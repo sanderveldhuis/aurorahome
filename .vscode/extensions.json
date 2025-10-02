@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "dprint.dprint"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ]
+}
