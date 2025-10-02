@@ -1,0 +1,49 @@
+{
+  "indentWidth": 2,
+  "lineWidth": 1000,
+  "newLineKind": "lf",
+  "useTabs": false,
+  "typescript": {
+    "semiColons": "always",
+    "quoteStyle": "preferSingle",
+    "quoteProps": "consistent",
+    "useBraces": "whenNotSingleLine",
+    "bracePosition": "sameLineUnlessHanging",
+    "singleBodyPosition": "sameLine",
+    "nextControlFlowPosition": "nextLine", // Stroustrup style braces.
+    "trailingCommas": "never",
+    "preferHanging": false,
+    "operatorPosition": "maintain",
+
+    "arrowFunction.useParentheses": "preferNone",
+    "conditionalExpression.linePerExpression": false, // Keep our "match/case"-ish conditionals.
+    "functionExpression.spaceAfterFunctionKeyword": true,
+    "importDeclaration.forceMultiLine": "whenMultiple",
+    "constructorType.spaceAfterNewKeyword": true,
+    "constructSignature.spaceAfterNewKeyword": true,
+
+    "module.sortImportDeclarations": "caseInsensitive",
+    "module.sortExportDeclarations": "caseInsensitive",
+    "exportDeclaration.sortNamedExports": "caseInsensitive",
+    "importDeclaration.sortNamedImports": "caseInsensitive"
+  },
+  "yaml": {
+    "quotes": "preferSingle"
+  },
+  "json": {
+    // This would be good to do in known-JSONC files, but VS Code warns on trailing commas.
+    "trailingCommas": "never"
+  },
+  "excludes": [
+    "**/.git",
+    "**/node_modules",
+    "**/*-lock.json",
+    "output/**"
+  ],
+  // Note: if updating typescript, update the one in package.json.
+  "plugins": [
+    "https://plugins.dprint.dev/typescript-0.93.4.wasm",
+    "https://plugins.dprint.dev/json-0.19.4.wasm",
+    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.0.wasm"
+  ]
+}

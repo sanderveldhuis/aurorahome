@@ -1,0 +1,46 @@
+name: 'Feature request'
+description: 'Suggest an idea'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🔎 Please [search thoroughly in GitHub](https://github.com/sanderveldhuis/aurorahome/search?type=Issues) or by the query `site:github.com/sanderveldhuis/aurorahome <your keywords>` in your favorite search engine before logging new feature requests as most common ideas already have a proposal in progress.
+
+        Please fill in each section completely. Thank you!
+  - type: textarea
+    id: search_terms
+    attributes:
+      label: '🔍 Search Terms'
+      description: |
+        What search terms did you use when trying to find an existing suggestion?
+
+        List them here so people in the future can find this one more easily.
+      placeholder: |
+        List of keywords you searched for before creating this issue. Write them down here so that others can find this suggestion more easily and help provide feedback.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion_summary
+    attributes:
+      label: '⭐ Suggestion'
+      description: "A summary of what you'd like to see added or changed"
+    validations:
+      required: true
+  - type: textarea
+    id: motivating_example
+    attributes:
+      label: '📃 Motivating Example'
+      description: |
+        If you were announcing this feature in a blog post, what's a short explanation that shows a developer why this feature improves the language?
+    validations:
+      required: true
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: '💻 Use Cases'
+      value: |
+        1. What do you want to use this for?
+        2. What shortcomings exist with current approaches?
+        3. What workarounds are you using in the meantime?
+    validations:
+      required: true

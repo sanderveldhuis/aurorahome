@@ -1,0 +1,32 @@
+{
+  "name": "aurorahome",
+  "author": "Sander Veldhuis",
+  "homepage": "https://sanderveldhuis.nl/",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Home automation system build upon GlideLite",
+  "keywords": [
+    "home",
+    "automation",
+    "domotics",
+    "GlideLite"
+  ],
+  "bugs": {
+    "url": "https://github.com/sanderveldhuis/aurorahome/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sanderveldhuis/aurorahome.git"
+  },
+  "scripts": {
+    "test": "echo 'Not implemented'",
+    "build": "glc",
+    "clean": "node -e \"require('fs').rmSync('output', { recursive: true, force: true })\"",
+    "format": "dprint fmt",
+    "dist": "npm run format && npm run clean && npm run build && npm run test"
+  },
+  "devDependencies": {
+    "dprint": "^0.50.2",
+    "glidelite": "github:sanderveldhuis/glidelite#next"
+  }
+}

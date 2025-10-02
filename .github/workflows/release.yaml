@@ -1,0 +1,81 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_version:
+        description: Release package version
+        required: true
+        type: string
+
+run-name: ${{ github.workflow }} v${{ inputs.package_version }}
+
+permissions:
+  contents: read
+
+# Ensure scripts are run with pipefail. See:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          filter: blob:none # https://github.blog/2020-12-21-get-up-to-speed-with-partial-clone-and-shallow-clone/
+          fetch-depth: 0 # Default is 1; need to set to 0 to get the benefits of blob:none.
+          token: ${{ secrets.PUSH_GITHUB_TOKEN }}
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 'lts/*'
+      - name: Setup Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Update versions in main
+        run: |
+          git checkout main
+          sed -i -e 's/"version": ".*"/"version": "${{ inputs.package_version }}"/g' package.json
+          npm ci
+          npm install # update package-lock.json to ensure the version bump is included
+          npm run test
+          git diff
+          git add package.json package-lock.json
+          git commit -m "Bump version to v${{ inputs.package_version }}"
+          git push -f origin main
+      - name: Create release branch
+        run: |
+          git checkout -b release-${{ inputs.package_version }}
+          npm ci
+          npm run dist
+          git diff
+          git add --force output
+          git commit -m "Release build v${{ inputs.package_version }}"
+          git push --set-upstream origin release-${{ inputs.package_version }}
+      - name: Rebase stable branch
+        run: |
+          git checkout stable
+          git rebase -X ours main
+          git push -f origin stable
+          npm ci
+          npm run dist
+          git diff
+          git add --force output
+          git commit -m "Release build v${{ inputs.package_version }}"
+          git push -f origin stable
+      - name: Release
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.4.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ inputs.package_version }}
+          release_name: Release v${{ inputs.package_version }}
+          commitish: release-${{ inputs.package_version }}
+          draft: false
+          prerelease: false

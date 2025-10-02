@@ -1,0 +1,11 @@
+{
+  "editor.defaultFormatter": "dprint.dprint",
+  "editor.formatOnSave": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+
+  "typescript.tsc.autoDetect": "off",
+  "npm.autoDetect": "off"
+}
