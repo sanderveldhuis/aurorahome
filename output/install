@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Check permissions
+if [ $EUID -ne 0 ]; then
+  echo "This install script should be run as root"
+  exit 1
+fi
+
+# Install required packages
+dpkg -s nodejs > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  apt-get install nodejs
+  if [ $? -ne 0 ]; then
+    echo "Not all required packages are installed"
+    exit 1
+  fi
+fi
+
+# Cleanup old project
+rm -rf /etc/cron.d/aurorahome_workers
+rm -rf /opt/aurorahome
+pkill -f "node /opt/aurorahome/workers"
+
+# Copy new project
+cp -r opt /
+cp -r etc /
+
+# Install dependencies
+pushd /opt/aurorahome
+npm install
+popd
+
+# Finish message
+SECONDS=$(($(date +%s -d "$(date +%H:%M) + next minute") - $(date +%s) + 10))
+echo "Installation finished!"
+echo "Your project should be up and running after ${SECONDS} seconds from now"
