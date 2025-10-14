@@ -1,0 +1,10 @@
+/var/log/aurorahome/*.log {
+    weekly
+    rotate 12
+    maxsize 500M
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
