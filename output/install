@@ -7,9 +7,10 @@ if [ $EUID -ne 0 ]; then
 fi
 
 # Install required packages
-dpkg -s nodejs > /dev/null 2>&1
+dpkg -s cron logrotate nodejs > /dev/null 2>&1
 if [ $? -ne 0 ]; then
-  apt-get install nodejs
+  apt-get update
+  apt-get install cron logrotate nodejs
   if [ $? -ne 0 ]; then
     echo "Not all required packages are installed"
     exit 1
@@ -22,6 +23,7 @@ rm -rf /opt/aurorahome
 pkill -f "node /opt/aurorahome/workers"
 
 # Copy new project
+mkdir -p /var/log/aurorahome
 cp -r opt /
 cp -r etc /
 
