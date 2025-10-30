@@ -21,12 +21,21 @@
   "scripts": {
     "test": "echo 'Not implemented'",
     "build": "glc",
+    "build:workers": "glc -m workers",
     "clean": "node -e \"require('fs').rmSync('output', { recursive: true, force: true })\"",
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0 .",
     "format": "dprint fmt",
-    "dist": "npm run format && npm run clean && npm run build && npm run test"
+    "dist": "npm run format && npm run lint && npm run clean && npm run build && npm run test"
+  },
+  "dependencies": {
+    "mqtt-packet": "^9.0.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.38.0",
     "dprint": "^0.50.2",
-    "glidelite": "github:sanderveldhuis/glidelite#next"
+    "eslint": "^9.38.0",
+    "glidelite": "github:sanderveldhuis/glidelite#next",
+    "mqtt": "^5.14.1",
+    "typescript-eslint": "^8.46.2"
   }
 }
