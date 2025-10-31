@@ -24,6 +24,7 @@
 
 import { log } from 'glidelite';
 import net from 'node:net';
+import { StatusReporter } from '../controller/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
 /**
@@ -31,14 +32,15 @@ import { MqttProtocol } from './mqttProtocol';
  */
 export class ShellyDevice {
   _mqtt: MqttProtocol;
+  _statusReporter: StatusReporter;
 
   /**
    * Constructs a new Shelly device.
    * @param socket the client socket
    */
   constructor(socket: net.Socket) {
-    this._mqtt = new MqttProtocol(socket, () => {
-      this._onConnect();
+    this._mqtt = new MqttProtocol(socket, name => {
+      this._onConnect(name);
     }, () => {
       this._onClose();
     }, topics => {
@@ -46,6 +48,7 @@ export class ShellyDevice {
     }, (topic, payload) => {
       this._onPublish(topic, payload);
     });
+    this._statusReporter = new StatusReporter();
   }
 
   /**
@@ -75,17 +78,16 @@ export class ShellyDevice {
   /**
    * Handles connection of the Shelly device.
    */
-  _onConnect(): void {
-    // TODO: update status in database
-    log.shellydevice.debug('connected');
+  _onConnect(name: string): void {
+    this._statusReporter.start(name, 'shelly');
+    this._statusReporter.setHealth('running');
   }
 
   /**
    * Handles closure of the Shelly device.
    */
   _onClose(): void {
-    // TODO: update status in database
-    log.shellydevice.debug('disconnected');
+    this._statusReporter.stop();
   }
 
   /**

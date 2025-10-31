@@ -50,7 +50,7 @@ export class MqttProtocol {
   _protocolVersion: number;
   _cache: Record<string, MqttCache>;
   _messageId: number;
-  _connectCallback: () => void;
+  _connectCallback: (name: string) => void;
   _closeCallback: () => void;
   _subscribeCallback: (topics: string[]) => void;
   _publishCallback: (topic: string, payload: string) => void;
@@ -63,7 +63,7 @@ export class MqttProtocol {
    * @param subscribeCallback invoked when an MQTT subscription is received
    * @param publishCallback invoked when an MQTT publish is received
    */
-  constructor(socket: net.Socket, connectCallback: () => void, closeCallback: () => void, subscribeCallback: (topics: string[]) => void, publishCallback: (topic: string, payload: string) => void) {
+  constructor(socket: net.Socket, connectCallback: (name: string) => void, closeCallback: () => void, subscribeCallback: (topics: string[]) => void, publishCallback: (topic: string, payload: string) => void) {
     this._socket = socket;
     this._connectCallback = connectCallback;
     this._closeCallback = closeCallback;
@@ -257,7 +257,7 @@ export class MqttProtocol {
       const data = mqtt.generate({ cmd: 'connack', returnCode: 0 } as mqtt.IConnackPacket, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
 
-      this._connectCallback();
+      this._connectCallback(this._clientId);
     }
     else {
       log.shellyclient.warn(`Invalid credentials from client '${this._clientId}'`);

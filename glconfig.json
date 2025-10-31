@@ -1,6 +1,6 @@
 {
-  "health": {
-    "endpoint": "healthmanager",
+  "status": {
+    "endpoint": "statusmanager",
     "interval": 1000
   },
   "shelly": {

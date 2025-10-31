@@ -24,25 +24,30 @@
 
 import {
   glconfig,
+  ipc,
   log
 } from 'glidelite';
 import net from 'node:net';
-import { AuroraWorker } from '../controller/auroraWorker';
+import { StatusReporter } from '../controller/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 
 /**
  * A Shelly server handling Shelly devices.
  */
-export class ShellyServer extends AuroraWorker {
+export class ShellyServer {
   _server: net.Server = new net.Server();
   _devices: ShellyDevice[] = [];
+  _statusReporter: StatusReporter = new StatusReporter();
 
   /**
    * Starts the Shelly server and listens for new Shelly devices.
    */
   start() {
-    // Start IPC and health reporting
-    super.start(glconfig.shelly.endpoint);
+    // Start IPC communication
+    ipc.start(glconfig.shelly.endpoint, glconfig.status.endpoint);
+
+    // Start status reporting
+    this._statusReporter.start(glconfig.shelly.endpoint, 'worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
 
     // Register all listeners
     this._server.on('error', (error: Error) => {
@@ -66,8 +71,11 @@ export class ShellyServer extends AuroraWorker {
    * @details the Shelly server should not be used anymore after being stopped
    */
   stop() {
-    // Stop IPC and health reporting
-    super.stop();
+    // Stop status reporting
+    this._statusReporter.stop();
+
+    // Stop IPC communication
+    ipc.stop();
 
     // First stop the server to prevent Shelly devices being connected before cleaning up the Shelly devices
     this._server.close();
@@ -82,7 +90,7 @@ export class ShellyServer extends AuroraWorker {
    * Handles successfull start of the Shelly server.
    */
   _onListening() {
-    super.setStatus('running');
+    this._statusReporter.setHealth('running');
   }
 
   /**

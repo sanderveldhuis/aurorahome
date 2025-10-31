@@ -22,17 +22,18 @@
  * SOFTWARE.
  */
 
-'glc service';
+import {
+  glconfig,
+  ipc
+} from 'glidelite';
 
-import { ShellyServer } from './shellyServer';
+ipc.start(glconfig.status.endpoint);
 
-// Construct Shelly server
-const shellyServer = new ShellyServer();
+ipc.onIndication((name, payload) => {
+  console.log('Received indication with name:', name, 'payload:', payload);
+});
 
 // Gracefully shutdown
 process.on('SIGINT', () => {
-  shellyServer.stop();
+  ipc.stop();
 });
-
-// Start the Shelly server
-shellyServer.start();

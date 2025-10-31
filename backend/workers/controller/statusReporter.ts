@@ -28,43 +28,50 @@ import {
 } from 'glidelite';
 
 /**
- * The AuroraHome worker status:
- * - running - indicates the worker is started and operationable
- * - instable - indicates the worker has some issues but is still operationable
+ * The status reporter health:
+ * - running - indicates the application is started and operationable
+ * - instable - indicates the application has some issues but is still operationable
  */
-export type AuroraWorkerStatus = 'running' | 'instable';
+export type StatusReporterHealth = 'running' | 'instable';
 
 /**
- * Super class for AuroraHome workers providing IPC startup and shutdown, and health reporting.
+ * The status reporter type:
+ * - worker - indicates the application is a AuroraHome worker
+ * - shelly - indicates the application is a Shelly device
  */
-export abstract class AuroraWorker {
-  _status: AuroraWorkerStatus | 'starting' = 'starting';
+export type StatusReporterType = 'worker' | 'shelly';
+
+/**
+ * Class providing cyclic status reporting to the Status Manager.
+ */
+export class StatusReporter {
+  _health: StatusReporterHealth | 'starting' = 'starting';
   _interval: NodeJS.Timeout | undefined;
 
   /**
-   * Starts the AuroraHome worker by starting IPC and health reporting.
-   * @param name the IPC endpoint name, should be unique for the project
+   * Starts reporting the status cyclic to the Status Manager.
+   * @param name the application name
+   * @param type the application name
+   * @param status the application status (optional)
    */
-  start(name: string) {
-    ipc.start(name, glconfig.health.endpoint);
+  start(name: string, type: StatusReporterType, status?: object) {
     this._interval = setInterval(() => {
-      ipc.to[glconfig.health.endpoint].indication('health', { status: this._status });
-    }, glconfig.health.interval);
+      ipc.to[glconfig.status.endpoint].indication('status', { health: this._health, name, type, status });
+    }, glconfig.status.interval);
   }
 
   /**
-   * Stops the AuroraHome worker by stopping IPC and health reporting.
+   * Stops reporting the status to the Status Manager.
    */
   stop() {
     clearInterval(this._interval);
-    ipc.stop();
   }
 
   /**
-   * Sets the AuroraHome worker status for health reporting.
+   * Sets the health to be reported to the Status Manager.
    * @param status the status
    */
-  setStatus(status: AuroraWorkerStatus) {
-    this._status = status;
+  setHealth(health: StatusReporterHealth) {
+    this._health = health;
   }
 }

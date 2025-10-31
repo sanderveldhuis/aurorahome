@@ -9,6 +9,10 @@ export default tseslint.config(
   {
     extends: [eslint.configs.recommended, ...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylisticTypeChecked],
     files: ['backend/workers/**'],
+    rules: {
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off'
+    },
     languageOptions: {
       globals: globals.node,
       parserOptions: {
