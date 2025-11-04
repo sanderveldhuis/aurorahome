@@ -28,6 +28,7 @@ import { StatusReporter } from '../controller/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
+const SHELLY_MAX_NOF_DEVICES = 4;
 
 /**
  * A Shelly device connected via MQTT communication.
@@ -36,7 +37,7 @@ export class ShellyDevice {
   _mqtt: MqttProtocol;
   _statusReporter: StatusReporter;
   _statusTimer: NodeJS.Timeout | undefined;
-  _status: Record<string, string | number | boolean>;
+  _status: Record<string, string | number | boolean | object>;
   _name: string;
   _type: string;
 
@@ -130,7 +131,7 @@ export class ShellyDevice {
    * @param payload the payload
    */
   _onPublish(topic: string, payload: string): void {
-    // Handle Shelly device status
+    // Handle Shelly status
     if (topic == `${glconfig.shelly.endpoint as string}/rpc`) {
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
       if (json.id as string == 'Shelly.GetStatus') {
@@ -139,18 +140,22 @@ export class ShellyDevice {
     }
 
     // Handle Shelly device specific updates
-    if (topic == `${this._name}/status/switch:0`) {
+    if (topic.startsWith(`${this._name}/status/switch:`)) {
+      const parts = topic.split('/');
+      const name = parts[parts.length - 1];
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
-      this._handleSwitchStatus(json);
+      this._handleDeviceStatus(name, json);
     }
-    else if (topic == `${this._name}/status/light:0`) {
+    else if (topic.startsWith(`${this._name}/status/light:`)) {
+      const parts = topic.split('/');
+      const name = parts[parts.length - 1];
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
-      this._handleLightStatus(json);
+      this._handleDeviceStatus(name, json);
     }
   }
 
   /**
-   * Handles a Shelly device status
+   * Handles a Shelly status
    * @param data the data
    */
   _handleShellyStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
@@ -159,45 +164,42 @@ export class ShellyDevice {
       return;
     }
 
+    // Handle Shelly status
     this._status.mac = data.sys?.mac as string;
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
     this._statusReporter.setStatus(this._status);
 
-    if (data['switch:0']) {
-      this._status.type = 'switch:0';
-      this._handleSwitchStatus(data['switch:0']);
-    }
-    else if (data['light:0']) {
-      this._status.type = 'light:0';
-      this._handleLightStatus(data['light:0']);
+    // Handle Shelly device specific updates
+    for (let i = 0; i < SHELLY_MAX_NOF_DEVICES; i++) {
+      let name = `switch:${String(i)}`;
+      if (data[name]) {
+        this._status.type = 'switch';
+        this._handleDeviceStatus(name, data[name]);
+      }
+
+      name = `light:${String(i)}`;
+      if (data[name]) {
+        this._status.type = 'light';
+        this._handleDeviceStatus(name, data[name]);
+      }
     }
   }
 
   /**
-   * Handles a Shelly switch device updates
+   * Handles a Shelly device status
+   * @param name the device name
    * @param data the data
    */
-  _handleSwitchStatus(data: Record<string, string | number | boolean>): void {
-    this._status.output = data.output as boolean;
-    this._status.power = data.apower as number;
-    this._status.voltage = data.voltage as number;
-    this._status.current = data.current as number;
-    this._status.freq = data.freq as number;
-    this._statusReporter.setStatus(this._status);
-  }
-
-  /**
-   * Handles a Shelly light device updates
-   * @param data the data
-   */
-  _handleLightStatus(data: Record<string, string | number | boolean>): void {
-    this._status.output = data.output as boolean;
-    this._status.power = data.apower as number;
-    this._status.voltage = data.voltage as number;
-    this._status.current = data.current as number;
-    this._status.freq = data.freq as number;
-    this._status.brightness = data.brightness as number;
+  _handleDeviceStatus(name: string, data: Record<string, string | number | boolean>): void {
+    this._status[name] = {
+      output: data.output as boolean,
+      power: data.apower as number,
+      voltage: data.voltage as number,
+      current: data.current as number,
+      freq: data.freq as number,
+      brightness: data.brightness as number
+    };
     this._statusReporter.setStatus(this._status);
   }
 }
