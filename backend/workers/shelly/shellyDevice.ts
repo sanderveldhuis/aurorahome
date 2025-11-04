@@ -162,6 +162,8 @@ export class ShellyDevice {
     this._status.mac = data.sys?.mac as string;
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
+    this._statusReporter.setStatus(this._status);
+
     if (data['switch:0']) {
       this._status.type = 'switch:0';
       this._handleSwitchStatus(data['switch:0']);
