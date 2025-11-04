@@ -164,12 +164,10 @@ export class ShellyDevice {
     this._status.rssi = data.wifi?.rssi as number;
     if (data['switch:0']) {
       this._status.type = 'switch:0';
-      this._statusReporter.setStatus(this._status);
       this._handleSwitchStatus(data['switch:0']);
     }
     else if (data['light:0']) {
       this._status.type = 'light:0';
-      this._statusReporter.setStatus(this._status);
       this._handleLightStatus(data['light:0']);
     }
   }
