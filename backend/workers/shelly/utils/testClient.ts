@@ -25,33 +25,29 @@
 import mqtt from 'mqtt';
 
 const client = mqtt.connect('mqtt://127.0.0.1:1235', {
+  clientId: 'testclient',
   username: 'test1',
   password: 'test2'
 });
 client.on('connect', () => {
   console.log('connected');
 
-  client.subscribe(['test-topic1', 'test-topic2']);
-  client.publish('test-topic', 'hoi', { qos: 2 });
-
-  /*client.subscribe('presence', err => {
-    if (!err) {
-      client.publish('presence', 'Hello mqtt');
-    }
-  });*/
+  client.subscribe('testclient/rpc', err => {
+    console.log(err);
+  });
 });
 
 client.on('packetreceive', packet => {
-  console.log(packet.cmd);
+  if (packet.cmd == 'publish') {
+    console.log(packet.topic);
+    client.publish('shelly/rpc', '{"id":"Shelly.GetStatus","result":{"sys":{"mac":"aa:bb:cc:dd:ee:ff"},"wifi":{"sta_ip":"127.0.0.1"},"switch:0":{"id":0, "source":"init", "output":true, "brightness":31, "temperature":{"tC":42.9, "tF":109.2},"aenergy":{"total":1139.115,"by_minute":[42.453,39.135,40.474],"minute_ts":1762004640},"apower":2.6,"current":0.018,"voltage":228.0}}}', { qos: 1 });
+  }
+  else {
+    console.log(packet.cmd);
+  }
 });
 
 // Gracefully shutdown
 process.on('SIGINT', () => {
   client.end(true);
 });
-
-/*client.on('message', (topic, message) => {
-  // message is Buffer
-  console.log(message.toString());
-  client.end();
-});*/

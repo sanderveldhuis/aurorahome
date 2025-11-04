@@ -46,6 +46,7 @@ export type StatusReporterType = 'worker' | 'shelly';
  */
 export class StatusReporter {
   _health: StatusReporterHealth | 'starting' = 'starting';
+  _status: object | undefined;
   _interval: NodeJS.Timeout | undefined;
 
   /**
@@ -55,8 +56,9 @@ export class StatusReporter {
    * @param status the application status (optional)
    */
   start(name: string, type: StatusReporterType, status?: object) {
+    this._status = status;
     this._interval = setInterval(() => {
-      ipc.to[glconfig.status.endpoint].indication('status', { health: this._health, name, type, status });
+      ipc.to[glconfig.status.endpoint].indication('status', { health: this._health, name, type, status: this._status });
     }, glconfig.status.interval);
   }
 
@@ -69,9 +71,17 @@ export class StatusReporter {
 
   /**
    * Sets the health to be reported to the Status Manager.
-   * @param status the status
+   * @param health the health
    */
   setHealth(health: StatusReporterHealth) {
     this._health = health;
+  }
+
+  /**
+   * Sets the status to be reported to the Status Manager.
+   * @param status the status
+   */
+  setStatus(status: object) {
+    this._status = status;
   }
 }
