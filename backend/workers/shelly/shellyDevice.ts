@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-import { glconfig } from 'glidelite';
+import {
+  glconfig,
+  log
+} from 'glidelite';
 import net from 'node:net';
 import { StatusReporter } from '../controller/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
@@ -167,6 +170,7 @@ export class ShellyDevice {
   _handleShellyStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
     // If no data is received or no MAC address is available the device cannot be used
     if (data === undefined || data.sys?.mac === undefined) {
+      log.shellydevice.error(`Error occurred in device '${this._name}', message: status did not contain a MAC address`);
       this.stop();
       return;
     }

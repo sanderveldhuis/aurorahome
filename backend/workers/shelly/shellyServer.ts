@@ -102,6 +102,9 @@ export class ShellyServer {
         device.command(name, payload);
       }
     }
+    else {
+      log.shellyserver.error(`Received unknown command via IPC with name: ${name}, payload: ${String(payload)}`);
+    }
   }
 
   /**

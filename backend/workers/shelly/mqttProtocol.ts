@@ -178,7 +178,7 @@ export class MqttProtocol {
    * @param error the error
    */
   _onError(error: Error): void {
-    log.shellyclient.error(`Error occurred in client '${this._clientId}', message: ${error.message}`);
+    log.shellydevice.error(`Error occurred in device '${this._clientId}', message: ${error.message}`);
     this._socket.destroy();
   }
 
@@ -236,7 +236,7 @@ export class MqttProtocol {
         break;
       }
       default: {
-        log.shellyclient.warn(`Unknown packet from client '${this._clientId}', command: ${packet.cmd}`);
+        log.shellydevice.warn(`Unknown packet from device '${this._clientId}', command: ${packet.cmd}`);
         break;
       }
     }
@@ -260,7 +260,7 @@ export class MqttProtocol {
       this._connectCallback(this._clientId);
     }
     else {
-      log.shellyclient.warn(`Invalid credentials from client '${this._clientId}'`);
+      log.shellydevice.warn(`Invalid credentials from device '${this._clientId}'`);
       const data = mqtt.generate({ cmd: 'connack', returnCode: 4 } as mqtt.IConnackPacket, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
     }
