@@ -94,9 +94,11 @@ export class ShellyDevice {
   command(mac: string, params: object): void {
     if (mac === this._status.mac) {
       if (this._status.type === 'switch') {
+        log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
         this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params }));
       }
       else if (this._status.type === 'light') {
+        log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
         this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params }));
       }
     }
@@ -109,6 +111,7 @@ export class ShellyDevice {
   _onConnect(name: string): void {
     this._name = name;
     this._statusReporter.start(name, 'shelly');
+    log.shellydevice.info(`Connected device with name: ${this._name}`);
   }
 
   /**
@@ -117,6 +120,7 @@ export class ShellyDevice {
   _onClose(): void {
     clearInterval(this._statusTimer);
     this._statusReporter.stop();
+    log.shellydevice.info(`Closed device with name: ${this._name}`);
   }
 
   /**
@@ -170,7 +174,7 @@ export class ShellyDevice {
   _handleShellyStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
     // If no data is received or no MAC address is available the device cannot be used
     if (data === undefined || data.sys?.mac === undefined) {
-      log.shellydevice.error(`Error occurred in device '${this._name}', message: status did not contain a MAC address`);
+      log.shellydevice.error(`Error occurred in device with name: ${this._name}, message: status did not contain a MAC address`);
       this.stop();
       return;
     }

@@ -98,12 +98,13 @@ export class ShellyServer {
   _onIndication(name: string, payload: IpcPayload) {
     // Forward command to all devices
     if (typeof payload === 'object' && payload !== null) {
+      log.shellyserver.info(`Received command with name: ${name}, payload: ${JSON.stringify(payload)}`);
       for (const device of Object.values(this._devices)) {
         device.command(name, payload);
       }
     }
     else {
-      log.shellyserver.error(`Received unknown command via IPC with name: ${name}, payload: ${String(payload)}`);
+      log.shellyserver.error(`Received unknown command with name: ${name}, payload: ${String(payload)}`);
     }
   }
 
@@ -112,6 +113,7 @@ export class ShellyServer {
    */
   _onListening() {
     this._statusReporter.setHealth('running');
+    log.shellyserver.info(`Started listening on: ${glconfig.shelly.mqtt.hostname as string}:${glconfig.shelly.mqtt.port as string}`);
   }
 
   /**
@@ -129,6 +131,7 @@ export class ShellyServer {
   _onClose() {
     this._server.removeAllListeners();
     this.stop();
+    log.shellyserver.info('Stopped');
   }
 
   /**
@@ -136,6 +139,8 @@ export class ShellyServer {
    * @param socket the client socket
    */
   _onConnection(socket: net.Socket) {
+    log.shellyserver.info(`Device connected with IP address: ${String(socket.remoteAddress)}, number of devices: ${String(this._devices.length + 1)}`);
+
     // Accept new connection
     const device = new ShellyDevice(socket);
     this._devices.push(device);
