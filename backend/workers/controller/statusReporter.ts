@@ -55,17 +55,17 @@ export class StatusReporter {
    * @param type the application name
    * @param status the application status (optional)
    */
-  start(name: string, type: StatusReporterType, status?: object) {
+  start(name: string, type: StatusReporterType, status?: object): void {
     this._status = status;
     this._interval = setInterval(() => {
-      ipc.to[glconfig.status.endpoint].indication('status', { health: this._health, name, type, status: this._status });
+      ipc.to[glconfig.status.endpoint].indication('status', { name, type, health: this._health, status: this._status });
     }, glconfig.status.interval);
   }
 
   /**
    * Stops reporting the status to the Status Manager.
    */
-  stop() {
+  stop(): void {
     clearInterval(this._interval);
   }
 
@@ -73,7 +73,7 @@ export class StatusReporter {
    * Sets the health to be reported to the Status Manager.
    * @param health the health
    */
-  setHealth(health: StatusReporterHealth) {
+  setHealth(health: StatusReporterHealth): void {
     this._health = health;
   }
 
@@ -81,7 +81,7 @@ export class StatusReporter {
    * Sets the status to be reported to the Status Manager.
    * @param status the status
    */
-  setStatus(status: object) {
+  setStatus(status: object): void {
     this._status = status;
   }
 }

@@ -85,11 +85,11 @@ export class ShellyDevice {
 
   /**
    * Publishes a command to the Shelly device.
-   * @param name the Shelly device name
+   * @param mac the Shelly device MAC address
    * @param params the parameters for the device command
    */
-  command(name: string, params: object): void {
-    if (this._name === name) {
+  command(mac: string, params: object): void {
+    if (mac === this._status.mac) {
       if (this._status.type === 'switch') {
         this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params }));
       }
@@ -165,8 +165,9 @@ export class ShellyDevice {
    * @param data the data
    */
   _handleShellyStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
-    this._statusReporter.setHealth('running');
-    if (data === undefined) {
+    // If no data is received or no MAC address is available the device cannot be used
+    if (data === undefined || data.sys?.mac === undefined) {
+      this.stop();
       return;
     }
 
@@ -175,6 +176,7 @@ export class ShellyDevice {
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
     this._statusReporter.setStatus(this._status);
+    this._statusReporter.setHealth('running');
 
     // Handle Shelly device specific updates
     for (let i = 0; i < SHELLY_MAX_NOF_DEVICES; i++) {

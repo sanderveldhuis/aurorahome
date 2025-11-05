@@ -35,9 +35,9 @@ ipc.onIndication((name, payload) => {
 
 let on = false;
 const interval = setInterval(() => {
-  ipc.to.shelly.indication('shellyplugsg3-e4b063e5c430', { id: 0, on });
+  ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
   on = !on;
-  // ipc.to.shelly.indication('shellydimmerg3-e4b063d9d460', { id: 0, on: true, brightness: 31 });
+  // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
 }, 5000);
 
 // Gracefully shutdown
