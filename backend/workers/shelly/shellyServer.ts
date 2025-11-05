@@ -27,6 +27,7 @@ import {
   ipc,
   log
 } from 'glidelite';
+import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import net from 'node:net';
 import { StatusReporter } from '../controller/statusReporter';
 import { ShellyDevice } from './shellyDevice';
@@ -45,6 +46,9 @@ export class ShellyServer {
   start() {
     // Start IPC communication
     ipc.start(glconfig.shelly.endpoint, glconfig.status.endpoint);
+    ipc.onIndication((name, payload) => {
+      this._onIndication(name, payload);
+    });
 
     // Start status reporting
     this._statusReporter.start(glconfig.shelly.endpoint, 'worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
@@ -83,6 +87,20 @@ export class ShellyServer {
     // Stop all Shelly devices
     for (const device of Object.values(this._devices)) {
       device.stop();
+    }
+  }
+
+  /**
+   * Handles IPC indications.
+   * @param name the indication name
+   * @param payload the indication payload
+   */
+  _onIndication(name: string, payload: IpcPayload) {
+    // Forward command to all devices
+    if (typeof payload === 'object' && payload !== null) {
+      for (const device of Object.values(this._devices)) {
+        device.command(name, payload);
+      }
     }
   }
 

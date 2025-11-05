@@ -39,7 +39,6 @@ export class ShellyDevice {
   _statusTimer: NodeJS.Timeout | undefined;
   _status: Record<string, string | number | boolean | object>;
   _name: string;
-  _type: string;
 
   /**
    * Constructs a new Shelly device.
@@ -58,7 +57,6 @@ export class ShellyDevice {
     this._statusReporter = new StatusReporter();
     this._status = {};
     this._name = '';
-    this._type = '';
   }
 
   /**
@@ -87,15 +85,23 @@ export class ShellyDevice {
 
   /**
    * Publishes a command to the Shelly device.
+   * @param name the Shelly device name
+   * @param params the parameters for the device command
    */
-  command(): void {
-    // TODO: handle via IPC indication
-    this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params: { id: 0, on: false } }));
-    this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params: { id: 0, on: false, brightness: 31 } }));
+  command(name: string, params: object): void {
+    if (this._name === name) {
+      if (this._status.type === 'switch') {
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params }));
+      }
+      else if (this._status.type === 'light') {
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params }));
+      }
+    }
   }
 
   /**
    * Handles connection of the Shelly device.
+   * @param name the Shelly device name
    */
   _onConnect(name: string): void {
     this._name = name;

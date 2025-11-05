@@ -27,13 +27,21 @@ import {
   ipc
 } from 'glidelite';
 
-ipc.start(glconfig.status.endpoint);
+ipc.start(glconfig.status.endpoint, glconfig.shelly.endpoint);
 
 ipc.onIndication((name, payload) => {
   console.log('Received indication with name:', name, 'payload:', payload);
 });
 
+let on = false;
+const interval = setInterval(() => {
+  ipc.to.shelly.indication('shellyplugsg3-e4b063e5c430', { id: 0, on });
+  on = !on;
+  // ipc.to.shelly.indication('shellydimmerg3-e4b063d9d460', { id: 0, on: true, brightness: 31 });
+}, 5000);
+
 // Gracefully shutdown
 process.on('SIGINT', () => {
+  clearInterval(interval);
   ipc.stop();
 });
