@@ -1,0 +1,41 @@
+"use strict";
+/**
+ * MIT License
+ *
+ * Copyright (c) 2025 Sander Veldhuis
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+const glidelite_1 = require("glidelite");
+glidelite_1.ipc.start(glidelite_1.glconfig.status.endpoint, glidelite_1.glconfig.shelly.endpoint);
+glidelite_1.ipc.onIndication((name, payload) => {
+    console.log('Received indication with name:', name, 'payload:', payload);
+});
+let on = false;
+const interval = setInterval(() => {
+    glidelite_1.ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
+    on = !on;
+    // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
+}, 5000);
+// Gracefully shutdown
+process.on('SIGINT', () => {
+    clearInterval(interval);
+    glidelite_1.ipc.stop();
+});
