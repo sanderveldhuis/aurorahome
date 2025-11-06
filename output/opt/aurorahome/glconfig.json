@@ -1,1 +1,1 @@
-{"name":"aurorahome","version":"1.0.0"}
+{"status":{"endpoint":"statusmanager","interval":1000},"shelly":{"endpoint":"shelly","mqtt":{"port":1235,"hostname":"0.0.0.0","username":"test1","password":"test2"}},"name":"aurorahome","version":"1.0.0"}
