@@ -79,7 +79,7 @@ export class MqttProtocol {
   /**
    * Start the MQTT protocol by handling all incoming events.
    */
-  start() {
+  start(): void {
     // Remove listeners for safety, e.g. when this function was invoked before
     this._parser.removeAllListeners();
     this._socket.removeAllListeners();
@@ -162,14 +162,14 @@ export class MqttProtocol {
   /**
    * Handles timeout of the socket.
    */
-  _onTimeout() {
+  _onTimeout(): void {
     this._socket.end();
   }
 
   /**
    * Handles end of the socket.
    */
-  _onEnd() {
+  _onEnd(): void {
     this._socket.end();
   }
 

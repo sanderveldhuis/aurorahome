@@ -65,7 +65,7 @@ export class ShellyDevice {
   /**
    * Start the Shelly device and MQTT communication.
    */
-  start() {
+  start(): void {
     this._mqtt.start();
   }
 
@@ -89,17 +89,20 @@ export class ShellyDevice {
   /**
    * Publishes a command to the Shelly device.
    * @param mac the Shelly device MAC address
-   * @param params the parameters for the device command
+   * @param command the Shelly device command
    */
-  command(mac: string, params: object): void {
+  command(mac: string, command: object): void {
     if (mac === this._status.mac) {
-      if (this._status.type === 'switch') {
+      if (this._status.type === 'switch' && 'id' in command && 'on' in command) {
         log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params }));
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params: command }));
       }
-      else if (this._status.type === 'light') {
+      else if (this._status.type === 'light' && 'id' in command && ('on' in command || 'brightness' in command)) {
         log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params }));
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params: command }));
+      }
+      else {
+        log.shellydevice.error(`Received unknown command: ${JSON.stringify(command)}`);
       }
     }
   }
