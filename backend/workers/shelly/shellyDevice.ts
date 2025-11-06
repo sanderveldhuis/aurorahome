@@ -31,7 +31,7 @@ import { StatusReporter } from '../controller/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
-const SHELLY_MAX_NOF_DEVICES = 4;
+const SHELLY_MAX_NOF_COMPONENTS = 4;
 
 /**
  * A Shelly device connected via MQTT communication.
@@ -127,7 +127,7 @@ export class ShellyDevice {
   }
 
   /**
-   * Handles a subscription of the Shelly device.
+   * Handles a subscription from the Shelly device.
    * @param topics the subscribed topics
    */
   _onSubscribe(topics: string[]): void {
@@ -142,39 +142,39 @@ export class ShellyDevice {
   }
 
   /**
-   * Handles a publish of the Shelly device.
+   * Handles a publish from the Shelly device.
    * @param topic the MQTT topic
    * @param payload the payload
    */
   _onPublish(topic: string, payload: string): void {
-    // Handle Shelly status
+    // Handle Shelly device status
     if (topic == `${glconfig.shelly.endpoint as string}/rpc`) {
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
       if (json.id as string == 'Shelly.GetStatus') {
-        this._handleShellyStatus(json.result);
+        this._handleDeviceStatus(json.result);
       }
     }
 
-    // Handle Shelly device specific updates
+    // Handle Shelly component status
     if (topic.startsWith(`${this._name}/status/switch:`)) {
       const parts = topic.split('/');
       const name = parts[parts.length - 1];
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
-      this._handleDeviceStatus(name, json);
+      this._handleComponentStatus(name, json);
     }
     else if (topic.startsWith(`${this._name}/status/light:`)) {
       const parts = topic.split('/');
       const name = parts[parts.length - 1];
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
-      this._handleDeviceStatus(name, json);
+      this._handleComponentStatus(name, json);
     }
   }
 
   /**
-   * Handles a Shelly status
+   * Handles a Shelly device status
    * @param data the data
    */
-  _handleShellyStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
+  _handleDeviceStatus(data: any): void /* eslint-disable-line @typescript-eslint/no-explicit-any */ {
     // If no data is received or no MAC address is available the device cannot be used
     if (data === undefined || data.sys?.mac === undefined) {
       log.shellydevice.error(`Error occurred in device with name: ${this._name}, message: status did not contain a MAC address`);
@@ -182,35 +182,35 @@ export class ShellyDevice {
       return;
     }
 
-    // Handle Shelly status
+    // Handle Shelly device status
     this._status.mac = data.sys?.mac as string;
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
     this._statusReporter.setStatus(this._status);
     this._statusReporter.setHealth('running');
 
-    // Handle Shelly device specific updates
-    for (let i = 0; i < SHELLY_MAX_NOF_DEVICES; i++) {
+    // Handle Shelly component status
+    for (let i = 0; i < SHELLY_MAX_NOF_COMPONENTS; i++) {
       let name = `switch:${String(i)}`;
       if (data[name]) {
         this._status.type = 'switch';
-        this._handleDeviceStatus(name, data[name]);
+        this._handleComponentStatus(name, data[name]);
       }
 
       name = `light:${String(i)}`;
       if (data[name]) {
         this._status.type = 'light';
-        this._handleDeviceStatus(name, data[name]);
+        this._handleComponentStatus(name, data[name]);
       }
     }
   }
 
   /**
-   * Handles a Shelly device status
-   * @param name the device name
+   * Handles a Shelly component status
+   * @param name the component name
    * @param data the data
    */
-  _handleDeviceStatus(name: string, data: Record<string, string | number | boolean>): void {
+  _handleComponentStatus(name: string, data: Record<string, string | number | boolean>): void {
     this._status[name] = {
       output: data.output as boolean,
       power: data.apower as number,
