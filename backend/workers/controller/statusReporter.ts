@@ -26,39 +26,33 @@ import {
   glconfig,
   ipc
 } from 'glidelite';
-
-/**
- * The status reporter health:
- * - running - indicates the application is started and operationable
- * - instable - indicates the application has some issues but is still operationable
- */
-export type StatusReporterHealth = 'running' | 'instable';
-
-/**
- * The status reporter type:
- * - worker - indicates the application is a AuroraHome worker
- * - shelly - indicates the application is a Shelly device
- */
-export type StatusReporterType = 'worker' | 'shelly';
+import {
+  StatusHealth,
+  StatusMessage,
+  StatusMessageName,
+  StatusType
+} from '../types/status';
 
 /**
  * Class providing cyclic status reporting to the Status Manager.
  */
 export class StatusReporter {
-  _health: StatusReporterHealth | 'starting' = 'starting';
+  _health: StatusHealth = 'starting';
   _status: object | undefined;
   _interval: NodeJS.Timeout | undefined;
 
   /**
    * Starts reporting the status cyclic to the Status Manager.
    * @param name the application name
-   * @param type the application name
+   * @param type the application type
    * @param status the application status (optional)
    */
-  start(name: string, type: StatusReporterType, status?: object): void {
+  start(name: string, type: StatusType, status?: object): void {
     this._status = status;
     this._interval = setInterval(() => {
-      ipc.to[glconfig.status.endpoint].indication('status', { name, type, health: this._health, status: this._status });
+      const messageName: StatusMessageName = 'status';
+      const message: StatusMessage = { name, type, health: this._health, status: this._status };
+      ipc.to[glconfig.status.endpoint].indication(messageName, message);
     }, glconfig.status.interval);
   }
 
@@ -73,7 +67,7 @@ export class StatusReporter {
    * Sets the health to be reported to the Status Manager.
    * @param health the health
    */
-  setHealth(health: StatusReporterHealth): void {
+  setHealth(health: StatusHealth): void {
     this._health = health;
   }
 

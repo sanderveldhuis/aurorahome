@@ -43,7 +43,7 @@ export class ShellyServer {
   /**
    * Starts the Shelly server and listens for new Shelly devices.
    */
-  start() {
+  start(): void {
     // Start IPC communication
     ipc.start(glconfig.shelly.endpoint, glconfig.status.endpoint);
     ipc.onIndication((name, payload) => {
@@ -74,7 +74,7 @@ export class ShellyServer {
    * Stops the Shelly server and the connected Shelly devices.
    * @details the Shelly server should not be used anymore after being stopped
    */
-  stop() {
+  stop(): void {
     // Stop status reporting
     this._statusReporter.stop();
 
@@ -95,7 +95,7 @@ export class ShellyServer {
    * @param name the indication name
    * @param payload the indication payload
    */
-  _onIndication(name: string, payload: IpcPayload) {
+  _onIndication(name: string, payload: IpcPayload): void {
     // Forward command to all devices
     if (typeof payload === 'object' && payload !== null) {
       log.shellyserver.info(`Received command with name: ${name}, payload: ${JSON.stringify(payload)}`);
@@ -111,7 +111,7 @@ export class ShellyServer {
   /**
    * Handles successfull start of the Shelly server.
    */
-  _onListening() {
+  _onListening(): void {
     this._statusReporter.setHealth('running');
     log.shellyserver.info(`Started listening on: ${glconfig.shelly.mqtt.hostname as string}:${glconfig.shelly.mqtt.port as string}`);
   }
@@ -120,7 +120,7 @@ export class ShellyServer {
    * Handles errors of the Shelly server.
    * @param error the error
    */
-  _onError(error: Error) {
+  _onError(error: Error): void {
     log.shellyserver.error(error.message);
     this._server.close();
   }
@@ -128,7 +128,7 @@ export class ShellyServer {
   /**
    * Handles closure of the Shelly server.
    */
-  _onClose() {
+  _onClose(): void {
     this._server.removeAllListeners();
     this.stop();
     log.shellyserver.info('Stopped');
@@ -138,7 +138,7 @@ export class ShellyServer {
    * Handles a new Shelly device connecting to the Shelly server.
    * @param socket the client socket
    */
-  _onConnection(socket: net.Socket) {
+  _onConnection(socket: net.Socket): void {
     log.shellyserver.info(`Device connected with IP address: ${String(socket.remoteAddress)}, number of devices: ${String(this._devices.length + 1)}`);
 
     // Accept new connection

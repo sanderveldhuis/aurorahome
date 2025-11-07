@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  ipc
-} from 'glidelite';
+/**
+ * The IPC message for setting a Shelly switch.
+ * @details the IPC message name should be the Shelly device MAC address
+ */
+export interface ShellySetSwitchMessage {
+  /** Identifier of the switch component */
+  id: number;
+  /** `true` for switch on, or `false` otherwise  */
+  on: boolean;
+}
 
-ipc.start(glconfig.status.endpoint, glconfig.shelly.endpoint);
-
-ipc.onIndication((name, payload) => {
-  console.log('Received indication with name:', name, 'payload:', payload);
-});
-
-let on = false;
-const interval = setInterval(() => {
-  ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-  on = !on;
-  // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
-}, 5000);
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  clearInterval(interval);
-  ipc.stop();
-});
+/**
+ * The IPC message for setting a Shelly light.
+ * @details the IPC message name should be the Shelly device MAC address
+ */
+export interface ShellySetLightMessage {
+  /** Identifier of the light component */
+  id: number;
+  /** `true` for light on, or `false` otherwise (optional)  */
+  on?: boolean;
+  /** Brightness level of the light (optional) */
+  brightness?: number;
+}
