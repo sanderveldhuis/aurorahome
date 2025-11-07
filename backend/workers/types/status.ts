@@ -22,26 +22,34 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  ipc
-} from 'glidelite';
+/**
+ * The status type.
+ * @details
+ * - worker - indicates the application is an AuroraHome worker
+ * - shelly - indicates the application is a Shelly device
+ */
+export type StatusType = 'worker' | 'shelly';
 
-ipc.start(glconfig.status.endpoint, glconfig.shelly.endpoint);
+/**
+ * The status health.
+ * @details
+ * - starting - indicates the application is starting and not yet operationable
+ * - running - indicates the application is started and operationable
+ * - instable - indicates the application has some issues but is still operationable
+ */
+export type StatusHealth = 'starting' | 'running' | 'instable';
 
-ipc.onIndication((name, payload) => {
-  console.log('Received indication with name:', name, 'payload:', payload);
-});
+/**
+ * The status message name for IPC.
+ */
+export type StatusMessageName = 'status';
 
-let on = false;
-const interval = setInterval(() => {
-  ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-  on = !on;
-  // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
-}, 5000);
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  clearInterval(interval);
-  ipc.stop();
-});
+/**
+ * The status message for IPC.
+ */
+export interface StatusMessage {
+  name: string;
+  type: StatusType;
+  health: StatusHealth;
+  status?: object;
+}
