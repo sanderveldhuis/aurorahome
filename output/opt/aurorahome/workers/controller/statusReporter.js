@@ -35,13 +35,15 @@ class StatusReporter {
     /**
      * Starts reporting the status cyclic to the Status Manager.
      * @param name the application name
-     * @param type the application name
+     * @param type the application type
      * @param status the application status (optional)
      */
     start(name, type, status) {
         this._status = status;
         this._interval = setInterval(() => {
-            glidelite_1.ipc.to[glidelite_1.glconfig.status.endpoint].indication('status', { name, type, health: this._health, status: this._status });
+            const messageName = 'status';
+            const message = { name, type, health: this._health, status: this._status };
+            glidelite_1.ipc.to[glidelite_1.glconfig.status.endpoint].indication(messageName, message);
         }, glidelite_1.glconfig.status.interval);
     }
     /**
