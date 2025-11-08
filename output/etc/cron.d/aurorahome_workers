@@ -1,2 +1,4 @@
 @reboot root node /opt/aurorahome/workers/shelly/run.js >> /var/log/aurorahome/workers.log &
 * * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/workers/shelly/run.js" || node /opt/aurorahome/workers/shelly/run.js >> /var/log/aurorahome/workers.log &
+@reboot root node /opt/aurorahome/workers/statusmanager/run.js >> /var/log/aurorahome/workers.log &
+* * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/workers/statusmanager/run.js" || node /opt/aurorahome/workers/statusmanager/run.js >> /var/log/aurorahome/workers.log &
