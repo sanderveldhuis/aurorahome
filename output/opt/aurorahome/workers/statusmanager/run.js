@@ -1,4 +1,3 @@
-"use strict";
 /**
  * MIT License
  *
@@ -22,20 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+'glc service';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const glidelite_1 = require("glidelite");
-glidelite_1.ipc.start(glidelite_1.glconfig.status.endpoint, glidelite_1.glconfig.shelly.endpoint);
-glidelite_1.ipc.onIndication((name, payload) => {
-    console.log('Received indication with name:', name, 'payload:', payload);
-});
-let on = false;
-const interval = setInterval(() => {
-    glidelite_1.ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-    on = !on;
-    // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
-}, 5000);
+const statusManager_1 = require("./statusManager");
+// Construct Status Manager
+const statusManager = new statusManager_1.StatusManager();
 // Gracefully shutdown
 process.on('SIGINT', () => {
-    clearInterval(interval);
-    glidelite_1.ipc.stop();
+    statusManager.stop();
 });
+// Start the Status Manager
+statusManager.start();
