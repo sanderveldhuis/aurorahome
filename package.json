@@ -36,6 +36,6 @@
     "eslint": "^9.38.0",
     "glidelite": "github:sanderveldhuis/glidelite#next",
     "mqtt": "^5.14.1",
-    "typescript-eslint": "^8.46.2"
+    "typescript-eslint": "^8.47.0"
   }
 }
