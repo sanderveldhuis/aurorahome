@@ -21,7 +21,8 @@
   "scripts": {
     "test": "echo 'Not implemented'",
     "build": "glc",
-    "build:workers": "glc -m workers",
+    "build:backend": "glc -m backend",
+    "build:frontend": "glc -m frontend",
     "clean": "node -e \"require('fs').rmSync('output', { recursive: true, force: true })\"",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0 .",
     "format": "dprint fmt",
