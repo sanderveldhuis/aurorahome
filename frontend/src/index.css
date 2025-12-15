@@ -21,3 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/* Import all of Bootstrap's CSS */
+@import "~bootstrap/scss/bootstrap.scss";
+
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+  color: rgb(255, 255, 255);
+  background-color: rgb(18,18,18);
+}
