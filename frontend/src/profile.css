@@ -22,23 +22,6 @@
  * SOFTWARE.
  */
 
-.container-fluid .container-row {
-  height: calc(100vh - 40px); /* Remove the height of the navbar from the viewport height */
-}
-
-@media (min-width: 768px) {
-  .container-fluid .container-row {
-    height: 100vh; /* Full viewport height is available when navbar is not enabled */
-  }
-}
-
-.container-fluid .container-row .container-col {
-  height: 100%;
-}
-
-.container-fluid .container-row .container-col .card {
-  --bs-body-color: white;
-  --bs-card-bg: rgb(22, 27, 46);
-  --bs-card-border-color: rgb(0, 8, 31);
-  --bs-card-border-width: 2px;
+.profile .form-label {
+  font-size: 0.875rem !important;
 }
