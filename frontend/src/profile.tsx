@@ -49,15 +49,15 @@ function editProfile(onSave: () => void, onCancel: () => void) {
   return (
     <>
       <div className='mb-2'>
-        <label className='form-label fw-semibold mb-1'>Name</label>
+        <label className='form-label fw-semibold small mb-1'>Name</label>
         <input type='text' className='form-control form-control-sm' placeholder='Name' id='profileName' value='Veldhuis' />
       </div>
       <div className='mb-2'>
-        <label className='form-label fw-semibold mb-1'>Address</label>
+        <label className='form-label fw-semibold small mb-1'>Address</label>
         <input type='text' className='form-control form-control-sm' placeholder='Address' id='profileAddress' value='Tunneloven 9, Albergen' />
       </div>
       <div className='mb-2'>
-        <label className='form-label fw-semibold mb-1'>Email</label>
+        <label className='form-label fw-semibold small mb-1'>Email</label>
         <input type='email' className='form-control form-control-sm' placeholder='Email' id='profileEmail' value='mail@sanderveldhuis.nl' />
       </div>
       <button
@@ -90,7 +90,7 @@ function Profile({ component }: { component: string; }) {
         <div className='col-12 col-lg-6 col-xl-3'>
           <div className='card'>
             <div className='card-body'>
-              <img src='https://github.com/sanderveldhuis.png' alt='' className='img-fluid rounded-circle mb-3'></img>
+              <img src='https://github.com/sanderveldhuis.png' alt='' className='img-fluid rounded-circle mb-3' />
               {edit ? editProfile(() => {
                 // TODO: store via API
                 setEdit(false);

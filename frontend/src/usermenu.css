@@ -21,3 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+.usermenu {
+  background-color: rgb(22, 27, 46);
+}
+
+.usermenu .nav-link {
+  height: 50px;
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 400;
+}
+
+.usermenu .nav-link svg {
+  vertical-align: -.125em;
+  fill: currentColor;
+}
+
+.usermenu .nav-divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 2px solid rgba(157, 54, 230, 0.3);
+  opacity: 1;
+}

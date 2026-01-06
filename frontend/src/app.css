@@ -32,10 +32,6 @@
   }
 }
 
-.container-fluid .container-row .container-col {
-  height: 100%;
-}
-
 .container-fluid .container-row .container-col .card {
   --bs-body-color: white;
   --bs-card-bg: rgb(22, 27, 46);
