@@ -40,7 +40,7 @@ function App() {
       <UserMenu setComponent={setComponent} />
       <div className='container-fluid'>
         <div className='container-row row'>
-          <NavMenu setComponent={setComponent} />
+          <NavMenu component={component} setComponent={setComponent} />
           <main className='container-col col h-100 overflow-y-auto'>
             <Dashboard component={component} />
             <Settings component={component} />
