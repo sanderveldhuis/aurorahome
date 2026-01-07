@@ -7,10 +7,10 @@ if [ $EUID -ne 0 ]; then
 fi
 
 # Install required packages
-dpkg -s cron logrotate nodejs > /dev/null 2>&1
+dpkg -s cron logrotate nodejs nginx certbot python3-certbot-nginx > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   apt-get update
-  apt-get install cron logrotate nodejs
+  apt-get install cron logrotate nodejs nginx certbot python3-certbot-nginx
   if [ $? -ne 0 ]; then
     echo "Not all required packages are installed"
     exit 1
@@ -18,12 +18,14 @@ if [ $? -ne 0 ]; then
 fi
 
 # Cleanup old project
+rm -rf /var/www/aurorahome
 rm -rf /etc/cron.d/aurorahome_workers
 rm -rf /opt/aurorahome
 pkill -f "node /opt/aurorahome/workers"
 
 # Copy new project
 mkdir -p /var/log/aurorahome
+cp -r var /
 cp -r opt /
 cp -r etc /
 
@@ -31,6 +33,9 @@ cp -r etc /
 pushd /opt/aurorahome
 npm install
 popd
+
+# Obtain the SSL/TLS certificate
+certbot --nginx -d sanderveldhuis.nl -d www.sanderveldhuis.nl
 
 # Finish message
 SECONDS=$(($(date +%s -d "$(date +%H:%M) + next minute") - $(date +%s) + 10))
