@@ -80,7 +80,7 @@ function editProfile(onSave: () => void, onCancel: () => void) {
 
 function Profile({ component }: { component: string; }) {
   const [edit, setEdit] = useState(false);
-  if (component !== Profile.name) {
+  if (component !== 'Profile') {
     return null;
   }
 

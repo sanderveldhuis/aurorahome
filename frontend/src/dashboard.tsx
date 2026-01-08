@@ -25,7 +25,7 @@
 import './dashboard.css';
 
 function Dashboard({ component }: { component: string; }) {
-  if (component !== Dashboard.name) {
+  if (component !== 'Dashboard') {
     return null;
   }
 
