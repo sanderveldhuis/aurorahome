@@ -25,7 +25,6 @@
 import './navbar.css';
 
 /* Import Bootstrap's plugins to enable functionality */
-import { Offcanvas } from 'bootstrap'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 function Navbar() {
   // TODO: retrieve values via API
