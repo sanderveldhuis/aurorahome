@@ -24,8 +24,6 @@
 
 import './navbar.css';
 
-/* Import Bootstrap's plugins to enable functionality */
-
 function Navbar() {
   // TODO: retrieve values via API
 
