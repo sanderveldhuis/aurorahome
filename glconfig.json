@@ -11,5 +11,8 @@
       "username": "test1",
       "password": "test2"
     }
+  },
+  "ports": {
+    "proxy": 12001
   }
 }

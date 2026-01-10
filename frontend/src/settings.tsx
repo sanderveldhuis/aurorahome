@@ -25,7 +25,7 @@
 import './settings.css';
 
 function Settings({ component }: { component: string; }) {
-  if (component !== Settings.name) {
+  if (component !== 'Settings') {
     return null;
   }
 
