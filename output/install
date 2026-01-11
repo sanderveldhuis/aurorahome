@@ -35,7 +35,7 @@ npm install
 popd
 
 # Obtain the SSL/TLS certificate
-certbot --nginx -d sanderveldhuis.nl -d www.sanderveldhuis.nl
+certbot --nginx -d aurorahome.sanderveldhuis.nl
 
 # Finish message
 SECONDS=$(($(date +%s -d "$(date +%H:%M) + next minute") - $(date +%s) + 10))
