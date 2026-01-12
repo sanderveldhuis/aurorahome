@@ -3,6 +3,12 @@
     "endpoint": "statusmanager",
     "interval": 1000
   },
+  "config": {
+    "endpoint": "configmanager"
+  },
+  "weather": {
+    "endpoint": "weathermanager"
+  },
   "shelly": {
     "endpoint": "shelly",
     "mqtt": {
