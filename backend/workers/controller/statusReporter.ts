@@ -78,4 +78,11 @@ export class StatusReporter {
   setStatus(status: object): void {
     this._status = status;
   }
+
+  /**
+   * Resets the status to be reported to the Status Manager.
+   */
+  resetStatus(): void {
+    this._status = undefined;
+  }
 }

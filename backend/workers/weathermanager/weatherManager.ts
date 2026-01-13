@@ -30,12 +30,16 @@ import {
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { StatusReporter } from '../controller/statusReporter';
 import { WeatherManagerConfig } from '../types/config';
+import { OpenWeatherMapV3 } from './openweathermapV3';
+import { WeatherRetriever } from './weatherRetriever';
 
 /**
  * A Weather Manager retrieving actual weather online and publishing the information via IPC.
  */
 export class WeatherManager {
   _statusReporter: StatusReporter = new StatusReporter();
+  _weatherRetriever: WeatherRetriever | undefined;
+  _retrievalTimer: NodeJS.Timeout | undefined;
 
   /**
    * Starts the Weather Manager.
@@ -52,7 +56,6 @@ export class WeatherManager {
     this._statusReporter.setHealth('running');
 
     log.weathermanager.info('Started');
-
   }
 
   /**
@@ -60,6 +63,9 @@ export class WeatherManager {
    * @details the Weather Manager should not be used anymore after being stopped
    */
   stop(): void {
+    // Stop retrieving weather
+    clearInterval(this._retrievalTimer);
+
     // Stop status reporting
     this._statusReporter.stop();
 
@@ -83,22 +89,53 @@ export class WeatherManager {
     }
   }
 
-    /**
-     * Checks whether the specified message is a config message.
-     * @param name the message name
-     * @param payload the message payload
-     * @returns `true` when the message is a config message, or `false` otherwise
-     */
-    _isConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
-      return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null;
+  /**
+   * Checks whether the specified message is a config message.
+   * @param name the message name
+   * @param payload the message payload
+   * @returns `true` when the message is a config message, or `false` otherwise
+   */
+  _isConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
+    return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null && (!('source' in payload) ||
+      ('interval' in (payload.source as object)) && ('name' in (payload.source as object)) && ('apiKey' in (payload.source as object)));
+  }
+
+  /**
+   * Handles the specified configuration.
+   * @param config the configuration
+   */
+  _handleConfig(config: WeatherManagerConfig): void {
+    // Always cleanup for safety
+    clearInterval(this._retrievalTimer);
+    this._statusReporter.resetStatus();
+    this._statusReporter.setHealth('running');
+
+    // If no source is available the weather retrieval should stop
+    if (!config.source) {
+      log.weathermanager.info(`Stopped weather retrieval`);
+      return;
     }
 
-    /**
-     * Handles the specified configuration.
-     * @param config the configuration
-    */
-    _handleConfig(config: WeatherManagerConfig): void {
-      // TODO: get the weather from the configured source
-      log.weathermanager.error(`Received config: ${JSON.stringify(config)}`);
+    // Construct the dedicated weather retriever
+    if (config.source.name === 'openweathermapV3') {
+      this._weatherRetriever = new OpenWeatherMapV3(config.source.apiKey);
     }
+    else {
+      this._statusReporter.setHealth('instable');
+      log.weathermanager.error(`Failed starting weather retrieval from '${config.source.name as string}': unknown source`);
+      return;
+    }
+
+    // Start the weather retriever
+    this._retrievalTimer = setInterval(() => {
+      if (this._weatherRetriever) {
+        this._weatherRetriever.get();
+        this._statusReporter.setStatus({ source: config.source?.name, lastUpdate: Date.now(), nextUpdate: Date.now() + ((config.source?.interval ?? 0) * 1000) });
+      }
+    }, config.source.interval * 1000);
+    this._weatherRetriever.get();
+    this._statusReporter.setStatus({ source: config.source.name, lastUpdate: Date.now(), nextUpdate: Date.now() + (config.source.interval * 1000) });
+
+    log.weathermanager.info(`Started weather retrieval from '${config.source.name}' each ${String(config.source.interval)} seconds`);
+  }
 }

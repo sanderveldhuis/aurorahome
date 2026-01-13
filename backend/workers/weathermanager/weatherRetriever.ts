@@ -23,31 +23,9 @@
  */
 
 /**
- * The Weather Manager source name.
+ * Retrieves actual weather from a weather source.
  */
-export type WeatherManagerSourceName = 'openweathermapV3' | 'TBD';
-
-/**
- * The Weather Manager weather source.
- */
-export interface WeatherManagerSource {
-  /** Interval of weather retrieval from the specified source in seconds */
-  interval: number;
-  /** The source name */
-  name: WeatherManagerSourceName;
-  /** The source API key */
-  apiKey: string;
-}
-
-/**
- * The Weather Manager configuration message name for IPC.
- */
-export type WeatherManagerMessageName = 'WeatherManagerConfig';
-
-/**
- * The IPC message for the Weather Manager configuration.
- */
-export interface WeatherManagerConfig {
-  /** The source to retrieve the weather from, empty means no weather is retrieved */
-  source?: WeatherManagerSource;
+export interface WeatherRetriever {
+  /** Retrieves actual weather from a weather source */
+  get(): void;
 }

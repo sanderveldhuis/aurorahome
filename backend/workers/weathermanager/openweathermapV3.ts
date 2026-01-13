@@ -22,32 +22,27 @@
  * SOFTWARE.
  */
 
-/**
- * The Weather Manager source name.
- */
-export type WeatherManagerSourceName = 'openweathermapV3' | 'TBD';
+import { WeatherRetriever } from './weatherRetriever';
 
 /**
- * The Weather Manager weather source.
+ * Retrieves actual weather from OpenWeatherMap One Call API 3.0.
  */
-export interface WeatherManagerSource {
-  /** Interval of weather retrieval from the specified source in seconds */
-  interval: number;
-  /** The source name */
-  name: WeatherManagerSourceName;
-  /** The source API key */
-  apiKey: string;
-}
+export class OpenWeatherMapV3 implements WeatherRetriever {
+  _apiKey: string;
 
-/**
- * The Weather Manager configuration message name for IPC.
- */
-export type WeatherManagerMessageName = 'WeatherManagerConfig';
+  /**
+   * Constructs a new OpenWeatherMap One Call API 3.0 retriever.
+   * @param apiKey the source API key from the config
+   */
+  constructor(apiKey: string) {
+    this._apiKey = apiKey;
+  }
 
-/**
- * The IPC message for the Weather Manager configuration.
- */
-export interface WeatherManagerConfig {
-  /** The source to retrieve the weather from, empty means no weather is retrieved */
-  source?: WeatherManagerSource;
+  /**
+   * Retrieves actual weather from OpenWeatherMap One Call API 3.0.
+   */
+  get(): void {
+    // TODO: get the weather from the configured source
+    // TODO: return the data and let the root application publish it via IPC
+  }
 }
