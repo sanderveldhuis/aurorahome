@@ -20,6 +20,8 @@ fi
 # Cleanup old project
 rm -rf /var/www/aurorahome
 rm -rf /etc/cron.d/aurorahome_workers
+rm -rf /etc/nginx/sites-available/aurorahome.*.conf
+rm -rf /etc/nginx/sites-enabled/aurorahome.*.conf
 rm -rf /opt/aurorahome
 pkill -f "node /opt/aurorahome/workers"
 
@@ -33,6 +35,13 @@ cp -r etc /
 pushd /opt/aurorahome
 npm install
 popd
+
+# Prepare Nginx
+for file in /etc/nginx/sites-available/aurorahome.*.conf
+do
+  ln -s $file /etc/nginx/sites-enabled
+done
+service nginx reload
 
 # Obtain the SSL/TLS certificate
 certbot --nginx -d aurorahome.sanderveldhuis.nl
