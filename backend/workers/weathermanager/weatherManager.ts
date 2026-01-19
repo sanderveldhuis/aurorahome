@@ -30,14 +30,19 @@ import {
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { StatusReporter } from '../controller/statusReporter';
 import { WeatherManagerConfig } from '../types/config';
+import { StatusWeatherManager } from '../types/status';
 import { OpenWeatherMapV3 } from './openweathermapV3';
-import { WeatherRetriever } from './weatherRetriever';
+import {
+  WeatherRetriever,
+  WeatherRetrieverStatus
+} from './weatherRetriever';
 
 /**
  * A Weather Manager retrieving actual weather online and publishing the information via IPC.
  */
 export class WeatherManager {
   _statusReporter: StatusReporter = new StatusReporter();
+  _status: StatusWeatherManager = { source: '' };
   _weatherRetriever: WeatherRetriever | undefined;
   _retrievalTimer: NodeJS.Timeout | undefined;
 
@@ -97,7 +102,7 @@ export class WeatherManager {
    */
   _isConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
     return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null && (!('source' in payload) ||
-      ('interval' in (payload.source as object)) && ('name' in (payload.source as object)) && ('apiKey' in (payload.source as object)));
+      ('interval' in (payload.source as object)) && ('name' in (payload.source as object)) && ('lat' in (payload.source as object)) && ('lon' in (payload.source as object)) && ('apiKey' in (payload.source as object)));
   }
 
   /**
@@ -116,26 +121,51 @@ export class WeatherManager {
       return;
     }
 
+    // Construct the health status
+    this._status = { source: config.source.name };
+    this._statusReporter.setStatus(this._status);
+
     // Construct the dedicated weather retriever
     if (config.source.name === 'openweathermapV3') {
-      this._weatherRetriever = new OpenWeatherMapV3(config.source.apiKey);
+      this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.apiKey);
     }
     else {
       this._statusReporter.setHealth('instable');
-      log.weathermanager.error(`Failed starting weather retrieval from '${config.source.name as string}': unknown source`);
+      log.weathermanager.error(`Failed starting weather retrieval from '${config.source.name as string}': source not implemented`);
       return;
     }
 
     // Start the weather retriever
     this._retrievalTimer = setInterval(() => {
-      if (this._weatherRetriever) {
-        this._weatherRetriever.get();
-        this._statusReporter.setStatus({ source: config.source?.name, lastUpdate: Date.now(), nextUpdate: Date.now() + ((config.source?.interval ?? 0) * 1000) });
-      }
+      this._executeWeatherRetriever(config.source?.interval ?? 0);
     }, config.source.interval * 1000);
-    this._weatherRetriever.get();
-    this._statusReporter.setStatus({ source: config.source.name, lastUpdate: Date.now(), nextUpdate: Date.now() + (config.source.interval * 1000) });
+    this._executeWeatherRetriever(config.source.interval);
 
     log.weathermanager.info(`Started weather retrieval from '${config.source.name}' each ${String(config.source.interval)} seconds`);
+  }
+
+  /**
+   * Executes the weather retriever and stores the results.
+   * @param interval the interval in seconds
+   */
+  _executeWeatherRetriever(interval: number): void {
+    if (!this._weatherRetriever) {
+      return;
+    }
+
+    const result = this._weatherRetriever.get();
+    if (result.status === WeatherRetrieverStatus.Ok) {
+      this._status.lastUpdate = Date.now();
+      this._status.nextUpdate = Date.now() + (interval * 1000);
+      this._statusReporter.setHealth('running');
+
+      if (result.data) {
+        ipc.publish('WeatherData', result.data);
+      }
+    }
+    else {
+      this._status.nextUpdate = Date.now() + (interval * 1000);
+      this._statusReporter.setHealth('instable');
+    }
   }
 }

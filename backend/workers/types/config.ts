@@ -35,6 +35,10 @@ export interface WeatherManagerSource {
   interval: number;
   /** The source name */
   name: WeatherManagerSourceName;
+  /** The latitude geographic coordinate of the location */
+  lat: number;
+  /** The longitude geographic coordinate of the location */
+  lon: number;
   /** The source API key */
   apiKey: string;
 }

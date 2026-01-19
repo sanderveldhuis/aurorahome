@@ -22,10 +22,26 @@
  * SOFTWARE.
  */
 
+import { WeatherData } from '../types/weather';
+
+/**
+ * The status of an actual weather retrieval.
+ */
+export enum WeatherRetrieverStatus {
+  Ok,
+  Failed,
+  Error
+}
+
+export interface WeatherRetrieverResult {
+  status: WeatherRetrieverStatus;
+  data?: WeatherData;
+}
+
 /**
  * Retrieves actual weather from a weather source.
  */
 export interface WeatherRetriever {
   /** Retrieves actual weather from a weather source */
-  get(): void;
+  get(): WeatherRetrieverResult;
 }

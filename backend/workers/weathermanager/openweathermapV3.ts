@@ -22,27 +22,56 @@
  * SOFTWARE.
  */
 
-import { WeatherRetriever } from './weatherRetriever';
+import { log } from 'glidelite';
+import syncFetch from 'sync-fetch';
+import { WeatherData } from '../types/weather';
+import {
+  WeatherRetriever,
+  WeatherRetrieverResult,
+  WeatherRetrieverStatus
+} from './weatherRetriever';
 
 /**
  * Retrieves actual weather from OpenWeatherMap One Call API 3.0.
  */
 export class OpenWeatherMapV3 implements WeatherRetriever {
+  _lat: number;
+  _lon: number;
   _apiKey: string;
 
   /**
    * Constructs a new OpenWeatherMap One Call API 3.0 retriever.
+   * @param lat the latitude geographic coordinate of the location
+   * @param lon the longitude geographic coordinate of the location
    * @param apiKey the source API key from the config
    */
-  constructor(apiKey: string) {
+  constructor(lat: number, lon: number, apiKey: string) {
+    this._lat = lat;
+    this._lon = lon;
     this._apiKey = apiKey;
   }
 
   /**
    * Retrieves actual weather from OpenWeatherMap One Call API 3.0.
    */
-  get(): void {
-    // TODO: get the weather from the configured source
-    // TODO: return the data and let the root application publish it via IPC
+  get(): WeatherRetrieverResult {
+    try {
+      const response = syncFetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${String(this._lat)}&lon=${String(this._lon)}&appid=${this._apiKey}&units=metric`);
+      if (response.status === 200) {
+        // TODO: return the data
+        console.log(response.json());
+
+        const data: WeatherData = { timestamp: Date.now() };
+        return { status: WeatherRetrieverStatus.Ok, data };
+      }
+      else {
+        log.weathermanager.error(`Failed retrieving weather from 'openweathermapV3': status code ${String(response.status)}`);
+        return { status: WeatherRetrieverStatus.Failed };
+      }
+    }
+    catch (error) {
+      log.weathermanager.error(`Failed retrieving weather from 'openweathermapV3': ${error as string}`);
+      return { status: WeatherRetrieverStatus.Error };
+    }
   }
 }
