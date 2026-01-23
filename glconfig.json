@@ -4,7 +4,8 @@
     "interval": 1000
   },
   "config": {
-    "endpoint": "configmanager"
+    "endpoint": "configmanager",
+    "database": "mongodb://localhost:27017/config"
   },
   "weather": {
     "endpoint": "weathermanager"
@@ -20,5 +21,8 @@
   },
   "ports": {
     "proxy": 12001
-  }
+  },
+  "packages": [
+    "mongodb-org"
+  ]
 }
