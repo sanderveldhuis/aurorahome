@@ -22,19 +22,30 @@
  * SOFTWARE.
  */
 
-import mongoose from 'mongoose';
+/**
+ * The configuration name.
+ */
+export type ConfigName = 'WeatherManager';
 
 /**
- * Describes the Config model schema.
+ * The IPC message for setting configuration in the Config Manager.
+ * @details the message ID for this message is 'SetConfig'
  */
-const schema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  config: { type: Object, required: true }
-}, { timestamps: true });
+export interface IpcSetConfig {
+  /** The name of the configuration */
+  name: ConfigName;
+  /** The configuration for the name */
+  config: Object;
+}
 
 /**
- * Constructs the Config model based on the schema.
+ * The IPC result for setting configuration in the Config Manager.
  */
-const Config = mongoose.model('Config', schema);
+export type SetConfigResult = 'ok' | 'disconnected' | 'error';
 
-export default Config;
+/**
+ * The IPC result message for setting configuration in the Config Manager.
+ */
+export interface IpcSetConfigResult {
+  result: SetConfigResult;
+}
