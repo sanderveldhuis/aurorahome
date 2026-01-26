@@ -19,7 +19,7 @@ There are many ways to [contribute](https://github.com/sanderveldhuis/aurorahome
 To install and use AuroraHome please refer to the user documentation:
 * [Getting started](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/getting-started.md)
 
-To contribute development of AuroraHome please refer to the technical documentation:
+If you start to [contribute](https://github.com/sanderveldhuis/aurorahome/blob/main/CONTRIBUTING.md) to AuroraHome please refer to the technical documentation:
 * [System overview](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/system-overview.md)
 * [Status manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/status-manager.md)
 * [Config manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/config-manager.md)
