@@ -4,6 +4,10 @@ on:
   push:
     paths:
       - '**/*.puml'
+    branches-ignore:
+      - main
+      - next
+      - release-*
   # enable users to manually trigger with workflow_dispatch
   workflow_dispatch: {}
 
