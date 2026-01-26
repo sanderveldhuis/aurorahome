@@ -23,11 +23,12 @@
  */
 
 import mongoose from 'mongoose';
+import { IpcSetConfig } from './types';
 
 /**
  * Describes the Config model schema.
  */
-const schema = new mongoose.Schema({
+const schema = new mongoose.Schema<IpcSetConfig>({
   name: { type: String, required: true, unique: true },
   config: { type: Object, required: true }
 }, { timestamps: true });
