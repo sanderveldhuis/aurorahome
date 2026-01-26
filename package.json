@@ -44,7 +44,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
     "glidelite": "github:sanderveldhuis/glidelite#next",
-    "globals": "^17.0.0",
+    "globals": "^17.1.0",
     "mqtt": "^5.14.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
