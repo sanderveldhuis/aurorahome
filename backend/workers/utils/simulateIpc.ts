@@ -24,11 +24,11 @@
 
 import { ipc } from 'glidelite';
 import readline from 'node:readline';
-import { WeatherManagerConfig } from '../types/config';
 import {
-  IpcSetConfig,
-  IpcSetConfigResult
-} from '../types/ipc';
+  IpcSetConfigResult,
+  WeatherManagerSetConfig
+} from '../configmanager/types';
+import { WeatherManagerConfig } from '../weathermanager/types';
 
 let userInput: readline.Interface | undefined;
 
@@ -66,7 +66,8 @@ function handleUserInput(input: string): void {
   // Handle command
   if (command[0] === 'WeatherManager' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the WeatherManager`);
-    ipc.to.configmanager.request('SetConfig', { name: 'WeatherManager', config: {} as WeatherManagerConfig } as IpcSetConfig, (name, payload) => {
+    const config: WeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
+    ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
       const result = payload as IpcSetConfigResult;
       console.log('Stop the WeatherManager result:', result.result);
     });
@@ -79,11 +80,9 @@ function handleUserInput(input: string): void {
 
 // Start IPC
 ipc.start('ipcsimulator', 'configmanager', 'weathermanager');
-ipc.to.configmanager.subscribe('Test1Config', (name, payload) => {
-  console.log('Received publish with name:', name, 'payload:', JSON.stringify(payload));
-});
-ipc.to.configmanager.subscribe('Test2Config', (name, payload) => {
-  console.log('Received publish with name:', name, 'payload:', JSON.stringify(payload));
+ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
+  const config = payload as WeatherManagerConfig;
+  console.log('Received WeatherManager configuration:', JSON.stringify(config.source));
 });
 
 // Handle user input as commands

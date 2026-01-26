@@ -58,6 +58,6 @@ downloadMongoDbWithVersionInfo({ directory: mongoDir, useLockfile: true }).then(
       console.log(stderr);
     }
   });
-}).catch(error => {
-  console.error(`Failed downloading and extracting MongoDB: ${error}`);
+}).catch((error: unknown) => {
+  console.error(`Failed downloading and extracting MongoDB: ${error instanceof Error ? error.message : 'unknown'}`);
 });

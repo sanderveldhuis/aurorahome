@@ -58,7 +58,8 @@ import {
  * E.g.: creating/updating the configuration for an application named `HelloWorld` can be done using:
  * ```js
  * // The `HelloWorldSetConfig` interface should be described in `backend/workers/configmanager/types.ts`
- * ipc.to.configmanager.request('SetConfig', { name: 'HelloWorld', config: { hello: 'world' } } as HelloWorldSetConfig, (name, payload) => {
+ * const config: HelloWorldSetConfig = { name: 'HelloWorld', config: { hello: 'world' } };
+ * ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
  *   const result = payload as IpcSetConfigResult;
  *   console.log('Setting HelloWorld config result:', result.result);
  * });
@@ -100,7 +101,9 @@ export class ConfigManager {
 
     // Stop database connection
     mongoose.connection.removeAllListeners();
-    mongoose.disconnect();
+    mongoose.disconnect().catch(() => {
+      // Ignore
+    });
 
     // Stop status reporting
     this._statusReporter.stop();
@@ -173,7 +176,7 @@ export class ConfigManager {
         }, 5000);
 
         this._statusReporter.setHealth('instable');
-        log.configmanager.error(`Failed getting all available configurations from database: ${error}`);
+        log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
       }
     });
   }
@@ -226,7 +229,7 @@ export class ConfigManager {
       // Publish the new configuration
       ipc.publish(`${setConfig.name}Config`, setConfig.config);
     }).catch((error: unknown) => {
-      log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error}`);
+      log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error instanceof Error ? error.message : 'unknown'}`);
       response({ result: 'error' } as IpcSetConfigResult);
     });
   }
