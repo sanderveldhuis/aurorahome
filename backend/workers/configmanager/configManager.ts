@@ -31,11 +31,11 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
 import { StatusReporter } from '../controller/statusReporter';
+import Config from './configModel';
 import {
   IpcSetConfig,
   IpcSetConfigResult
-} from '../types/ipc';
-import Config from './configModel';
+} from './types';
 
 /**
  * A Config Manager handles configuration by storing it in a database and publishing it via IPC.
@@ -44,7 +44,7 @@ import Config from './configModel';
  * E.g.: an application named `HelloWorld` can subscribe and receive its configuration using:
  * ```js
  * ipc.to.configmanager.subscribe('HelloWorldConfig', (name, payload) => {
- *   // The `HelloWorldConfig` interface should be described in `backend/workers/types/config.ts`
+ *   // The `HelloWorldConfig` interface should be described in `backend/workers/configmanager/types.ts`
  *   const config = payload as HelloWorldConfig;
  *   console.log('Received configuration:', config.hello);
  * });
@@ -57,8 +57,8 @@ import Config from './configModel';
  * Applications can create/update a configuration by using the IPC request message name `SetConfig`.
  * E.g.: creating/updating the configuration for an application named `HelloWorld` can be done using:
  * ```js
- * // The `HelloWorldConfig` interface should be described in `backend/workers/types/config.ts`
- * ipc.to.configmanager.request('SetConfig', { name: 'HelloWorld', config: { hello: 'world' } as HelloWorldConfig } as IpcSetConfig, (name, payload) => {
+ * // The `HelloWorldSetConfig` interface should be described in `backend/workers/configmanager/types.ts`
+ * ipc.to.configmanager.request('SetConfig', { name: 'HelloWorld', config: { hello: 'world' } } as HelloWorldSetConfig, (name, payload) => {
  *   const result = payload as IpcSetConfigResult;
  *   console.log('Setting HelloWorld config result:', result.result);
  * });

@@ -23,17 +23,12 @@
  */
 
 /**
- * The configuration name.
- */
-export type ConfigName = 'WeatherManager';
-
-/**
  * The IPC message for setting configuration in the Config Manager.
  * @details the message ID for this message is 'SetConfig'
  */
 export interface IpcSetConfig {
   /** The name of the configuration */
-  name: ConfigName;
+  name: string;
   /** The configuration for the name */
   config: Object;
 }
