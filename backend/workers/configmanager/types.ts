@@ -32,7 +32,7 @@ export interface IpcSetConfig {
   /** The name of the configuration */
   name: string;
   /** The configuration for the name */
-  config: Object;
+  config: object;
 }
 
 /**

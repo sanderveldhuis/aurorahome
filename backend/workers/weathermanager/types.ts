@@ -23,18 +23,13 @@
  */
 
 /**
- * The Weather Manager source name.
- */
-export type WeatherManagerSourceName = 'openweathermapV3' | 'TBD';
-
-/**
- * The Weather Manager weather source.
+ * The Weather Manager weather data source.
  */
 export interface WeatherManagerSource {
-  /** Interval of weather retrieval from the specified source in seconds */
+  /** Interval of fetching from the source in seconds */
   interval: number;
   /** The source name */
-  name: WeatherManagerSourceName;
+  name: 'openweathermapV3';
   /** The latitude geographic coordinate of the location */
   lat: number;
   /** The longitude geographic coordinate of the location */
@@ -47,6 +42,6 @@ export interface WeatherManagerSource {
  * The Weather Manager configuration.
  */
 export interface WeatherManagerConfig {
-  /** The source to retrieve the weather from, empty means no weather is retrieved */
+  /** The source of the weather data, `undefined` means no weather should be fetched */
   source?: WeatherManagerSource;
 }
