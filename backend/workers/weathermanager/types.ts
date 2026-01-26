@@ -44,12 +44,7 @@ export interface WeatherManagerSource {
 }
 
 /**
- * The Weather Manager configuration message name for IPC.
- */
-export type WeatherManagerMessageName = 'WeatherManagerConfig';
-
-/**
- * The IPC message for the Weather Manager configuration.
+ * The Weather Manager configuration.
  */
 export interface WeatherManagerConfig {
   /** The source to retrieve the weather from, empty means no weather is retrieved */

@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { WeatherManagerConfig } from '../weathermanager/types';
+
 /**
  * The IPC message for setting configuration in the Config Manager.
  * @details the message ID for this message is 'SetConfig'
@@ -34,13 +36,20 @@ export interface IpcSetConfig {
 }
 
 /**
- * The IPC result for setting configuration in the Config Manager.
- */
-export type SetConfigResult = 'ok' | 'disconnected' | 'error';
-
-/**
  * The IPC result message for setting configuration in the Config Manager.
  */
 export interface IpcSetConfigResult {
-  result: SetConfigResult;
+  /** The result of setting the configuration */
+  result: 'ok' | 'disconnected' | 'error';
 }
+
+/**
+ * The IPC message for setting Weather Manager configuration in the Config Manager.
+ * @details the message ID for this message is 'SetConfig'
+ */
+export type WeatherManagerSetConfig = IpcSetConfig & {
+  /** The name of the Weather Manager configuration */
+  name: 'WeatherManager';
+  /** The Weather Manager configuration */
+  config: WeatherManagerConfig;
+};
