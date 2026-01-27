@@ -30,7 +30,7 @@ import {
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
-import { StatusReporter } from '../controller/statusReporter';
+import { status } from '../statusmanager/statusReporter';
 import Config from './configModel';
 import {
   IpcSetConfig,
@@ -66,7 +66,6 @@ import {
  * ```
  */
 export class ConfigManager {
-  _statusReporter = new StatusReporter();
   _publishRetryTimer: NodeJS.Timeout | undefined;
   _isRunning = true;
 
@@ -81,7 +80,7 @@ export class ConfigManager {
     });
 
     // Start status reporting
-    this._statusReporter.start('configmanager', 'worker');
+    status.configmanager.start('worker');
 
     // Start database connection
     this._connectDatabase();
@@ -106,7 +105,7 @@ export class ConfigManager {
     });
 
     // Stop status reporting
-    this._statusReporter.stop();
+    status.configmanager.stop();
 
     // Stop IPC communication
     ipc.stop();
@@ -142,7 +141,7 @@ export class ConfigManager {
    * Handles database connection disconnect.
    */
   _handleDatabaseDisconnect(): void {
-    this._statusReporter.setHealth('instable');
+    status.configmanager.setHealth('instable');
     log.configmanager.warn(`Disconnected from database '${glconfig.configmanager.database as string}'`);
   }
 
@@ -166,7 +165,7 @@ export class ConfigManager {
         ipc.publish(`${config.name}Config`, config.config);
       }
 
-      this._statusReporter.setHealth('running');
+      status.configmanager.setHealth('running');
       log.configmanager.info('Published all available configurations');
     }).catch((error: unknown) => {
       if (this._isRunning) {
@@ -175,7 +174,7 @@ export class ConfigManager {
           this._publishAllConfigs();
         }, 5000);
 
-        this._statusReporter.setHealth('instable');
+        status.configmanager.setHealth('instable');
         log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
       }
     });

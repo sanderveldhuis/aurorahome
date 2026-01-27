@@ -27,7 +27,7 @@ import {
   log
 } from 'glidelite';
 import net from 'node:net';
-import { StatusReporter } from '../controller/statusReporter';
+import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
@@ -38,7 +38,6 @@ const SHELLY_MAX_NOF_COMPONENTS = 4;
  */
 export class ShellyDevice {
   _mqtt: MqttProtocol;
-  _statusReporter: StatusReporter;
   _statusTimer: NodeJS.Timeout | undefined;
   _status: Record<string, string | number | boolean | object>;
   _name: string;
@@ -57,7 +56,6 @@ export class ShellyDevice {
     }, (topic, payload) => {
       this._onPublish(topic, payload);
     });
-    this._statusReporter = new StatusReporter();
     this._status = {};
     this._name = '';
   }
@@ -113,7 +111,7 @@ export class ShellyDevice {
    */
   _onConnect(name: string): void {
     this._name = name;
-    this._statusReporter.start(name, 'shelly');
+    status[this._name].start('shelly');
     log.shellydevice.info(`Connected device with name: ${this._name}`);
   }
 
@@ -122,7 +120,7 @@ export class ShellyDevice {
    */
   _onClose(): void {
     clearInterval(this._statusTimer);
-    this._statusReporter.stop();
+    status[this._name].stop();
     log.shellydevice.info(`Closed device with name: ${this._name}`);
   }
 
@@ -186,8 +184,8 @@ export class ShellyDevice {
     this._status.mac = data.sys?.mac as string;
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
-    this._statusReporter.setStatus(this._status);
-    this._statusReporter.setHealth('running');
+    status[this._name].setStatus(this._status);
+    status[this._name].setHealth('running');
 
     // Handle Shelly component status
     for (let i = 0; i < SHELLY_MAX_NOF_COMPONENTS; i++) {
@@ -219,6 +217,6 @@ export class ShellyDevice {
       freq: data.freq as number,
       brightness: data.brightness as number
     };
-    this._statusReporter.setStatus(this._status);
+    status[this._name].setStatus(this._status);
   }
 }

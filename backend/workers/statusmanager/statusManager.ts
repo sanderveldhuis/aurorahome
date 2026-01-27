@@ -119,7 +119,7 @@ export class StatusManager {
    * @returns `true` when the message is a status message, or `false` otherwise
    */
   _isStatusMessage(name: string, payload: IpcPayload): payload is StatusMessage {
-    return name === 'status' && typeof payload === 'object' && payload !== null && 'name' in payload && 'type' in payload && 'health' in payload;
+    return name === 'Status' && typeof payload === 'object' && payload !== null && 'name' in payload && 'type' in payload && 'health' in payload;
   }
 
   /**

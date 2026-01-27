@@ -28,10 +28,10 @@ import {
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
-import { StatusReporter } from '../controller/statusReporter';
-import { WeatherManagerConfig } from '../types/config';
+import { status } from '../statusmanager/statusReporter';
 import { StatusWeatherManager } from '../types/status';
 import { OpenWeatherMapV3 } from './openweathermapV3';
+import { WeatherManagerConfig } from './types';
 import {
   WeatherRetriever,
   WeatherRetrieverStatus
@@ -41,7 +41,6 @@ import {
  * A Weather Manager retrieving actual weather online and publishing the information via IPC.
  */
 export class WeatherManager {
-  _statusReporter: StatusReporter = new StatusReporter();
   _status: StatusWeatherManager = { source: '' };
   _weatherRetriever: WeatherRetriever | undefined;
   _retrievalTimer: NodeJS.Timeout | undefined;
@@ -51,14 +50,14 @@ export class WeatherManager {
    */
   start(): void {
     // Start IPC communication
-    ipc.start(glconfig.weather.endpoint, glconfig.status.endpoint, glconfig.config.endpoint);
+    ipc.start(glconfig.weather.endpoint, glconfig.status.endpoint, 'configmanager');
     ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
       this._onPublish(name, payload);
     });
 
     // Start status reporting
-    this._statusReporter.start(glconfig.weather.endpoint, 'worker');
-    this._statusReporter.setHealth('running');
+    status.weathermanager.start('worker');
+    status.weathermanager.setHealth('running');
 
     log.weathermanager.info('Started');
   }
@@ -72,7 +71,7 @@ export class WeatherManager {
     clearInterval(this._retrievalTimer);
 
     // Stop status reporting
-    this._statusReporter.stop();
+    status.weathermanager.stop();
 
     // Stop IPC communication
     ipc.stop();
@@ -112,8 +111,8 @@ export class WeatherManager {
   _handleConfig(config: WeatherManagerConfig): void {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
-    this._statusReporter.resetStatus();
-    this._statusReporter.setHealth('running');
+    status.weathermanager.resetStatus();
+    status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
     if (!config.source) {
@@ -123,14 +122,14 @@ export class WeatherManager {
 
     // Construct the health status
     this._status = { source: config.source.name };
-    this._statusReporter.setStatus(this._status);
+    status.weathermanager.setStatus(this._status);
 
     // Construct the dedicated weather retriever
     if (config.source.name === 'openweathermapV3') {
       this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.apiKey);
     }
     else {
-      this._statusReporter.setHealth('instable');
+      status.weathermanager.setHealth('instable');
       log.weathermanager.error(`Failed starting weather retrieval from '${config.source.name as string}': source not implemented`);
       return;
     }
@@ -157,7 +156,7 @@ export class WeatherManager {
     if (result.status === WeatherRetrieverStatus.Ok) {
       this._status.lastUpdate = Date.now();
       this._status.nextUpdate = Date.now() + (interval * 1000);
-      this._statusReporter.setHealth('running');
+      status.weathermanager.setHealth('running');
 
       if (result.data) {
         ipc.publish('WeatherData', result.data);
@@ -165,7 +164,7 @@ export class WeatherManager {
     }
     else {
       this._status.nextUpdate = Date.now() + (interval * 1000);
-      this._statusReporter.setHealth('instable');
+      status.weathermanager.setHealth('instable');
     }
   }
 }

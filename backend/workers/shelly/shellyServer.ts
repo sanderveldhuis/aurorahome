@@ -29,7 +29,7 @@ import {
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import net from 'node:net';
-import { StatusReporter } from '../controller/statusReporter';
+import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 
 /**
@@ -38,7 +38,6 @@ import { ShellyDevice } from './shellyDevice';
 export class ShellyServer {
   _server: net.Server = new net.Server();
   _devices: ShellyDevice[] = [];
-  _statusReporter: StatusReporter = new StatusReporter();
 
   /**
    * Starts the Shelly server and listens for new Shelly devices.
@@ -51,7 +50,7 @@ export class ShellyServer {
     });
 
     // Start status reporting
-    this._statusReporter.start(glconfig.shelly.endpoint, 'worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
+    status.shellyserver.start('worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
 
     // Register all listeners
     this._server.on('error', (error: Error) => {
@@ -76,7 +75,7 @@ export class ShellyServer {
    */
   stop(): void {
     // Stop status reporting
-    this._statusReporter.stop();
+    status.shellyserver.stop();
 
     // Stop IPC communication
     ipc.stop();
@@ -112,7 +111,7 @@ export class ShellyServer {
    * Handles successfull start of the Shelly server.
    */
   _onListening(): void {
-    this._statusReporter.setHealth('running');
+    status.shellyserver.setHealth('running');
     log.shellyserver.info(`Started listening on: ${glconfig.shelly.mqtt.hostname as string}:${glconfig.shelly.mqtt.port as string}`);
   }
 

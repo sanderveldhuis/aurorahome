@@ -29,7 +29,6 @@ import {
 import {
   StatusHealth,
   StatusMessage,
-  StatusMessageName,
   StatusType
 } from '../types/status';
 
@@ -37,22 +36,27 @@ import {
  * Class providing cyclic status reporting to the Status Manager.
  */
 export class StatusReporter {
-  _health: StatusHealth = 'starting';
-  _status: object | undefined;
+  _statusMessage: StatusMessage;
   _interval: NodeJS.Timeout | undefined;
 
   /**
-   * Starts reporting the status cyclic to the Status Manager.
+   * Constructs a new status reporter.
    * @param name the application name
+   */
+  constructor(name: string) {
+    this._statusMessage = { name, type: 'worker', health: 'starting' };
+  }
+
+  /**
+   * Starts reporting the status cyclic to the Status Manager.
    * @param type the application type
    * @param status the application status (optional)
    */
-  start(name: string, type: StatusType, status?: object): void {
-    this._status = status;
+  start(type: StatusType, status?: object): void {
+    this._statusMessage.type = type;
+    this._statusMessage.status = status;
     this._interval = setInterval(() => {
-      const messageName: StatusMessageName = 'status';
-      const message: StatusMessage = { name, type, health: this._health, status: this._status };
-      ipc.to[glconfig.status.endpoint].indication(messageName, message);
+      ipc.to.statusmanager.indication('Status', this._statusMessage);
     }, glconfig.status.interval);
   }
 
@@ -68,7 +72,7 @@ export class StatusReporter {
    * @param health the health
    */
   setHealth(health: StatusHealth): void {
-    this._health = health;
+    this._statusMessage.health = health;
   }
 
   /**
@@ -76,13 +80,28 @@ export class StatusReporter {
    * @param status the status
    */
   setStatus(status: object): void {
-    this._status = status;
+    this._statusMessage.status = status;
   }
 
   /**
    * Resets the status to be reported to the Status Manager.
    */
   resetStatus(): void {
-    this._status = undefined;
+    this._statusMessage.status = undefined;
   }
 }
+
+/**
+ * Provides cyclic status reporting to the Status Manager.
+ */
+export const status: Record<string, StatusReporter> = new Proxy({}, {
+  /**
+   * The proxy is used to trap getting a specific status reporter by name and creates the status reporter if it does not yet exist.
+   * @param target the target with created status reporter, default empty
+   * @param name the status reporter name
+   * @returns the existing or newly created status reporter
+   */
+  get(target: Record<string, StatusReporter>, name: string) {
+    return target[name] ?? (target[name] = new StatusReporter(name));
+  }
+});
