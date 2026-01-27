@@ -23,7 +23,6 @@
  */
 
 import {
-  glconfig,
   ipc,
   log
 } from 'glidelite';
@@ -52,7 +51,7 @@ export class StatusManager {
    * Starts the Status Manager.
    */
   start(): void {
-    ipc.start(glconfig.status.endpoint);
+    ipc.start('statusmanager');
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
     });

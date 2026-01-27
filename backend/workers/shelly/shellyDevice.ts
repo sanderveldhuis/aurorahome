@@ -22,10 +22,7 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  log
-} from 'glidelite';
+import { log } from 'glidelite';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
@@ -93,11 +90,11 @@ export class ShellyDevice {
     if (mac === this._status.mac) {
       if (this._status.type === 'switch' && 'id' in command && 'on' in command) {
         log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glconfig.shelly.endpoint as string, method: 'Switch.Set', params: command }));
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: 'shellyserver', method: 'Switch.Set', params: command }));
       }
       else if (this._status.type === 'light' && 'id' in command && ('on' in command || 'brightness' in command)) {
         log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glconfig.shelly.endpoint as string, method: 'Light.Set', params: command }));
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: 'shellyserver', method: 'Light.Set', params: command }));
       }
       else {
         log.shellydevice.error(`Received unknown command: ${JSON.stringify(command)}`);
@@ -131,10 +128,10 @@ export class ShellyDevice {
   _onSubscribe(topics: string[]): void {
     if (topics.includes(`${this._name}/rpc`)) {
       // Get the initial Shelly device status
-      this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: glconfig.shelly.endpoint as string }), 1);
+      this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: 'shellyserver' }), 1);
       // Get the Shelly device status cyclic
       this._statusTimer = setInterval(() => {
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: glconfig.shelly.endpoint as string }), 1);
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: 'shellyserver' }), 1);
       }, SHELLY_GET_STATUS_TIMEOUT);
     }
   }
@@ -146,7 +143,7 @@ export class ShellyDevice {
    */
   _onPublish(topic: string, payload: string): void {
     // Handle Shelly device status
-    if (topic == `${glconfig.shelly.endpoint as string}/rpc`) {
+    if (topic == 'shellyserver/rpc') {
       const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
       if (json.id as string == 'Shelly.GetStatus') {
         this._handleDeviceStatus(json.result);

@@ -1,18 +1,13 @@
 {
   "status": {
-    "endpoint": "statusmanager",
     "interval": 1000
   },
   "configmanager": {
     "database": "mongodb://127.0.0.1:27017/config"
   },
-  "weather": {
-    "endpoint": "weathermanager"
-  },
   "shelly": {
-    "endpoint": "shelly",
     "mqtt": {
-      "port": 1235,
+      "port": 12010,
       "hostname": "0.0.0.0",
       "username": "test1",
       "password": "test2"

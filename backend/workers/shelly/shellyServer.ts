@@ -44,7 +44,7 @@ export class ShellyServer {
    */
   start(): void {
     // Start IPC communication
-    ipc.start(glconfig.shelly.endpoint, glconfig.status.endpoint);
+    ipc.start('shellyserver', 'statusmanager');
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
     });

@@ -22,12 +22,9 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  ipc
-} from 'glidelite';
+import { ipc } from 'glidelite';
 
-ipc.start('unknown', glconfig.shelly.endpoint, glconfig.status.endpoint);
+ipc.start('unknown', 'shellyserver', 'statusmanager');
 
 // let on = false;
 const interval = setInterval(() => {
@@ -35,7 +32,7 @@ const interval = setInterval(() => {
   // on = !on;
   // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
 
-  ipc.to[glconfig.status.endpoint].request('get', undefined, (name, payload) => {
+  ipc.to.statusmanager.request('get', undefined, (name, payload) => {
     console.log(payload);
   });
 }, 5000);
