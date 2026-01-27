@@ -118,7 +118,7 @@ export class ConfigManager {
    */
   _connectDatabase(): void {
     // Start the connection
-    mongoose.connect(glconfig.configmanager.database, { serverSelectionTimeoutMS: 1000 }).then(() => {
+    mongoose.connect(glconfig.config.database, { serverSelectionTimeoutMS: 1000 }).then(() => {
       // Add listeners for future disconnect and connect events
       mongoose.connection.addListener('disconnected', () => {
         this._handleDatabaseDisconnect();
@@ -142,14 +142,14 @@ export class ConfigManager {
    */
   _handleDatabaseDisconnect(): void {
     status.configmanager.setHealth('instable');
-    log.configmanager.warn(`Disconnected from database '${glconfig.configmanager.database as string}'`);
+    log.configmanager.warn(`Disconnected from database '${glconfig.config.database as string}'`);
   }
 
   /**
    * Handles database connection establishment.
    */
   _handleDatabaseConnect(): void {
-    log.configmanager.info(`Connected to database '${glconfig.configmanager.database as string}'`);
+    log.configmanager.info(`Connected to database '${glconfig.config.database as string}'`);
     this._publishAllConfigs();
   }
 

@@ -2,7 +2,7 @@
   "status": {
     "interval": 1000
   },
-  "configmanager": {
+  "config": {
     "database": "mongodb://127.0.0.1:27017/config"
   },
   "shelly": {
