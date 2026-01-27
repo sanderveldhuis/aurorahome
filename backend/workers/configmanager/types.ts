@@ -49,7 +49,7 @@ export interface IpcSetConfigResult {
  */
 export type WeatherManagerSetConfig = IpcSetConfig & {
   /** The name of the Weather Manager configuration */
-  name: 'weathermanager';
+  name: 'WeatherManager';
   /** The Weather Manager configuration */
   config: WeatherManagerConfig;
 };
