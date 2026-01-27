@@ -26,6 +26,10 @@ import { log } from 'glidelite';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
+import {
+  IpcSetLight,
+  IpcSetSwitch
+} from './types';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
 const SHELLY_MAX_NOF_COMPONENTS = 4;
@@ -82,22 +86,35 @@ export class ShellyDevice {
   }
 
   /**
-   * Publishes a command to the Shelly device.
+   * Publishes a Switch.Set command to the Shelly device.
    * @param mac the Shelly device MAC address
-   * @param command the Shelly device command
+   * @param set the Switch.Set command
    */
-  command(mac: string, command: object): void {
+  setSwitch(mac: string, set: IpcSetSwitch): void {
     if (mac === this._status.mac) {
-      if (this._status.type === 'switch' && 'id' in command && 'on' in command) {
+      if (this._status.type === 'switch') {
         log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: 'shellyserver', method: 'Switch.Set', params: command }));
-      }
-      else if (this._status.type === 'light' && 'id' in command && ('on' in command || 'brightness' in command)) {
-        log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
-        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: 'shellyserver', method: 'Light.Set', params: command }));
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: 'shellyserver', method: 'Switch.Set', params: set }));
       }
       else {
-        log.shellydevice.error(`Received unknown command: ${JSON.stringify(command)}`);
+        log.shellydevice.warn(`Failed executing Switch.Set command in device with name: ${this._name}`);
+      }
+    }
+  }
+
+  /**
+   * Publishes a Light.Set command to the Shelly device.
+   * @param mac the Shelly device MAC address
+   * @param set the Light.Set command
+   */
+  setLight(mac: string, set: IpcSetLight): void {
+    if (mac === this._status.mac) {
+      if (this._status.type === 'light') {
+        log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
+        this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: 'shellyserver', method: 'Light.Set', params: set }));
+      }
+      else {
+        log.shellydevice.warn(`Failed executing Light.Set command in device with name: ${this._name}`);
       }
     }
   }

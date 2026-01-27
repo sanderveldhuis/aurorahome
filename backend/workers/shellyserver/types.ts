@@ -26,7 +26,7 @@
  * The IPC message for setting a Shelly switch.
  * @details the IPC message name should be the Shelly device MAC address
  */
-export interface ShellySetSwitchMessage {
+export interface IpcSetSwitch {
   /** Identifier of the switch component */
   id: number;
   /** `true` for switch on, or `false` otherwise  */
@@ -37,7 +37,7 @@ export interface ShellySetSwitchMessage {
  * The IPC message for setting a Shelly light.
  * @details the IPC message name should be the Shelly device MAC address
  */
-export interface ShellySetLightMessage {
+export interface IpcSetLight {
   /** Identifier of the light component */
   id: number;
   /** `true` for light on, or `false` otherwise (optional)  */
