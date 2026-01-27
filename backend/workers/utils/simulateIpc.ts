@@ -66,7 +66,7 @@ function handleUserInput(input: string): void {
   // Handle command
   if (command[0] === 'WeatherManager' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the WeatherManager`);
-    const config: WeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
+    const config: WeatherManagerSetConfig = { name: 'weathermanager', config: {} };
     ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
       const result = payload as IpcSetConfigResult;
       console.log('Stop the WeatherManager result:', result.result);
