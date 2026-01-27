@@ -23,15 +23,16 @@
  */
 
 import {
-  glconfig,
   ipc,
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { status } from '../statusmanager/statusReporter';
-import { StatusWeatherManager } from '../types/status';
 import { OpenWeatherMapV3 } from './openweathermapV3';
-import { WeatherManagerConfig } from './types';
+import {
+  WeatherManagerConfig,
+  WeatherManagerStatusDetails
+} from './types';
 import {
   WeatherRetriever,
   WeatherRetrieverStatus
@@ -41,7 +42,7 @@ import {
  * A Weather Manager retrieving actual weather online and publishing the information via IPC.
  */
 export class WeatherManager {
-  _status: StatusWeatherManager = { source: '' };
+  _status: WeatherManagerStatusDetails = {};
   _weatherRetriever: WeatherRetriever | undefined;
   _retrievalTimer: NodeJS.Timeout | undefined;
 
@@ -50,7 +51,7 @@ export class WeatherManager {
    */
   start(): void {
     // Start IPC communication
-    ipc.start(glconfig.weather.endpoint, glconfig.status.endpoint, 'configmanager');
+    ipc.start('weathermanager', 'statusmanager', 'configmanager');
     ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
       this._onPublish(name, payload);
     });
@@ -111,7 +112,7 @@ export class WeatherManager {
   _handleConfig(config: WeatherManagerConfig): void {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
-    status.weathermanager.resetStatus();
+    status.weathermanager.resetDetails();
     status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
@@ -122,7 +123,7 @@ export class WeatherManager {
 
     // Construct the health status
     this._status = { source: config.source.name };
-    status.weathermanager.setStatus(this._status);
+    status.weathermanager.setDetails(this._status);
 
     // Construct the dedicated weather retriever
     if (config.source.name === 'openweathermapV3') {

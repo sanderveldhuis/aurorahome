@@ -23,34 +23,43 @@
  */
 
 import {
+  glconfig,
   ipc,
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import {
+  IpcStatus,
+  STATUS_HEALTH,
+  STATUS_TYPE,
   StatusHealth,
-  StatusMessage,
   StatusType
-} from '../types/status';
-
-interface DeviceStatus {
-  timestamp: number;
-  health: StatusHealth;
-  status?: object;
-}
-
-const STATUS_VALID_TIMEOUT = 5000;
+} from './types';
 
 /**
- * A Status Manager handling all devices and workers.
+ * Defines the application status health, status details, and timestamp of the last update.
+ */
+export interface ApplicationStatus {
+  /** Timestamp of the last status update */
+  timestamp: number;
+  /** The application status health */
+  health: StatusHealth;
+  /** The application status details */
+  details?: object;
+}
+
+/**
+ * A Status Manager keeping track of all application statusses.
  */
 export class StatusManager {
-  _deviceStatus: Record<StatusType, Record<string, DeviceStatus>> = {} as Record<StatusType, Record<string, DeviceStatus>>;
+  _applicationStatus: Record<StatusType, Record<string, ApplicationStatus>> = {} as Record<StatusType, Record<string, ApplicationStatus>>;
+  _cleanupTimer: NodeJS.Timeout | undefined;
 
   /**
    * Starts the Status Manager.
    */
   start(): void {
+    // Start IPC communication
     ipc.start('statusmanager');
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
@@ -58,6 +67,11 @@ export class StatusManager {
     ipc.onRequest((name, payload, response) => {
       this._onRequest(name, payload, response);
     });
+
+    // Start cleanup timer
+    this._cleanupTimer = setInterval(() => {
+      this._cleanupExpiredStatus();
+    }, 60000);
 
     log.statusmanager.info('Started');
   }
@@ -67,27 +81,32 @@ export class StatusManager {
    * @details the Status Manager should not be used anymore after being stopped
    */
   stop(): void {
+    // Stop cleanup timer
+    clearInterval(this._cleanupTimer);
+
+    // Stop IPC communication
     ipc.stop();
+
     log.statusmanager.info('Stopped');
   }
 
   /**
-   * Cleans devices which do not report a status anymore.
+   * Cleans applications which do not report a status anymore to prevent overflooding memory.
    */
-  _cleanupOldDevices(): void {
+  _cleanupExpiredStatus(): void {
     const now = Date.now();
-    for (const devices of Object.values(this._deviceStatus)) {
-      for (const name of Object.keys(devices)) {
-        if (devices[name].timestamp + STATUS_VALID_TIMEOUT < now) {
-          delete devices[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
+    for (const applications of Object.values(this._applicationStatus)) {
+      for (const name of Object.keys(applications)) {
+        if (applications[name].timestamp + glconfig.status.validity < now) {
+          delete applications[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
         }
       }
     }
   }
 
   /**
-   * Handles IPC indications.
-   * @param name the indication name
+   * Handles received IPC indications.
+   * @param name the indication message name
    * @param payload the indication payload
    */
   _onIndication(name: string, payload: IpcPayload): void {
@@ -95,43 +114,46 @@ export class StatusManager {
       this._handleStatusMessage(payload);
     }
     else {
-      log.statusmanager.error(`Received unknown indication with name: ${name}, payload: ${JSON.stringify(payload)}`);
+      log.statusmanager.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
     }
   }
 
   /**
-   * Handles IPC requests.
-   * @param name the request name
-   * @param payload the request payload
-   * @param response the response callback
-   */
-  _onRequest(name: string, payload: IpcPayload, response: (payload?: IpcPayload) => void): void {
-    this._cleanupOldDevices();
-    // TODO: implement once known which request we require
-    response(this._deviceStatus);
-  }
-
-  /**
-   * Checks whether the specified message is a status message.
+   * Checks whether the specified message is a Status message.
    * @param name the message name
    * @param payload the message payload
-   * @returns `true` when the message is a status message, or `false` otherwise
+   * @returns `true` when the message is a Status message, or `false` otherwise
    */
-  _isStatusMessage(name: string, payload: IpcPayload): payload is StatusMessage {
-    return name === 'Status' && typeof payload === 'object' && payload !== null && 'name' in payload && 'type' in payload && 'health' in payload;
+  _isStatusMessage(name: string, payload: IpcPayload): payload is IpcStatus {
+    return name === 'Status' && typeof payload === 'object' && payload !== null &&
+      'name' in payload && typeof payload.name === 'string' &&
+      'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
+      'health' in payload && typeof payload.health === 'string' && STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
+      (!('status' in payload) || (typeof payload.status === 'object' && payload.status !== null));
   }
 
   /**
-   * Handles the specified status message.
-   * @param message the status message
+   * Handles Status message.
+   * @param status the Status message
    */
-  _handleStatusMessage(message: StatusMessage): void {
-    // Add type to device status list
-    if (!Object.keys(this._deviceStatus).includes(message.type)) {
-      this._deviceStatus[message.type] = {} as Record<string, DeviceStatus>;
+  _handleStatusMessage(status: IpcStatus): void {
+    // Add type to application status list
+    if (!Object.keys(this._applicationStatus).includes(status.type)) {
+      this._applicationStatus[status.type] = {} as Record<string, ApplicationStatus>;
     }
 
-    // Add device status to device status list
-    this._deviceStatus[message.type][message.name] = { timestamp: Date.now(), health: message.health, status: message.status };
+    // Add application status to application status list
+    this._applicationStatus[status.type][status.name] = { timestamp: Date.now(), health: status.health, details: status.details };
+  }
+
+  /**
+   * Handles received IPC requests.
+   * @param name the request message name
+   * @param payload the request payload
+   * @param response the response function
+   */
+  _onRequest(name: string, payload: IpcPayload, response: (payload?: IpcPayload) => void): void {
+    // TODO: implement once known which request we require
+    response({ result: 'not implemented' });
   }
 }

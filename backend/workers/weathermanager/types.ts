@@ -45,3 +45,15 @@ export interface WeatherManagerConfig {
   /** The source of the weather data, `undefined` means no weather should be fetched */
   source?: WeatherManagerSource;
 }
+
+/**
+ * The Weather Manager status details.
+ */
+export interface WeatherManagerStatusDetails {
+  /** The source of the weather data */
+  source?: string;
+  /** The timestamp of the last weather data update, `undefined` when not (yet) updated */
+  lastUpdate?: number;
+  /** The timestamp of the next weather data update */
+  nextUpdate?: number;
+}

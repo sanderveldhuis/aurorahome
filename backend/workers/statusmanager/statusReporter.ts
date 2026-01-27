@@ -27,16 +27,16 @@ import {
   ipc
 } from 'glidelite';
 import {
+  IpcStatus,
   StatusHealth,
-  StatusMessage,
   StatusType
-} from '../types/status';
+} from './types';
 
 /**
  * Class providing cyclic status reporting to the Status Manager.
  */
 export class StatusReporter {
-  _statusMessage: StatusMessage;
+  _status: IpcStatus;
   _interval: NodeJS.Timeout | undefined;
 
   /**
@@ -44,19 +44,19 @@ export class StatusReporter {
    * @param name the application name
    */
   constructor(name: string) {
-    this._statusMessage = { name, type: 'worker', health: 'starting' };
+    this._status = { name, type: 'worker', health: 'starting' };
   }
 
   /**
    * Starts reporting the status cyclic to the Status Manager.
    * @param type the application type
-   * @param status the application status (optional)
+   * @param details the application status details (optional)
    */
-  start(type: StatusType, status?: object): void {
-    this._statusMessage.type = type;
-    this._statusMessage.status = status;
+  start(type: StatusType, details?: object): void {
+    this._status.type = type;
+    this._status.details = details;
     this._interval = setInterval(() => {
-      ipc.to.statusmanager.indication('Status', this._statusMessage);
+      ipc.to.statusmanager.indication('Status', this._status);
     }, glconfig.status.interval);
   }
 
@@ -72,22 +72,22 @@ export class StatusReporter {
    * @param health the health
    */
   setHealth(health: StatusHealth): void {
-    this._statusMessage.health = health;
+    this._status.health = health;
   }
 
   /**
-   * Sets the status to be reported to the Status Manager.
-   * @param status the status
+   * Sets the status details to be reported to the Status Manager.
+   * @param details the status details
    */
-  setStatus(status: object): void {
-    this._statusMessage.status = status;
+  setDetails(details: object): void {
+    this._status.details = details;
   }
 
   /**
-   * Resets the status to be reported to the Status Manager.
+   * Resets the status details to be reported to the Status Manager.
    */
-  resetStatus(): void {
-    this._statusMessage.status = undefined;
+  resetDetails(): void {
+    this._status.details = undefined;
   }
 }
 

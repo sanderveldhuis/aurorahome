@@ -23,42 +23,28 @@
  */
 
 /**
- * The status type.
- * @details
- * - worker - indicates the application is an AuroraHome worker
- * - shelly - indicates the application is a Shelly device
+ * The application type.
  */
-export type StatusType = 'worker' | 'shelly';
+export type StatusType = typeof STATUS_TYPE[number];
+export const STATUS_TYPE = ['worker', 'shellydevice'] as const;
 
 /**
- * The status health.
- * @details
- * - starting - indicates the application is starting and not yet operationable
- * - running - indicates the application is started and operationable
- * - instable - indicates the application has some issues but is still operationable
+ * The application health.
  */
-export type StatusHealth = 'starting' | 'running' | 'instable';
+export type StatusHealth = typeof STATUS_HEALTH[number];
+export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
 
 /**
- * The status message name for IPC.
+ * The IPC message for indicating statusses to the Status Manager.
+ * @details the message ID for this message is 'Status'
  */
-export type StatusMessageName = 'status';
-
-/**
- * The status message for IPC.
- */
-export interface StatusMessage {
+export interface IpcStatus {
+  /** The applicaton name */
   name: string;
+  /** The application type */
   type: StatusType;
+  /** The application status health */
   health: StatusHealth;
-  status?: object;
-}
-
-/**
- * The Weather Manager status.
- */
-export interface StatusWeatherManager {
-  source: string;
-  lastUpdate?: number;
-  nextUpdate?: number;
+  /** Optional application status details */
+  details?: object;
 }

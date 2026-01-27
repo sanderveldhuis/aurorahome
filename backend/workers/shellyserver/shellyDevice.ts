@@ -108,7 +108,7 @@ export class ShellyDevice {
    */
   _onConnect(name: string): void {
     this._name = name;
-    status[this._name].start('shelly');
+    status[this._name].start('shellydevice');
     log.shellydevice.info(`Connected device with name: ${this._name}`);
   }
 
@@ -181,7 +181,7 @@ export class ShellyDevice {
     this._status.mac = data.sys?.mac as string;
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
-    status[this._name].setStatus(this._status);
+    status[this._name].setDetails(this._status);
     status[this._name].setHealth('running');
 
     // Handle Shelly component status
@@ -214,6 +214,6 @@ export class ShellyDevice {
       freq: data.freq as number,
       brightness: data.brightness as number
     };
-    status[this._name].setStatus(this._status);
+    status[this._name].setDetails(this._status);
   }
 }
