@@ -97,7 +97,7 @@ export class StatusManager {
     const now = Date.now();
     for (const applications of Object.values(this._applicationStatus)) {
       for (const name of Object.keys(applications)) {
-        if (applications[name].timestamp + glconfig.status.validity < now) {
+        if (applications[name].timestamp + Number(glconfig.status.validity) < now) {
           delete applications[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
         }
       }
