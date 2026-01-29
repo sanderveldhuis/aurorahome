@@ -31,6 +31,7 @@ import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
 import {
   SOURCE_NAME,
+  SOURCE_UNITS,
   WeatherManagerConfig,
   WeatherManagerStatusDetails
 } from './types';
@@ -109,6 +110,7 @@ export class WeatherManager {
         'name' in payload.source && typeof payload.source.name === 'string' && SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
         'lat' in payload.source && typeof payload.source.lat === 'number' &&
         'lon' in payload.source && typeof payload.source.lon === 'number' &&
+        'units' in payload.source && typeof payload.source.units === 'string' && SOURCE_UNITS.find(name => name === payload.source.units) !== undefined &&
         'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 
@@ -134,7 +136,7 @@ export class WeatherManager {
 
     // Construct the dedicated weather retriever
     // TODO: currently only supporting OpenWeatherMapV3, add if-statement once more protocols are supported
-    this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.apiKey);
+    this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.units, config.source.apiKey);
 
     // Start the weather retriever
     this._retrievalTimer = setInterval(() => {
