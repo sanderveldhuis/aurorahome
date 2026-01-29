@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import { WeatherData } from '../types/weather';
+import { IpcWeatherData } from './types';
 
 /**
- * The status of an actual weather retrieval.
+ * The status of a weather data retrieval.
  */
 export enum WeatherRetrieverStatus {
   Ok,
@@ -33,15 +33,23 @@ export enum WeatherRetrieverStatus {
   Error
 }
 
+/**
+ * The weather data retrieval result.
+ */
 export interface WeatherRetrieverResult {
+  /** The status of the weahter data retrieval */
   status: WeatherRetrieverStatus;
-  data?: WeatherData;
+  /** The retrieved weather data */
+  data?: IpcWeatherData;
 }
 
 /**
- * Retrieves actual weather from a weather source.
+ * Retrieves weather data from a weather source.
  */
 export interface WeatherRetriever {
-  /** Retrieves actual weather from a weather source */
+  /**
+   * Retrieves weather data from a weather source.
+   * @returns the weather data retrieval result
+   */
   get(): WeatherRetrieverResult;
 }

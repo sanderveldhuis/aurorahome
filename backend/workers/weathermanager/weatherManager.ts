@@ -30,6 +30,7 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
 import {
+  SOURCE_NAME,
   WeatherManagerConfig,
   WeatherManagerStatusDetails
 } from './types';
@@ -39,10 +40,10 @@ import {
 } from './weatherRetriever';
 
 /**
- * A Weather Manager retrieving actual weather online and publishing the information via IPC.
+ * A Weather Manager retrieving weather data from a configured source and publishing the information via IPC.
  */
 export class WeatherManager {
-  _status: WeatherManagerStatusDetails = {};
+  _statusDetails: WeatherManagerStatusDetails | undefined;
   _weatherRetriever: WeatherRetriever | undefined;
   _retrievalTimer: NodeJS.Timeout | undefined;
 
@@ -81,35 +82,41 @@ export class WeatherManager {
   }
 
   /**
-   * Handles IPC publishes.
-   * @param name the publish name
+   * Handles received IPC publishes.
+   * @param name the publish message name
    * @param payload the publish payload
    */
   _onPublish(name: string, payload: IpcPayload): void {
-    if (this._isConfigMessage(name, payload)) {
-      this._handleConfig(payload);
+    if (this._isWeatherManagerConfigMessage(name, payload)) {
+      log.weathermanager.info('Received WeatherManagerConfig publish via IPC');
+      this._handleWeatherManagerConfig(payload);
     }
     else {
-      log.weathermanager.error(`Received unknown publish with name: ${name}, payload: ${JSON.stringify(payload)}`);
+      log.weathermanager.warn(`Received unknown IPC publish with name '${name}': ${JSON.stringify(payload)}`);
     }
   }
 
   /**
-   * Checks whether the specified message is a config message.
+   * Checks whether the specified message is a WeatherManagerConfig message.
    * @param name the message name
    * @param payload the message payload
-   * @returns `true` when the message is a config message, or `false` otherwise
+   * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
    */
-  _isConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
-    return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null && (!('source' in payload) ||
-      ('interval' in (payload.source as object)) && ('name' in (payload.source as object)) && ('lat' in (payload.source as object)) && ('lon' in (payload.source as object)) && ('apiKey' in (payload.source as object)));
+  _isWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
+    return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
+      (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
+        'interval' in payload.source && typeof payload.source.interval === 'number' &&
+        'name' in payload.source && typeof payload.source.name === 'string' && SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
+        'lat' in payload.source && typeof payload.source.lat === 'number' &&
+        'lon' in payload.source && typeof payload.source.lon === 'number' &&
+        'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 
   /**
-   * Handles the specified configuration.
-   * @param config the configuration
+   * Handles WeatherManagerConfig message.
+   * @param config the WeatherManagerConfig message
    */
-  _handleConfig(config: WeatherManagerConfig): void {
+  _handleWeatherManagerConfig(config: WeatherManagerConfig): void {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.resetDetails();
@@ -121,19 +128,13 @@ export class WeatherManager {
       return;
     }
 
-    // Construct the health status
-    this._status = { source: config.source.name };
-    status.weathermanager.setDetails(this._status);
+    // Construct the status details
+    this._statusDetails = { source: config.source.name };
+    status.weathermanager.setDetails(this._statusDetails);
 
     // Construct the dedicated weather retriever
-    if (config.source.name === 'openweathermapV3') {
-      this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.apiKey);
-    }
-    else {
-      status.weathermanager.setHealth('instable');
-      log.weathermanager.error(`Failed starting weather retrieval from '${config.source.name as string}': source not implemented`);
-      return;
-    }
+    // TODO: currently only supporting OpenWeatherMapV3, add if-statement once more protocols are supported
+    this._weatherRetriever = new OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.apiKey);
 
     // Start the weather retriever
     this._retrievalTimer = setInterval(() => {
@@ -149,22 +150,27 @@ export class WeatherManager {
    * @param interval the interval in seconds
    */
   _executeWeatherRetriever(interval: number): void {
-    if (!this._weatherRetriever) {
+    if (!this._weatherRetriever || !this._statusDetails) {
+      // Should not happen
       return;
     }
 
+    // Get weather data using the weather retriever
     const result = this._weatherRetriever.get();
     if (result.status === WeatherRetrieverStatus.Ok) {
-      this._status.lastUpdate = Date.now();
-      this._status.nextUpdate = Date.now() + (interval * 1000);
+      // Set status details
+      this._statusDetails.lastUpdate = Date.now();
+      this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
       status.weathermanager.setHealth('running');
 
+      // Publish weather data if available
       if (result.data) {
         ipc.publish('WeatherData', result.data);
       }
     }
     else {
-      this._status.nextUpdate = Date.now() + (interval * 1000);
+      // Set status details
+      this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
       status.weathermanager.setHealth('instable');
     }
   }

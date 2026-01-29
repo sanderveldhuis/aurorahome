@@ -23,13 +23,19 @@
  */
 
 /**
+ * The weather data source name.
+ */
+export type SourceName = typeof SOURCE_NAME[number];
+export const SOURCE_NAME = ['openweathermapV3'] as const;
+
+/**
  * The Weather Manager weather data source.
  */
 export interface WeatherManagerSource {
-  /** Interval of fetching from the source in seconds */
+  /** Interval of retrieving from the source in seconds */
   interval: number;
   /** The source name */
-  name: 'openweathermapV3';
+  name: SourceName;
   /** The latitude geographic coordinate of the location */
   lat: number;
   /** The longitude geographic coordinate of the location */
@@ -42,7 +48,7 @@ export interface WeatherManagerSource {
  * The Weather Manager configuration.
  */
 export interface WeatherManagerConfig {
-  /** The source of the weather data, `undefined` means no weather should be fetched */
+  /** The source of the weather data, `undefined` means no weather should be retrieved */
   source?: WeatherManagerSource;
 }
 
@@ -51,7 +57,7 @@ export interface WeatherManagerConfig {
  */
 export interface WeatherManagerStatusDetails {
   /** The source of the weather data */
-  source?: string;
+  source: string;
   /** The timestamp of the last weather data update, `undefined` when not (yet) updated */
   lastUpdate?: number;
   /** The timestamp of the next weather data update */
