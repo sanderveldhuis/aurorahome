@@ -49,7 +49,7 @@ export interface ApplicationStatus {
 }
 
 /**
- * A Status Manager keeping track of all application statusses.
+ * A Status Manager keeping track of all application statusses, i.e.: application type, health, and additional detailed runtime information.
  */
 export class StatusManager {
   _applicationStatus: Record<StatusType, Record<string, ApplicationStatus>> = {} as Record<StatusType, Record<string, ApplicationStatus>>;
@@ -64,16 +64,11 @@ export class StatusManager {
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
     });
-    ipc.onRequest((name, payload, response) => {
-      this._onRequest(name, payload, response);
-    });
 
     // Start cleanup timer
     this._cleanupTimer = setInterval(() => {
-      this._cleanupExpiredStatus();
-    }, 60000);
-
-    log.statusmanager.info('Started');
+      this._cleanupExpiredStatusses();
+    }, glconfig.status.cleanup);
   }
 
   /**
@@ -93,7 +88,7 @@ export class StatusManager {
   /**
    * Cleans applications which do not report a status anymore to prevent overflooding memory.
    */
-  _cleanupExpiredStatus(): void {
+  _cleanupExpiredStatusses(): void {
     const now = Date.now();
     for (const applications of Object.values(this._applicationStatus)) {
       for (const name of Object.keys(applications)) {
@@ -129,7 +124,7 @@ export class StatusManager {
       'name' in payload && typeof payload.name === 'string' &&
       'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
       'health' in payload && typeof payload.health === 'string' && STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
-      (!('status' in payload) || (typeof payload.status === 'object' && payload.status !== null));
+      (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
   }
 
   /**
@@ -144,16 +139,5 @@ export class StatusManager {
 
     // Add application status to application status list
     this._applicationStatus[status.type][status.name] = { timestamp: Date.now(), health: status.health, details: status.details };
-  }
-
-  /**
-   * Handles received IPC requests.
-   * @param name the request message name
-   * @param payload the request payload
-   * @param response the response function
-   */
-  _onRequest(name: string, payload: IpcPayload, response: (payload?: IpcPayload) => void): void {
-    // TODO: implement once known which request we require
-    response({ result: 'not implemented' });
   }
 }

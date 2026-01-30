@@ -33,11 +33,11 @@ import {
 } from './types';
 
 /**
- * Class providing cyclic status reporting to the Status Manager.
+ * Helper class providing cyclic status reporting to the Status Manager.
  */
 export class StatusReporter {
   _status: IpcStatus;
-  _interval: NodeJS.Timeout | undefined;
+  _reportTimer: NodeJS.Timeout | undefined;
 
   /**
    * Constructs a new status reporter.
@@ -55,7 +55,7 @@ export class StatusReporter {
   start(type: StatusType, details?: object): void {
     this._status.type = type;
     this._status.details = details;
-    this._interval = setInterval(() => {
+    this._reportTimer = setInterval(() => {
       ipc.to.statusmanager.indication('Status', this._status);
     }, glconfig.status.interval);
   }
@@ -64,7 +64,7 @@ export class StatusReporter {
    * Stops reporting the status to the Status Manager.
    */
   stop(): void {
-    clearInterval(this._interval);
+    clearInterval(this._reportTimer);
   }
 
   /**
@@ -86,7 +86,7 @@ export class StatusReporter {
   /**
    * Resets the status details to be reported to the Status Manager.
    */
-  resetDetails(): void {
+  clearDetails(): void {
     this._status.details = undefined;
   }
 }

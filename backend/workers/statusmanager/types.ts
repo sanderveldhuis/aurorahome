@@ -41,10 +41,10 @@ export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
 export interface IpcStatus {
   /** The applicaton name */
   name: string;
-  /** The application type */
+  /** The application status type */
   type: StatusType;
   /** The application status health */
   health: StatusHealth;
-  /** Optional application status details */
+  /** Application status details (optional) */
   details?: object;
 }

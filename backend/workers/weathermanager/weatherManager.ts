@@ -121,7 +121,7 @@ export class WeatherManager {
   _handleWeatherManagerConfig(config: WeatherManagerConfig): void {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
-    status.weathermanager.resetDetails();
+    status.weathermanager.clearDetails();
     status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
