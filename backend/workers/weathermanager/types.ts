@@ -54,8 +54,9 @@ export interface WeatherManagerSource {
 
 /**
  * The Weather Manager configuration.
+ * @details the message ID for this message is 'WeatherManagerConfig'
  */
-export interface WeatherManagerConfig {
+export interface IpcWeatherManagerConfig {
   /** The source of the weather data, `undefined` means no weather should be retrieved */
   source?: WeatherManagerSource;
 }

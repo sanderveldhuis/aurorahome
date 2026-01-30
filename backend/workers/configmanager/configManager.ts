@@ -33,37 +33,13 @@ import { ConnectionStates } from 'mongoose';
 import { status } from '../statusmanager/statusReporter';
 import Config from './configModel';
 import {
+  CONFIG_NAME,
   IpcSetConfig,
-  IpcSetConfigResult
+  IpcSetConfigResponse
 } from './types';
 
 /**
  * A Config Manager handles configuration by storing it in a database and publishing it via IPC.
- * @details
- * Applications can subscribe to their own configuration by using the IPC subscription message name `<Application>Config`.
- * E.g.: an application named `HelloWorld` can subscribe and receive its configuration using:
- * ```js
- * ipc.to.configmanager.subscribe('HelloWorldConfig', (name, payload) => {
- *   // The `HelloWorldConfig` interface should be described in `backend/workers/configmanager/types.ts`
- *   const config = payload as HelloWorldConfig;
- *   console.log('Received configuration:', config.hello);
- * });
- * ```
- *
- * In case an application did not (yet) receive any published configuration means the configuration is not available,
- * the Config Manager is not yet started, or the Config Manager is not working properly. The application should not
- * simply assume the configuration is not available.
- *
- * Applications can create/update a configuration by using the IPC request message name `SetConfig`.
- * E.g.: creating/updating the configuration for an application named `HelloWorld` can be done using:
- * ```js
- * // The `HelloWorldSetConfig` interface should be described in `backend/workers/configmanager/types.ts`
- * const config: HelloWorldSetConfig = { name: 'HelloWorld', config: { hello: 'world' } };
- * ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
- *   const result = payload as IpcSetConfigResult;
- *   console.log('Setting HelloWorld config result:', result.result);
- * });
- * ```
  */
 export class ConfigManager {
   _publishRetryTimer: NodeJS.Timeout | undefined;
@@ -166,13 +142,13 @@ export class ConfigManager {
       }
 
       status.configmanager.setHealth('running');
-      log.configmanager.info('Published all available configurations');
+      log.configmanager.info(`Published ${String(configs.length)} available configurations`);
     }).catch((error: unknown) => {
       if (this._isRunning) {
         // Start retry timer for publishing all available configurations
         this._publishRetryTimer = setTimeout(() => {
           this._publishAllConfigs();
-        }, 5000);
+        }, glconfig.config.databaseReadRetry);
 
         status.configmanager.setHealth('instable');
         log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
@@ -193,7 +169,7 @@ export class ConfigManager {
     }
     else {
       log.configmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
-      response({ result: 'error' } as IpcSetConfigResult);
+      response({ result: 'error' } as IpcSetConfigResponse);
     }
   }
 
@@ -205,8 +181,8 @@ export class ConfigManager {
    */
   _isSetConfigMessage(name: string, payload: IpcPayload): payload is IpcSetConfig {
     return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-      'name' in payload && typeof payload.name === 'string' &&
-      'config' in payload && typeof payload.config === 'object';
+      'name' in payload && typeof payload.name === 'string' && CONFIG_NAME.find(name => name === payload.name) !== undefined &&
+      'config' in payload && typeof payload.config === 'object' && payload.config !== null;
   }
 
   /**
@@ -217,19 +193,19 @@ export class ConfigManager {
   _handleSetConfigMessage(setConfig: IpcSetConfig, response: (payload?: IpcPayload) => void): void {
     // Do not try to update the database if not connected
     if (mongoose.connection.readyState !== ConnectionStates.connected) {
-      response({ result: 'disconnected' } as IpcSetConfigResult);
+      response({ result: 'disconnected' } as IpcSetConfigResponse);
       return;
     }
 
     // Update or create configuration for the specified name
     Config.findOneAndUpdate({ name: setConfig.name }, setConfig, { upsert: true }).then(() => {
-      response({ result: 'ok' } as IpcSetConfigResult);
+      response({ result: 'ok' } as IpcSetConfigResponse);
 
       // Publish the new configuration
       ipc.publish(`${setConfig.name}Config`, setConfig.config);
     }).catch((error: unknown) => {
       log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error instanceof Error ? error.message : 'unknown'}`);
-      response({ result: 'error' } as IpcSetConfigResult);
+      response({ result: 'error' } as IpcSetConfigResponse);
     });
   }
 }

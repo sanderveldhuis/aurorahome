@@ -30,9 +30,9 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
 import {
+  IpcWeatherManagerConfig,
   SOURCE_NAME,
   SOURCE_UNITS,
-  WeatherManagerConfig,
   WeatherManagerStatusDetails
 } from './types';
 import {
@@ -103,7 +103,7 @@ export class WeatherManager {
    * @param payload the message payload
    * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
    */
-  _isWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is WeatherManagerConfig {
+  _isWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is IpcWeatherManagerConfig {
     return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
       (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
         'interval' in payload.source && typeof payload.source.interval === 'number' &&
@@ -118,7 +118,7 @@ export class WeatherManager {
    * Handles WeatherManagerConfig message.
    * @param config the WeatherManagerConfig message
    */
-  _handleWeatherManagerConfig(config: WeatherManagerConfig): void {
+  _handleWeatherManagerConfig(config: IpcWeatherManagerConfig): void {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.clearDetails();

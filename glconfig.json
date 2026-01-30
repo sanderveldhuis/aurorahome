@@ -5,7 +5,8 @@
     "cleanup": 60000
   },
   "config": {
-    "database": "mongodb://127.0.0.1:27017/config"
+    "database": "mongodb://127.0.0.1:27017/config",
+    "databaseReadRetry": 5000
   },
   "shelly": {
     "mqtt": {

@@ -22,23 +22,29 @@
  * SOFTWARE.
  */
 
-import { WeatherManagerConfig } from '../weathermanager/types';
+import { IpcWeatherManagerConfig } from '../weathermanager/types';
+
+/**
+ * The application name of the configuration.
+ */
+export type ConfigName = typeof CONFIG_NAME[number];
+export const CONFIG_NAME = ['WeatherManager'] as const;
 
 /**
  * The IPC message for setting configuration in the Config Manager.
  * @details the message ID for this message is 'SetConfig'
  */
 export interface IpcSetConfig {
-  /** The name of the configuration */
-  name: string;
-  /** The configuration for the name */
+  /** The application name of the configuration */
+  name: ConfigName;
+  /** The configuration for the application */
   config: object;
 }
 
 /**
- * The IPC result message for setting configuration in the Config Manager.
+ * The IPC response message for setting configuration in the Config Manager.
  */
-export interface IpcSetConfigResult {
+export interface IpcSetConfigResponse {
   /** The result of setting the configuration */
   result: 'ok' | 'disconnected' | 'error';
 }
@@ -47,9 +53,9 @@ export interface IpcSetConfigResult {
  * The IPC message for setting Weather Manager configuration in the Config Manager.
  * @details the message ID for this message is 'SetConfig'
  */
-export type WeatherManagerSetConfig = IpcSetConfig & {
-  /** The name of the Weather Manager configuration */
+export type IpcWeatherManagerSetConfig = IpcSetConfig & {
+  /** The application name of the Weather Manager */
   name: 'WeatherManager';
-  /** The Weather Manager configuration */
-  config: WeatherManagerConfig;
+  /** The configuration for the Weather Manager */
+  config: IpcWeatherManagerConfig;
 };

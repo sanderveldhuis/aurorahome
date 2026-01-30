@@ -26,7 +26,7 @@ import mongoose from 'mongoose';
 import { IpcSetConfig } from './types';
 
 /**
- * Describes the Config model schema.
+ * Describes the Config model schema for the database.
  */
 const schema = new mongoose.Schema<IpcSetConfig>({
   name: { type: String, required: true, unique: true },
@@ -34,7 +34,7 @@ const schema = new mongoose.Schema<IpcSetConfig>({
 }, { timestamps: true });
 
 /**
- * Constructs the Config model based on the schema.
+ * Constructs the Config model for the database based on the schema.
  */
 const Config = mongoose.model('Config', schema);
 
