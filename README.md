@@ -21,7 +21,7 @@ To install and use AuroraHome please refer to the user documentation:
 
 If you start to [contribute](https://github.com/sanderveldhuis/aurorahome/blob/main/CONTRIBUTING.md) to AuroraHome please refer to the technical documentation:
 * [System overview](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/system-overview.md)
-* [Status manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/status-manager.md)
-* [Config manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/config-manager.md)
-* [Weather manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/weather-manager.md)
-* [Shelly server](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/shelly-server.md)
+* [Status Manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/status-manager.md)
+* [Config Manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/config-manager.md)
+* [Weather Manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/weather-manager.md)
+* [Shelly Server](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/shelly-server.md)

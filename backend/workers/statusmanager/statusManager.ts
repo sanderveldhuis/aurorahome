@@ -69,6 +69,8 @@ export class StatusManager {
     this._cleanupTimer = setInterval(() => {
       this._cleanupExpiredStatusses();
     }, glconfig.status.cleanup);
+
+    log.statusmanager.info('Started');
   }
 
   /**

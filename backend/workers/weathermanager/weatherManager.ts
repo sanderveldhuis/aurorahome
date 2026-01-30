@@ -41,7 +41,7 @@ import {
 } from './weatherRetriever';
 
 /**
- * A Weather Manager retrieving weather data from a configured source and publishing the information via IPC.
+ * A Weather Manager retrieving weather data from a configured source and publishing the weather data via IPC.
  */
 export class WeatherManager {
   _statusDetails: WeatherManagerStatusDetails | undefined;
@@ -107,10 +107,14 @@ export class WeatherManager {
     return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
       (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
         'interval' in payload.source && typeof payload.source.interval === 'number' &&
-        'name' in payload.source && typeof payload.source.name === 'string' && SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
+        'name' in payload.source && typeof payload.source.name === 'string' &&
+        // @ts-ignore-line
+        SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
         'lat' in payload.source && typeof payload.source.lat === 'number' &&
         'lon' in payload.source && typeof payload.source.lon === 'number' &&
-        'units' in payload.source && typeof payload.source.units === 'string' && SOURCE_UNITS.find(name => name === payload.source.units) !== undefined &&
+        'units' in payload.source && typeof payload.source.units === 'string' &&
+        // @ts-ignore-line
+        SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
         'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 
