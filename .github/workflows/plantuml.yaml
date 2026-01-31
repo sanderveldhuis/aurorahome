@@ -1,0 +1,37 @@
+name: PlantUML Generation
+
+on:
+  push:
+    paths:
+      - '**/*.puml'
+    branches-ignore:
+      - main
+      - next
+      - release-*
+  # enable users to manually trigger with workflow_dispatch
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+# Ensure scripts are run with pipefail. See:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  plantuml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Generate PlantUML
+        uses: grassedge/generate-plantuml-action@4936762686b831393728392054322cfde20645e8 # v1.5
+        with:
+          message: 'Generated PlantUML files'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_GITHUB_TOKEN }}

@@ -22,34 +22,40 @@
  * SOFTWARE.
  */
 
-/**
- * The status type.
- * @details
- * - worker - indicates the application is an AuroraHome worker
- * - shelly - indicates the application is a Shelly device
- */
-export type StatusType = 'worker' | 'shelly';
+import { IpcWeatherManagerConfig } from '../weathermanager/types';
 
 /**
- * The status health.
- * @details
- * - starting - indicates the application is starting and not yet operationable
- * - running - indicates the application is started and operationable
- * - instable - indicates the application has some issues but is still operationable
+ * The application name of the configuration.
  */
-export type StatusHealth = 'starting' | 'running' | 'instable';
+export type ConfigName = typeof CONFIG_NAME[number];
+export const CONFIG_NAME = ['WeatherManager'] as const;
 
 /**
- * The status message name for IPC.
+ * The IPC message for setting configuration in the Config Manager.
+ * @details the message ID for this message is 'SetConfig'
  */
-export type StatusMessageName = 'status';
-
-/**
- * The status message for IPC.
- */
-export interface StatusMessage {
-  name: string;
-  type: StatusType;
-  health: StatusHealth;
-  status?: object;
+export interface IpcSetConfig {
+  /** The application name of the configuration */
+  name: ConfigName;
+  /** The configuration for the application */
+  config: object;
 }
+
+/**
+ * The IPC response message for setting configuration in the Config Manager.
+ */
+export interface IpcSetConfigResponse {
+  /** The result of setting the configuration */
+  result: 'ok' | 'disconnected' | 'error';
+}
+
+/**
+ * The IPC message for setting Weather Manager configuration in the Config Manager.
+ * @details the message ID for this message is 'SetConfig'
+ */
+export type IpcWeatherManagerSetConfig = IpcSetConfig & {
+  /** The application name of the Weather Manager */
+  name: 'WeatherManager';
+  /** The configuration for the Weather Manager */
+  config: IpcWeatherManagerConfig;
+};

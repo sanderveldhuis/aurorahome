@@ -22,26 +22,34 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  ipc
-} from 'glidelite';
+import { IpcWeatherData } from './types';
 
-ipc.start('unknown', glconfig.shelly.endpoint, glconfig.status.endpoint);
+/**
+ * The status of a weather data retrieval.
+ */
+export enum WeatherRetrieverStatus {
+  Ok,
+  Failed,
+  Error
+}
 
-// let on = false;
-const interval = setInterval(() => {
-  // ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-  // on = !on;
-  // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
+/**
+ * The weather data retrieval result.
+ */
+export interface WeatherRetrieverResult {
+  /** The status of the weahter data retrieval */
+  status: WeatherRetrieverStatus;
+  /** The retrieved weather data */
+  data?: IpcWeatherData;
+}
 
-  ipc.to[glconfig.status.endpoint].request('get', undefined, (name, payload) => {
-    console.log(payload);
-  });
-}, 5000);
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  clearInterval(interval);
-  ipc.stop();
-});
+/**
+ * Retrieves weather data from a weather source.
+ */
+export interface WeatherRetriever {
+  /**
+   * Retrieves weather data from a weather source.
+   * @returns the weather data retrieval result
+   */
+  get(): WeatherRetrieverResult;
+}

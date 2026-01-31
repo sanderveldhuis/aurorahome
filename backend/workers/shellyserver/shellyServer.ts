@@ -29,8 +29,12 @@ import {
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import net from 'node:net';
-import { StatusReporter } from '../controller/statusReporter';
+import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
+import {
+  IpcSetLight,
+  IpcSetSwitch
+} from './types';
 
 /**
  * A Shelly server handling Shelly devices.
@@ -38,20 +42,19 @@ import { ShellyDevice } from './shellyDevice';
 export class ShellyServer {
   _server: net.Server = new net.Server();
   _devices: ShellyDevice[] = [];
-  _statusReporter: StatusReporter = new StatusReporter();
 
   /**
    * Starts the Shelly server and listens for new Shelly devices.
    */
   start(): void {
     // Start IPC communication
-    ipc.start(glconfig.shelly.endpoint, glconfig.status.endpoint);
+    ipc.start('shellyserver', 'statusmanager');
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
     });
 
     // Start status reporting
-    this._statusReporter.start(glconfig.shelly.endpoint, 'worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
+    status.shellyserver.start('worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
 
     // Register all listeners
     this._server.on('error', (error: Error) => {
@@ -76,7 +79,7 @@ export class ShellyServer {
    */
   stop(): void {
     // Stop status reporting
-    this._statusReporter.stop();
+    status.shellyserver.stop();
 
     // Stop IPC communication
     ipc.stop();
@@ -91,28 +94,60 @@ export class ShellyServer {
   }
 
   /**
-   * Handles IPC indications.
-   * @param name the indication name
+   * Handles received IPC indications.
+   * @param name the indication message name
    * @param payload the indication payload
    */
   _onIndication(name: string, payload: IpcPayload): void {
-    // Forward command to all devices
-    if (typeof payload === 'object' && payload !== null) {
-      log.shellyserver.info(`Received command with name: ${name}, payload: ${JSON.stringify(payload)}`);
+    if (this._isSetSwitchMessage(name, payload)) {
+      log.shellyserver.info(`Received SetSwitch indication via IPC for MAC address: ${name}`);
       for (const device of Object.values(this._devices)) {
-        device.command(name, payload);
+        device.setSwitch(name, payload);
+      }
+    }
+    else if (this._isSetLightMessage(name, payload)) {
+      log.shellyserver.info(`Received SetLight indication via IPC for MAC address: ${name}`);
+      for (const device of Object.values(this._devices)) {
+        device.setLight(name, payload);
       }
     }
     else {
-      log.shellyserver.error(`Received unknown command with name: ${name}, payload: ${String(payload)}`);
+      log.shellyserver.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
     }
+  }
+
+  /**
+   * Checks whether the specified message is a SetSwitch message.
+   * @param name the message name
+   * @param payload the message payload
+   * @returns `true` when the message is a SetSwitch message, or `false` otherwise
+   */
+  _isSetSwitchMessage(name: string, payload: IpcPayload): payload is IpcSetSwitch {
+    // The message name should contain the Shelly device MAC address, it is checked later
+    return typeof payload === 'object' && payload !== null &&
+      'id' in payload && typeof payload.id === 'number' &&
+      'on' in payload && typeof payload.on === 'boolean';
+  }
+
+  /**
+   * Checks whether the specified message is a SetLight message.
+   * @param name the message name
+   * @param payload the message payload
+   * @returns `true` when the message is a SetLight message, or `false` otherwise
+   */
+  _isSetLightMessage(name: string, payload: IpcPayload): payload is IpcSetLight {
+    // The message name should contain the Shelly device MAC address, it is checked later
+    return typeof payload === 'object' && payload !== null &&
+      'id' in payload && typeof payload.id === 'number' &&
+      (!('on' in payload) || typeof payload.on === 'boolean') &&
+      (!('brightness' in payload) || typeof payload.brightness === 'number');
   }
 
   /**
    * Handles successfull start of the Shelly server.
    */
   _onListening(): void {
-    this._statusReporter.setHealth('running');
+    status.shellyserver.setHealth('running');
     log.shellyserver.info(`Started listening on: ${glconfig.shelly.mqtt.hostname as string}:${glconfig.shelly.mqtt.port as string}`);
   }
 
