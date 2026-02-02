@@ -26,9 +26,10 @@ import { ipc } from 'glidelite';
 import readline from 'node:readline';
 import {
   IpcSetConfigResponse,
+  IpcShellyServerSetConfig,
   IpcWeatherManagerSetConfig
 } from '../configmanager/types';
-import { IpcWeatherManagerConfig } from '../weathermanager/types';
+import { IpcShellyServerConfig } from '../shellyserver/types';
 
 let userInput: readline.Interface | undefined;
 
@@ -37,7 +38,9 @@ let userInput: readline.Interface | undefined;
  */
 function printHelp(): void {
   console.log('Enter one of the following commands:');
-  console.log('  WeatherManager stop - Stops the WeatherManager by removing the configuration');
+  console.log('  WeatherManager stop - Stops the Weather Manager by removing the configuration');
+  console.log('  ShellyServer stop - Stops the Shelly Server by removing the configuration');
+  console.log('  ShellyServer <port> - Starts the Shelly Server by setting the configuration');
 }
 
 /**
@@ -65,11 +68,28 @@ function handleUserInput(input: string): void {
 
   // Handle command
   if (command[0] === 'WeatherManager' && command.length === 2 && command[1] === 'stop') {
-    console.log(`Stop the WeatherManager`);
-    const config: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
-    ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
+    console.log(`Stop the Weather Manager`);
+    const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
+    ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
       const response = payload as IpcSetConfigResponse;
-      console.log('Stop the WeatherManager result:', response.result);
+      console.log('Stop the Weather Manager result:', response.result);
+    });
+  }
+  else if (command[0] === 'ShellyServer' && command.length === 2 && command[1] === 'stop') {
+    console.log(`Stop the Shelly Server`);
+    const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config: {} };
+    ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+      const response = payload as IpcSetConfigResponse;
+      console.log('Stop the Shelly Server result:', response.result);
+    });
+  }
+  else if (command[0] === 'ShellyServer' && command.length === 2 && !Number.isNaN(command[1])) {
+    console.log(`Start the Shelly Server`);
+    const config: IpcShellyServerConfig = { mqtt: { port: Number(command[1]), hostname: '0.0.0.0', username: 'test1', password: 'test2' } };
+    const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config };
+    ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+      const response = payload as IpcSetConfigResponse;
+      console.log('Start the Shelly Server result:', response.result);
     });
   }
   else {
@@ -79,11 +99,7 @@ function handleUserInput(input: string): void {
 }
 
 // Start IPC
-ipc.start('ipcsimulator', 'configmanager', 'weathermanager');
-ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
-  const config = payload as IpcWeatherManagerConfig;
-  console.log('Received WeatherManager configuration:', JSON.stringify(config.source));
-});
+ipc.start('ipcsimulator', 'configmanager');
 
 // Handle user input as commands
 console.log('IPC simulator running, press Ctrl+C twice to exit');

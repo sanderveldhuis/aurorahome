@@ -45,3 +45,36 @@ export interface IpcSetLight {
   /** Brightness level of the light (optional) */
   brightness?: number;
 }
+
+/**
+ * The Shelly Server MQTT settings.
+ */
+export interface ShellyServerMqtt {
+  /** The port number of the MQTT server */
+  port: number;
+  /** The host name of the MQTT server */
+  hostname: string;
+  /** The MQTT username */
+  username: string;
+  /** The MQTT password */
+  password: string;
+}
+
+/**
+ * The Shelly Server configuration.
+ * @details the message ID for this message is 'ShellyServerConfig'
+ */
+export interface IpcShellyServerConfig {
+  /** The MQTT settings, `undefined` means no MQTT server should be started */
+  mqtt?: ShellyServerMqtt;
+}
+
+/**
+ * The Shelly Server status details.
+ */
+export interface ShellyServerStatusDetails {
+  /** The port number of the MQTT server */
+  port: number;
+  /** The host name of the MQTT server */
+  hostname: string;
+}

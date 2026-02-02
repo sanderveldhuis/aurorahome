@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
+import { IpcShellyServerConfig } from '../shellyserver/types';
 import { IpcWeatherManagerConfig } from '../weathermanager/types';
 
 /**
  * The application name of the configuration.
  */
 export type ConfigName = typeof CONFIG_NAME[number];
-export const CONFIG_NAME = ['WeatherManager'] as const;
+export const CONFIG_NAME = ['WeatherManager', 'ShellyServer'] as const;
 
 /**
  * The IPC message for setting configuration in the Config Manager.
@@ -58,4 +59,15 @@ export type IpcWeatherManagerSetConfig = IpcSetConfig & {
   name: 'WeatherManager';
   /** The configuration for the Weather Manager */
   config: IpcWeatherManagerConfig;
+};
+
+/**
+ * The IPC message for setting Shelly Server configuration in the Config Manager.
+ * @details the message ID for this message is 'SetConfig'
+ */
+export type IpcShellyServerSetConfig = IpcSetConfig & {
+  /** The application name of the Shelly Server */
+  name: 'ShellyServer';
+  /** The configuration for the Shelly Server */
+  config: IpcShellyServerConfig;
 };

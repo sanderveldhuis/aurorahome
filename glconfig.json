@@ -10,10 +10,9 @@
   },
   "shelly": {
     "mqtt": {
-      "port": 12010,
-      "hostname": "0.0.0.0",
-      "username": "test1",
-      "password": "test2"
+      "version": 4,
+      "retryTimeout": 5000,
+      "retryMax": 10
     }
   },
   "ports": {

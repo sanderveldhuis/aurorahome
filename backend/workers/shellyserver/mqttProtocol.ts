@@ -36,15 +36,13 @@ interface MqttCache {
   retryTimeout?: NodeJS.Timeout;
 }
 
-const MQTT_DEFAULT_VERSION = 4;
-const MQTT_RETRY_TIMEOUT = 5000;
-const MQTT_MAX_RETRY = 10;
-
 /**
  * Executes the MQTT protocol on a socket.
  */
 export class MqttProtocol {
   _socket: net.Socket;
+  _username: string;
+  _password: string;
   _parser: mqtt.Parser;
   _clientId: string;
   _protocolVersion: number;
@@ -58,20 +56,24 @@ export class MqttProtocol {
   /**
    * Constructs a new MQTT protocol for the specified socket.
    * @param socket the socket
+   * @param username the MQTT username
+   * @param password the MQTT password
    * @param connectCallback invoked when MQTT is connected
    * @param closeCallback invoked when the socket is ended (i.e. MQTT is disconnected)
    * @param subscribeCallback invoked when an MQTT subscription is received
    * @param publishCallback invoked when an MQTT publish is received
    */
-  constructor(socket: net.Socket, connectCallback: (name: string) => void, closeCallback: () => void, subscribeCallback: (topics: string[]) => void, publishCallback: (topic: string, payload: string) => void) {
+  constructor(socket: net.Socket, username: string, password: string, connectCallback: (name: string) => void, closeCallback: () => void, subscribeCallback: (topics: string[]) => void, publishCallback: (topic: string, payload: string) => void) {
     this._socket = socket;
+    this._username = username;
+    this._password = password;
     this._connectCallback = connectCallback;
     this._closeCallback = closeCallback;
     this._subscribeCallback = subscribeCallback;
     this._publishCallback = publishCallback;
     this._parser = mqtt.parser();
     this._clientId = 'unknown';
-    this._protocolVersion = MQTT_DEFAULT_VERSION;
+    this._protocolVersion = glconfig.mqtt.version as number;
     this._cache = {};
     this._messageId = 1;
   }
@@ -249,11 +251,11 @@ export class MqttProtocol {
   _onConnect(packet: mqtt.IConnectPacket): void {
     // Store received settings for future use
     this._clientId = packet.clientId;
-    this._protocolVersion = packet.protocolVersion ?? MQTT_DEFAULT_VERSION;
+    this._protocolVersion = packet.protocolVersion ?? glconfig.mqtt.version as number;
     this._socket.setTimeout((packet.keepalive ?? 0) * 1500);
 
     // Validate credentials
-    if (packet.username === glconfig.shelly.mqtt.username && packet.password?.toString() === glconfig.shelly.mqtt.password) {
+    if (packet.username === this._username && packet.password?.toString() === this._password) {
       const data = mqtt.generate({ cmd: 'connack', returnCode: 0 } as mqtt.IConnackPacket, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
 
@@ -406,7 +408,7 @@ export class MqttProtocol {
     }
 
     // Check if retries already exceeded
-    if (this._cache[messageId].count >= MQTT_MAX_RETRY) {
+    if (this._cache[messageId].count >= glconfig.mqtt.retryMax) {
       return;
     }
 
@@ -437,6 +439,6 @@ export class MqttProtocol {
       }
 
       this._setRetryTimeout(command, messageId, message);
-    }, MQTT_RETRY_TIMEOUT);
+    }, glconfig.mqtt.retryTimeout);
   }
 }

@@ -46,17 +46,27 @@ export class ShellyDevice {
   /**
    * Constructs a new Shelly device.
    * @param socket the client socket
+   * @param username the MQTT username
+   * @param password the MQTT password
    */
-  constructor(socket: net.Socket) {
-    this._mqtt = new MqttProtocol(socket, name => {
-      this._onConnect(name);
-    }, () => {
-      this._onClose();
-    }, topics => {
-      this._onSubscribe(topics);
-    }, (topic, payload) => {
-      this._onPublish(topic, payload);
-    });
+  constructor(socket: net.Socket, username: string, password: string) {
+    this._mqtt = new MqttProtocol(
+      socket,
+      username,
+      password,
+      name => {
+        this._onConnect(name);
+      },
+      () => {
+        this._onClose();
+      },
+      topics => {
+        this._onSubscribe(topics);
+      },
+      (topic, payload) => {
+        this._onPublish(topic, payload);
+      }
+    );
     this._status = {};
     this._name = '';
   }

@@ -23,7 +23,6 @@
  */
 
 import {
-  glconfig,
   ipc,
   log
 } from 'glidelite';
@@ -33,44 +32,39 @@ import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 import {
   IpcSetLight,
-  IpcSetSwitch
+  IpcSetSwitch,
+  IpcShellyServerConfig,
+  ShellyServerStatusDetails
 } from './types';
 
 /**
- * A Shelly server handling Shelly devices.
+ * A Shelly Server handling Shelly devices using the MQTT protocol.
  */
 export class ShellyServer {
+  _statusDetails: ShellyServerStatusDetails | undefined;
   _server: net.Server = new net.Server();
   _devices: ShellyDevice[] = [];
+  _username = '';
+  _password = '';
 
   /**
-   * Starts the Shelly server and listens for new Shelly devices.
+   * Starts the Shelly Server.
    */
   start(): void {
     // Start IPC communication
-    ipc.start('shellyserver', 'statusmanager');
+    ipc.start('shellyserver', 'statusmanager', 'configmanager');
     ipc.onIndication((name, payload) => {
       this._onIndication(name, payload);
     });
+    ipc.to.configmanager.subscribe('ShellyServerConfig', (name, payload) => {
+      this._onPublish(name, payload);
+    });
 
     // Start status reporting
-    status.shellyserver.start('worker', { port: glconfig.shelly.mqtt.port as number, hostname: glconfig.shelly.mqtt.hostname as string });
+    status.shellyserver.start('worker');
+    status.shellyserver.setHealth('running');
 
-    // Register all listeners
-    this._server.on('error', (error: Error) => {
-      this._onError(error);
-    });
-    this._server.on('close', () => {
-      this._onClose();
-    });
-    this._server.on('connection', (socket: net.Socket) => {
-      this._onConnection(socket);
-    });
-
-    // Start listening
-    this._server.listen(glconfig.shelly.mqtt.port, glconfig.shelly.mqtt.hostname, () => {
-      this._onListening();
-    });
+    log.shellyserver.info('Started');
   }
 
   /**
@@ -91,6 +85,8 @@ export class ShellyServer {
     for (const device of Object.values(this._devices)) {
       device.stop();
     }
+
+    log.shellyserver.info('Stopped');
   }
 
   /**
@@ -113,6 +109,21 @@ export class ShellyServer {
     }
     else {
       log.shellyserver.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
+    }
+  }
+
+  /**
+   * Handles received IPC publishes.
+   * @param name the publish message name
+   * @param payload the publish payload
+   */
+  _onPublish(name: string, payload: IpcPayload): void {
+    if (this._isShellyServerConfigMessage(name, payload)) {
+      log.shellyserver.info('Received ShellyServerConfig publish via IPC');
+      this._handleShellyServerConfig(payload);
+    }
+    else {
+      log.shellyserver.warn(`Received unknown IPC publish with name '${name}': ${JSON.stringify(payload)}`);
     }
   }
 
@@ -144,11 +155,68 @@ export class ShellyServer {
   }
 
   /**
+   * Checks whether the specified message is a ShellyServerConfig message.
+   * @param name the message name
+   * @param payload the message payload
+   * @returns `true` when the message is a ShellyServerConfig message, or `false` otherwise
+   */
+  _isShellyServerConfigMessage(name: string, payload: IpcPayload): payload is IpcShellyServerConfig {
+    return name === 'ShellyServerConfig' && typeof payload === 'object' && payload !== null &&
+      (!('mqtt' in payload) || (typeof payload.mqtt === 'object' && payload.mqtt !== null &&
+        'port' in payload.mqtt && typeof payload.mqtt.port === 'number' &&
+        'hostname' in payload.mqtt && typeof payload.mqtt.hostname === 'string' &&
+        'username' in payload.mqtt && typeof payload.mqtt.username === 'string' &&
+        'password' in payload.mqtt && typeof payload.mqtt.password === 'string'));
+  }
+
+  /**
+   * Handles ShellyServerConfig message.
+   * @param config the ShellyServerConfig message
+   */
+  _handleShellyServerConfig(config: IpcShellyServerConfig): void {
+    // Always cleanup for safety
+    status.shellyserver.clearDetails();
+    status.shellyserver.setHealth('running');
+
+    // If no settings are available the MQTT server should stop
+    if (!config.mqtt) {
+      this._server.close();
+      return;
+    }
+
+    // Construct the status details
+    this._statusDetails = { port: config.mqtt.port, hostname: config.mqtt.hostname };
+    status.shellyserver.setDetails(this._statusDetails);
+
+    // Store credentials for future use
+    this._username = config.mqtt.username;
+    this._password = config.mqtt.password;
+
+    // Ensure to stop any running server before starting the new one
+    this._server.close(() => {
+      // Register all listeners
+      this._server.on('error', (error: Error) => {
+        this._onError(error);
+      });
+      this._server.on('close', () => {
+        this._onClose();
+      });
+      this._server.on('connection', (socket: net.Socket) => {
+        this._onConnection(socket);
+      });
+
+      // Start listening
+      this._server.listen(config.mqtt?.port, config.mqtt?.hostname, () => {
+        this._onListening();
+      });
+    });
+  }
+
+  /**
    * Handles successfull start of the Shelly server.
    */
   _onListening(): void {
-    status.shellyserver.setHealth('running');
-    log.shellyserver.info(`Started listening on: ${glconfig.shelly.mqtt.hostname as string}:${glconfig.shelly.mqtt.port as string}`);
+    log.shellyserver.info(`Started MQTT server on '${String(this._statusDetails?.hostname)}:${String(this._statusDetails?.port)}'`);
   }
 
   /**
@@ -156,6 +224,7 @@ export class ShellyServer {
    * @param error the error
    */
   _onError(error: Error): void {
+    status.shellyserver.setHealth('instable');
     log.shellyserver.error(error.message);
     this._server.close();
   }
@@ -165,8 +234,7 @@ export class ShellyServer {
    */
   _onClose(): void {
     this._server.removeAllListeners();
-    this.stop();
-    log.shellyserver.info('Stopped');
+    log.shellyserver.info('Stopped MQTT server');
   }
 
   /**
@@ -177,7 +245,7 @@ export class ShellyServer {
     log.shellyserver.info(`Device connected with IP address: ${String(socket.remoteAddress)}, number of devices: ${String(this._devices.length + 1)}`);
 
     // Accept new connection
-    const device = new ShellyDevice(socket);
+    const device = new ShellyDevice(socket, this._username, this._password);
     this._devices.push(device);
     device.start();
 
