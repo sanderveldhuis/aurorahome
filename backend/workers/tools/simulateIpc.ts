@@ -30,6 +30,7 @@ import {
   IpcWeatherManagerSetConfig
 } from '../configmanager/types';
 import { IpcShellyServerConfig } from '../shellyserver/types';
+import { IpcWeatherManagerConfig } from '../weathermanager/types';
 
 let userInput: readline.Interface | undefined;
 
@@ -39,6 +40,7 @@ let userInput: readline.Interface | undefined;
 function printHelp(): void {
   console.log('Enter one of the following commands:');
   console.log('  WeatherManager stop - Stops the Weather Manager by removing the configuration');
+  console.log('  WeatherManager <apiKey> - Starts the Weather Manager by setting the configuration');
   console.log('  ShellyServer stop - Stops the Shelly Server by removing the configuration');
   console.log('  ShellyServer <port> - Starts the Shelly Server by setting the configuration');
 }
@@ -75,6 +77,15 @@ function handleUserInput(input: string): void {
       console.log('Stop the Weather Manager result:', response.result);
     });
   }
+  else if (command[0] === 'WeatherManager' && command.length === 2) {
+    console.log(`Start the Weather Manager`);
+    const config: IpcWeatherManagerConfig = { source: { interval: 10, name: 'openweathermapV3', units: 'metric', lat: 52.368212, lon: 6.772371, apiKey: command[1] } };
+    const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config };
+    ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+      const response = payload as IpcSetConfigResponse;
+      console.log('Start the Weather Manager result:', response.result);
+    });
+  }
   else if (command[0] === 'ShellyServer' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the Shelly Server`);
     const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config: {} };
@@ -99,7 +110,10 @@ function handleUserInput(input: string): void {
 }
 
 // Start IPC
-ipc.start('ipcsimulator', 'configmanager');
+ipc.start('ipcsimulator', 'configmanager', 'weathermanager');
+ipc.to.weathermanager.subscribe('WeatherData', (name, payload) => {
+  console.log('Received weather data:', JSON.stringify(payload));
+});
 
 // Handle user input as commands
 console.log('IPC simulator running, press Ctrl+C twice to exit');
