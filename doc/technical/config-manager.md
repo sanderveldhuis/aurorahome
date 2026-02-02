@@ -3,6 +3,13 @@
 
 A Config Manager stores received configurations in a database and publishes it via IPC to subscribed applications.
 
+## Static configuration
+
+The Config Manager can be configured, before compilation, with static configuration values. These values are available in the `config` element in the `glconfig.json` configuration file:
+
+* _database_: the MongoDB connection string.
+* _databaseReadRetry_: the retry timeout in milliseconds after the initial configuration values are read from the MongoDB.
+
 ## Get application configuration
 
 Applications can subscribe to their own configuration by using the IPC subscription message name `<Application>Config`.

@@ -8,12 +8,10 @@
     "database": "mongodb://127.0.0.1:27017/config",
     "databaseReadRetry": 5000
   },
-  "shelly": {
-    "mqtt": {
-      "version": 4,
-      "retryTimeout": 5000,
-      "retryMax": 10
-    }
+  "mqtt": {
+    "version": 4,
+    "retryTimeout": 5000,
+    "retryMax": 10
   },
   "ports": {
     "proxy": 12001

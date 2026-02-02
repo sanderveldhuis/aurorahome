@@ -24,7 +24,7 @@ Applications can create/update Weather Manager configuration by using the IPC re
 
 ```typescript
 import { ipc } from 'glidelite';
-import { IpcWeatherManagerSetConfig } from '../weathermanager/types';
+import { IpcWeatherManagerSetConfig } from '../configmanager/types';
 import { IpcSetConfigResponse } from '../configmanager/types';
 
 const config: IpcWeatherManagerSetConfig = { ... };

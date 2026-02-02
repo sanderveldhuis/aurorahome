@@ -2,9 +2,18 @@
 # Status Manager
 
 A Status Manager keeping track of all application statusses, i.e.:
+
 * _Application type_: either `worker` or `shellydevice`
 * _Application health_: either `starting`, `running`, or `instable`
 * _Application status details_: additional detailed runtime information (optional)
+
+## Static configuration
+
+The Status Manager can be configured, before compilation, with static configuration values. These values are available in the `status` element in the `glconfig.json` configuration file:
+
+* _interval_: the interval in milliseconds of status reporting by the helper class, see next section.
+* _validity_: the time in milliseconds a status remains valid after the last received status reporting.
+* _cleanup_: the interval in milliseconds after which the Status Manager will cleanup its list of statusses to prevent overflooding memory.
 
 ## Status reporting
 
