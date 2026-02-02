@@ -1,0 +1,56 @@
+@startuml
+!include <C4/C4_Container.puml>
+
+title AuroraHome system overview
+
+Person_Ext(User, "AuroraHome User", "Desktop/Mobile browser")
+System_Ext(OpenWeatherMap, "OpenWeatherMap", "")
+ContainerDb(MongoDb, "MongoDB", "")
+
+System_Boundary(Ui, "UI") {
+  System(StatusWidget, "StatusWidget", "")
+  System(ConfigWidget, "ConfigWidget", "")
+  System(WeatherWidget, "WeatherWidget", "")
+  System(LogWidget, "LogWidget", "")
+}
+
+System_Boundary(Api, "API") {
+  System(StatusApi, "/api/status", "")
+  System(WeatherApi, "/api/weather", "")
+  System(ShellyApi, "/api/shelly", "")
+  System(LogApi, "/api/log", "")
+}
+
+System_Boundary(Workers, "Workers") {
+  System(StatusManager, "StatusManager", "")
+  System(ConfigManager, "ConfigManager", "")
+  System(WeatherManager, "WeatherManager", "")
+  System(ShellyServer, "ShellyServer", "")
+}
+
+Rel_D(User, Api, "HTTPS", "GET/POST/PUT/DELETE")
+Rel_L(User, Ui, "HTTPS", "GET")
+
+Rel_D(StatusWidget, StatusApi, "HTTPS", "GET")
+Rel_D(ConfigWidget, WeatherApi, "HTTPS", "GET/POST")
+Rel_D(WeatherWidget, WeatherApi, "HTTPS", "GET")
+Rel_D(ConfigWidget, ShellyApi, "HTTPS", "GET/POST")
+Rel_D(LogWidget, LogApi, "HTTPS", "GET")
+
+Rel_U(WeatherManager, WeatherApi, "IPC pub/sub", "WeatherData")
+Rel_D(WeatherApi, ConfigManager, "IPC req/res", "SetConfig")
+Rel_D(ShellyApi, ConfigManager, "IPC req/res", "SetConfig")
+
+Rel_D(ConfigManager, WeatherManager, "IPC pub/sub", "WeatherManagerConfig")
+Rel_U(ConfigManager, WeatherApi, "IPC pub/sub", "WeatherManagerConfig")
+Rel_D(ConfigManager, ShellyServer, "IPC pub/sub", "ShellyServerConfig")
+Rel_U(ConfigManager, ShellyApi, "IPC pub/sub", "ShellyServerConfig")
+
+Rel_D(ConfigManager, StatusManager, "IPC ind", "ConfigManagerStatus")
+Rel_D(WeatherManager, StatusManager, "IPC ind", "WeatherManagerStatus")
+Rel_D(ShellyServer, StatusManager, "IPC ind", "ShellyServerStatus")
+
+Rel_R(ConfigManager, MongoDb, "read/write")
+Rel_R(WeatherManager, OpenWeatherMap, "HTTPS", "GET")
+
+@enduml

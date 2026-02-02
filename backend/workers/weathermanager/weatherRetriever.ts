@@ -22,34 +22,34 @@
  * SOFTWARE.
  */
 
-/**
- * The status type.
- * @details
- * - worker - indicates the application is an AuroraHome worker
- * - shelly - indicates the application is a Shelly device
- */
-export type StatusType = 'worker' | 'shelly';
+import { IpcWeatherData } from './types';
 
 /**
- * The status health.
- * @details
- * - starting - indicates the application is starting and not yet operationable
- * - running - indicates the application is started and operationable
- * - instable - indicates the application has some issues but is still operationable
+ * The status of a weather data retrieval.
  */
-export type StatusHealth = 'starting' | 'running' | 'instable';
+export enum WeatherRetrieverStatus {
+  Ok,
+  Failed,
+  Error
+}
 
 /**
- * The status message name for IPC.
+ * The weather data retrieval result.
  */
-export type StatusMessageName = 'status';
+export interface WeatherRetrieverResult {
+  /** The status of the weahter data retrieval */
+  status: WeatherRetrieverStatus;
+  /** The retrieved weather data */
+  data?: IpcWeatherData;
+}
 
 /**
- * The status message for IPC.
+ * Retrieves weather data from a weather source.
  */
-export interface StatusMessage {
-  name: string;
-  type: StatusType;
-  health: StatusHealth;
-  status?: object;
+export interface WeatherRetriever {
+  /**
+   * Retrieves weather data from a weather source.
+   * @returns the weather data retrieval result
+   */
+  get(): WeatherRetrieverResult;
 }

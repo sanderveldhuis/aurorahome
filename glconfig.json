@@ -1,18 +1,22 @@
 {
   "status": {
-    "endpoint": "statusmanager",
-    "interval": 1000
+    "interval": 1000,
+    "validity": 5000,
+    "cleanup": 60000
   },
-  "shelly": {
-    "endpoint": "shelly",
-    "mqtt": {
-      "port": 1235,
-      "hostname": "0.0.0.0",
-      "username": "test1",
-      "password": "test2"
-    }
+  "config": {
+    "database": "mongodb://127.0.0.1:27017/config",
+    "databaseReadRetry": 5000
+  },
+  "mqtt": {
+    "version": 4,
+    "retryTimeout": 5000,
+    "retryMax": 10
   },
   "ports": {
     "proxy": 12001
-  }
+  },
+  "packages": [
+    "mongodb-org"
+  ]
 }

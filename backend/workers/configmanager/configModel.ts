@@ -22,26 +22,20 @@
  * SOFTWARE.
  */
 
-/**
- * The IPC message for setting a Shelly switch.
- * @details the IPC message name should be the Shelly device MAC address
- */
-export interface ShellySetSwitchMessage {
-  /** Identifier of the switch component */
-  id: number;
-  /** `true` for switch on, or `false` otherwise  */
-  on: boolean;
-}
+import mongoose from 'mongoose';
+import { IpcSetConfig } from './types';
 
 /**
- * The IPC message for setting a Shelly light.
- * @details the IPC message name should be the Shelly device MAC address
+ * Describes the Config model schema for the database.
  */
-export interface ShellySetLightMessage {
-  /** Identifier of the light component */
-  id: number;
-  /** `true` for light on, or `false` otherwise (optional)  */
-  on?: boolean;
-  /** Brightness level of the light (optional) */
-  brightness?: number;
-}
+const schema = new mongoose.Schema<IpcSetConfig>({
+  name: { type: String, required: true, unique: true },
+  config: { type: Object, required: true }
+}, { timestamps: true });
+
+/**
+ * Constructs the Config model for the database based on the schema.
+ */
+const Config = mongoose.model('Config', schema);
+
+export default Config;

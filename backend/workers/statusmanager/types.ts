@@ -22,26 +22,29 @@
  * SOFTWARE.
  */
 
-import {
-  glconfig,
-  ipc
-} from 'glidelite';
+/**
+ * The application type.
+ */
+export type StatusType = typeof STATUS_TYPE[number];
+export const STATUS_TYPE = ['worker', 'shellydevice'] as const;
 
-ipc.start('unknown', glconfig.shelly.endpoint, glconfig.status.endpoint);
+/**
+ * The application health.
+ */
+export type StatusHealth = typeof STATUS_HEALTH[number];
+export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
 
-// let on = false;
-const interval = setInterval(() => {
-  // ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-  // on = !on;
-  // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
-
-  ipc.to[glconfig.status.endpoint].request('get', undefined, (name, payload) => {
-    console.log(payload);
-  });
-}, 5000);
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  clearInterval(interval);
-  ipc.stop();
-});
+/**
+ * The IPC message for indicating statusses to the Status Manager.
+ * @details the message ID for this message is 'Status'
+ */
+export interface IpcStatus {
+  /** The applicaton name */
+  name: string;
+  /** The application status type */
+  type: StatusType;
+  /** The application status health */
+  health: StatusHealth;
+  /** Application status details (optional) */
+  details?: object;
+}
