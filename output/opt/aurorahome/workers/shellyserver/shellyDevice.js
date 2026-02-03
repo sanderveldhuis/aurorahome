@@ -25,7 +25,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShellyDevice = void 0;
 const glidelite_1 = require("glidelite");
-const statusReporter_1 = require("../controller/statusReporter");
+const statusReporter_1 = require("../statusmanager/statusReporter");
 const mqttProtocol_1 = require("./mqttProtocol");
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
 const SHELLY_MAX_NOF_COMPONENTS = 4;
@@ -34,16 +34,17 @@ const SHELLY_MAX_NOF_COMPONENTS = 4;
  */
 class ShellyDevice {
     _mqtt;
-    _statusReporter;
     _statusTimer;
     _status;
     _name;
     /**
      * Constructs a new Shelly device.
      * @param socket the client socket
+     * @param username the MQTT username
+     * @param password the MQTT password
      */
-    constructor(socket) {
-        this._mqtt = new mqttProtocol_1.MqttProtocol(socket, name => {
+    constructor(socket, username, password) {
+        this._mqtt = new mqttProtocol_1.MqttProtocol(socket, username, password, name => {
             this._onConnect(name);
         }, () => {
             this._onClose();
@@ -52,7 +53,6 @@ class ShellyDevice {
         }, (topic, payload) => {
             this._onPublish(topic, payload);
         });
-        this._statusReporter = new statusReporter_1.StatusReporter();
         this._status = {};
         this._name = '';
     }
@@ -78,22 +78,34 @@ class ShellyDevice {
         return this._mqtt.isOpen();
     }
     /**
-     * Publishes a command to the Shelly device.
+     * Publishes a Switch.Set command to the Shelly device.
      * @param mac the Shelly device MAC address
-     * @param command the Shelly device command
+     * @param set the Switch.Set command
      */
-    command(mac, command) {
+    setSwitch(mac, set) {
         if (mac === this._status.mac) {
-            if (this._status.type === 'switch' && 'id' in command && 'on' in command) {
+            if (this._status.type === 'switch') {
                 glidelite_1.log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
-                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: glidelite_1.glconfig.shelly.endpoint, method: 'Switch.Set', params: command }));
-            }
-            else if (this._status.type === 'light' && 'id' in command && ('on' in command || 'brightness' in command)) {
-                glidelite_1.log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
-                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: glidelite_1.glconfig.shelly.endpoint, method: 'Light.Set', params: command }));
+                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: 'shellyserver', method: 'Switch.Set', params: set }));
             }
             else {
-                glidelite_1.log.shellydevice.error(`Received unknown command: ${JSON.stringify(command)}`);
+                glidelite_1.log.shellydevice.warn(`Failed executing Switch.Set command in device with name: ${this._name}`);
+            }
+        }
+    }
+    /**
+     * Publishes a Light.Set command to the Shelly device.
+     * @param mac the Shelly device MAC address
+     * @param set the Light.Set command
+     */
+    setLight(mac, set) {
+        if (mac === this._status.mac) {
+            if (this._status.type === 'light') {
+                glidelite_1.log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
+                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: 'shellyserver', method: 'Light.Set', params: set }));
+            }
+            else {
+                glidelite_1.log.shellydevice.warn(`Failed executing Light.Set command in device with name: ${this._name}`);
             }
         }
     }
@@ -103,7 +115,7 @@ class ShellyDevice {
      */
     _onConnect(name) {
         this._name = name;
-        this._statusReporter.start(name, 'shelly');
+        statusReporter_1.status[this._name].start('shellydevice');
         glidelite_1.log.shellydevice.info(`Connected device with name: ${this._name}`);
     }
     /**
@@ -111,7 +123,7 @@ class ShellyDevice {
      */
     _onClose() {
         clearInterval(this._statusTimer);
-        this._statusReporter.stop();
+        statusReporter_1.status[this._name].stop();
         glidelite_1.log.shellydevice.info(`Closed device with name: ${this._name}`);
     }
     /**
@@ -121,10 +133,10 @@ class ShellyDevice {
     _onSubscribe(topics) {
         if (topics.includes(`${this._name}/rpc`)) {
             // Get the initial Shelly device status
-            this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: glidelite_1.glconfig.shelly.endpoint }), 1);
+            this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: 'shellyserver' }), 1);
             // Get the Shelly device status cyclic
             this._statusTimer = setInterval(() => {
-                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: glidelite_1.glconfig.shelly.endpoint }), 1);
+                this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Shelly.GetStatus', method: 'Shelly.GetStatus', src: 'shellyserver' }), 1);
             }, SHELLY_GET_STATUS_TIMEOUT);
         }
     }
@@ -135,7 +147,7 @@ class ShellyDevice {
      */
     _onPublish(topic, payload) {
         // Handle Shelly device status
-        if (topic == `${glidelite_1.glconfig.shelly.endpoint}/rpc`) {
+        if (topic == 'shellyserver/rpc') {
             const json = JSON.parse(payload); /* eslint-disable-line @typescript-eslint/no-unsafe-assignment */
             if (json.id == 'Shelly.GetStatus') {
                 this._handleDeviceStatus(json.result);
@@ -170,8 +182,8 @@ class ShellyDevice {
         this._status.mac = data.sys?.mac;
         this._status.ip = data.eth?.ip || data.wifi?.sta_ip;
         this._status.rssi = data.wifi?.rssi;
-        this._statusReporter.setStatus(this._status);
-        this._statusReporter.setHealth('running');
+        statusReporter_1.status[this._name].setDetails(this._status);
+        statusReporter_1.status[this._name].setHealth('running');
         // Handle Shelly component status
         for (let i = 0; i < SHELLY_MAX_NOF_COMPONENTS; i++) {
             let name = `switch:${String(i)}`;
@@ -200,7 +212,7 @@ class ShellyDevice {
             freq: data.freq,
             brightness: data.brightness
         };
-        this._statusReporter.setStatus(this._status);
+        statusReporter_1.status[this._name].setDetails(this._status);
     }
 }
 exports.ShellyDevice = ShellyDevice;
