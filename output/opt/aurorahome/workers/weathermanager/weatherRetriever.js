@@ -23,3 +23,13 @@
  * SOFTWARE.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WeatherRetrieverStatus = void 0;
+/**
+ * The status of a weather data retrieval.
+ */
+var WeatherRetrieverStatus;
+(function (WeatherRetrieverStatus) {
+    WeatherRetrieverStatus[WeatherRetrieverStatus["Ok"] = 0] = "Ok";
+    WeatherRetrieverStatus[WeatherRetrieverStatus["Failed"] = 1] = "Failed";
+    WeatherRetrieverStatus[WeatherRetrieverStatus["Error"] = 2] = "Error";
+})(WeatherRetrieverStatus || (exports.WeatherRetrieverStatus = WeatherRetrieverStatus = {}));
