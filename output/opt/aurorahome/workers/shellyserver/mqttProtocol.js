@@ -29,14 +29,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MqttProtocol = void 0;
 const glidelite_1 = require("glidelite");
 const mqtt_packet_1 = __importDefault(require("mqtt-packet"));
-const MQTT_DEFAULT_VERSION = 4;
-const MQTT_RETRY_TIMEOUT = 5000;
-const MQTT_MAX_RETRY = 10;
 /**
  * Executes the MQTT protocol on a socket.
  */
 class MqttProtocol {
     _socket;
+    _username;
+    _password;
     _parser;
     _clientId;
     _protocolVersion;
@@ -49,20 +48,24 @@ class MqttProtocol {
     /**
      * Constructs a new MQTT protocol for the specified socket.
      * @param socket the socket
+     * @param username the MQTT username
+     * @param password the MQTT password
      * @param connectCallback invoked when MQTT is connected
      * @param closeCallback invoked when the socket is ended (i.e. MQTT is disconnected)
      * @param subscribeCallback invoked when an MQTT subscription is received
      * @param publishCallback invoked when an MQTT publish is received
      */
-    constructor(socket, connectCallback, closeCallback, subscribeCallback, publishCallback) {
+    constructor(socket, username, password, connectCallback, closeCallback, subscribeCallback, publishCallback) {
         this._socket = socket;
+        this._username = username;
+        this._password = password;
         this._connectCallback = connectCallback;
         this._closeCallback = closeCallback;
         this._subscribeCallback = subscribeCallback;
         this._publishCallback = publishCallback;
         this._parser = mqtt_packet_1.default.parser();
         this._clientId = 'unknown';
-        this._protocolVersion = MQTT_DEFAULT_VERSION;
+        this._protocolVersion = glidelite_1.glconfig.mqtt.version;
         this._cache = {};
         this._messageId = 1;
     }
@@ -224,10 +227,10 @@ class MqttProtocol {
     _onConnect(packet) {
         // Store received settings for future use
         this._clientId = packet.clientId;
-        this._protocolVersion = packet.protocolVersion ?? MQTT_DEFAULT_VERSION;
+        this._protocolVersion = packet.protocolVersion ?? glidelite_1.glconfig.mqtt.version;
         this._socket.setTimeout((packet.keepalive ?? 0) * 1500);
         // Validate credentials
-        if (packet.username === glidelite_1.glconfig.shelly.mqtt.username && packet.password?.toString() === glidelite_1.glconfig.shelly.mqtt.password) {
+        if (packet.username === this._username && packet.password?.toString() === this._password) {
             const data = mqtt_packet_1.default.generate({ cmd: 'connack', returnCode: 0 }, { protocolVersion: this._protocolVersion });
             this._socket.write(data);
             this._connectCallback(this._clientId);
@@ -362,7 +365,7 @@ class MqttProtocol {
             this._cache[messageId] = { command, count: 0, message };
         }
         // Check if retries already exceeded
-        if (this._cache[messageId].count >= MQTT_MAX_RETRY) {
+        if (this._cache[messageId].count >= glidelite_1.glconfig.mqtt.retryMax) {
             return;
         }
         // Clear any running timeout
@@ -390,7 +393,7 @@ class MqttProtocol {
                     break;
             }
             this._setRetryTimeout(command, messageId, message);
-        }, MQTT_RETRY_TIMEOUT);
+        }, glidelite_1.glconfig.mqtt.retryTimeout);
     }
 }
 exports.MqttProtocol = MqttProtocol;
