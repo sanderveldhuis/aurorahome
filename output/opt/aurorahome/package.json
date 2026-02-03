@@ -1,1 +1,1 @@
-{"name":"aurorahome","version":"1.0.0","dependencies":{"mqtt-packet":"^9.0.2","glidelite":"github:sanderveldhuis/glidelite#v1.0.0"}}
+{"name":"aurorahome","version":"1.0.0","dependencies":{"mongoose":"^9.1.5","mqtt-packet":"^9.0.2","sync-fetch":"^0.6.0","glidelite":"github:sanderveldhuis/glidelite#v1.0.0"}}
