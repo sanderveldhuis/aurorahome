@@ -25,23 +25,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatusManager = void 0;
 const glidelite_1 = require("glidelite");
-const STATUS_VALID_TIMEOUT = 5000;
+const types_1 = require("./types");
 /**
- * A Status Manager handling all devices and workers.
+ * A Status Manager keeping track of all application statusses, i.e.: application type, health, and additional detailed runtime information.
  */
 class StatusManager {
-    _deviceStatus = {};
+    _applicationStatus = {};
+    _cleanupTimer;
     /**
      * Starts the Status Manager.
      */
     start() {
-        glidelite_1.ipc.start(glidelite_1.glconfig.status.endpoint);
+        // Start IPC communication
+        glidelite_1.ipc.start('statusmanager');
         glidelite_1.ipc.onIndication((name, payload) => {
             this._onIndication(name, payload);
         });
-        glidelite_1.ipc.onRequest((name, payload, response) => {
-            this._onRequest(name, payload, response);
-        });
+        // Start cleanup timer
+        this._cleanupTimer = setInterval(() => {
+            this._cleanupExpiredStatusses();
+        }, glidelite_1.glconfig.status.cleanup);
         glidelite_1.log.statusmanager.info('Started');
     }
     /**
@@ -49,25 +52,28 @@ class StatusManager {
      * @details the Status Manager should not be used anymore after being stopped
      */
     stop() {
+        // Stop cleanup timer
+        clearInterval(this._cleanupTimer);
+        // Stop IPC communication
         glidelite_1.ipc.stop();
         glidelite_1.log.statusmanager.info('Stopped');
     }
     /**
-     * Cleans devices which do not report a status anymore.
+     * Cleans applications which do not report a status anymore to prevent overflooding memory.
      */
-    _cleanupOldDevices() {
+    _cleanupExpiredStatusses() {
         const now = Date.now();
-        for (const devices of Object.values(this._deviceStatus)) {
-            for (const name of Object.keys(devices)) {
-                if (devices[name].timestamp + STATUS_VALID_TIMEOUT < now) {
-                    delete devices[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
+        for (const applications of Object.values(this._applicationStatus)) {
+            for (const name of Object.keys(applications)) {
+                if (applications[name].timestamp + Number(glidelite_1.glconfig.status.validity) < now) {
+                    delete applications[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
                 }
             }
         }
     }
     /**
-     * Handles IPC indications.
-     * @param name the indication name
+     * Handles received IPC indications.
+     * @param name the indication message name
      * @param payload the indication payload
      */
     _onIndication(name, payload) {
@@ -75,40 +81,33 @@ class StatusManager {
             this._handleStatusMessage(payload);
         }
         else {
-            glidelite_1.log.statusmanager.error(`Received unknown indication with name: ${name}, payload: ${JSON.stringify(payload)}`);
+            glidelite_1.log.statusmanager.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
         }
     }
     /**
-     * Handles IPC requests.
-     * @param name the request name
-     * @param payload the request payload
-     * @param response the response callback
-     */
-    _onRequest(name, payload, response) {
-        this._cleanupOldDevices();
-        // TODO: implement once known which request we require
-        response(this._deviceStatus);
-    }
-    /**
-     * Checks whether the specified message is a status message.
+     * Checks whether the specified message is a Status message.
      * @param name the message name
      * @param payload the message payload
-     * @returns `true` when the message is a status message, or `false` otherwise
+     * @returns `true` when the message is a Status message, or `false` otherwise
      */
     _isStatusMessage(name, payload) {
-        return name === 'status' && typeof payload === 'object' && payload !== null && 'name' in payload && 'type' in payload && 'health' in payload;
+        return name === 'Status' && typeof payload === 'object' && payload !== null &&
+            'name' in payload && typeof payload.name === 'string' &&
+            'type' in payload && typeof payload.type === 'string' && types_1.STATUS_TYPE.find(type => type === payload.type) !== undefined &&
+            'health' in payload && typeof payload.health === 'string' && types_1.STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
+            (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
     }
     /**
-     * Handles the specified status message.
-     * @param message the status message
+     * Handles Status message.
+     * @param status the Status message
      */
-    _handleStatusMessage(message) {
-        // Add type to device status list
-        if (!Object.keys(this._deviceStatus).includes(message.type)) {
-            this._deviceStatus[message.type] = {};
+    _handleStatusMessage(status) {
+        // Add type to application status list
+        if (!Object.keys(this._applicationStatus).includes(status.type)) {
+            this._applicationStatus[status.type] = {};
         }
-        // Add device status to device status list
-        this._deviceStatus[message.type][message.name] = { timestamp: Date.now(), health: message.health, status: message.status };
+        // Add application status to application status list
+        this._applicationStatus[status.type][status.name] = { timestamp: Date.now(), health: status.health, details: status.details };
     }
 }
 exports.StatusManager = StatusManager;
