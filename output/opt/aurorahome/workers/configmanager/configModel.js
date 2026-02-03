@@ -22,20 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const glidelite_1 = require("glidelite");
-glidelite_1.ipc.start('unknown', glidelite_1.glconfig.shelly.endpoint, glidelite_1.glconfig.status.endpoint);
-// let on = false;
-const interval = setInterval(() => {
-    // ipc.to.shelly.indication('E4B063E5C430', { id: 0, on });
-    // on = !on;
-    // ipc.to.shelly.indication('E4B063D9D460', { id: 0, on: true, brightness: 31 });
-    glidelite_1.ipc.to[glidelite_1.glconfig.status.endpoint].request('get', undefined, (name, payload) => {
-        console.log(payload);
-    });
-}, 5000);
-// Gracefully shutdown
-process.on('SIGINT', () => {
-    clearInterval(interval);
-    glidelite_1.ipc.stop();
-});
+const mongoose_1 = __importDefault(require("mongoose"));
+/**
+ * Describes the Config model schema for the database.
+ */
+const schema = new mongoose_1.default.Schema({
+    name: { type: String, required: true, unique: true },
+    config: { type: Object, required: true }
+}, { timestamps: true });
+/**
+ * Constructs the Config model for the database based on the schema.
+ */
+const Config = mongoose_1.default.model('Config', schema);
+exports.default = Config;
