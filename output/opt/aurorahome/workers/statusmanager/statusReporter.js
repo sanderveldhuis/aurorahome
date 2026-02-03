@@ -23,48 +23,72 @@
  * SOFTWARE.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatusReporter = void 0;
+exports.status = exports.StatusReporter = void 0;
 const glidelite_1 = require("glidelite");
 /**
- * Class providing cyclic status reporting to the Status Manager.
+ * Helper class providing cyclic status reporting to the Status Manager.
  */
 class StatusReporter {
-    _health = 'starting';
     _status;
-    _interval;
+    _reportTimer;
+    /**
+     * Constructs a new status reporter.
+     * @param name the application name
+     */
+    constructor(name) {
+        this._status = { name, type: 'worker', health: 'starting' };
+    }
     /**
      * Starts reporting the status cyclic to the Status Manager.
-     * @param name the application name
      * @param type the application type
-     * @param status the application status (optional)
+     * @param details the application status details (optional)
      */
-    start(name, type, status) {
-        this._status = status;
-        this._interval = setInterval(() => {
-            const messageName = 'status';
-            const message = { name, type, health: this._health, status: this._status };
-            glidelite_1.ipc.to[glidelite_1.glconfig.status.endpoint].indication(messageName, message);
+    start(type, details) {
+        this._status.type = type;
+        this._status.details = details;
+        this._reportTimer = setInterval(() => {
+            glidelite_1.ipc.to.statusmanager.indication('Status', this._status);
         }, glidelite_1.glconfig.status.interval);
     }
     /**
      * Stops reporting the status to the Status Manager.
      */
     stop() {
-        clearInterval(this._interval);
+        clearInterval(this._reportTimer);
     }
     /**
      * Sets the health to be reported to the Status Manager.
      * @param health the health
      */
     setHealth(health) {
-        this._health = health;
+        this._status.health = health;
     }
     /**
-     * Sets the status to be reported to the Status Manager.
-     * @param status the status
+     * Sets the status details to be reported to the Status Manager.
+     * @param details the status details
      */
-    setStatus(status) {
-        this._status = status;
+    setDetails(details) {
+        this._status.details = details;
+    }
+    /**
+     * Resets the status details to be reported to the Status Manager.
+     */
+    clearDetails() {
+        this._status.details = undefined;
     }
 }
 exports.StatusReporter = StatusReporter;
+/**
+ * Provides cyclic status reporting to the Status Manager.
+ */
+exports.status = new Proxy({}, {
+    /**
+     * The proxy is used to trap getting a specific status reporter by name and creates the status reporter if it does not yet exist.
+     * @param target the target with created status reporter, default empty
+     * @param name the status reporter name
+     * @returns the existing or newly created status reporter
+     */
+    get(target, name) {
+        return target[name] ?? (target[name] = new StatusReporter(name));
+    }
+});
