@@ -14,9 +14,11 @@
     "retryMax": 10
   },
   "ports": {
-    "proxy": 12001
+    "proxy": 12001,
+    "api": 12002
   },
   "packages": [
-    "mongodb-org"
-  ]
+    "mongodb-org-server"
+  ],
+  "preinstall": "./scripts/preinstall"
 }
