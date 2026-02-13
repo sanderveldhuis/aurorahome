@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Check if MongoDB is already installed
+dpkg -s mongodb-org-server > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  # Install the last supported version that worked with Raspberry PI 4
+  curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | gpg -o /usr/share/keyrings/mongodb-server-4.4.gpg --dearmor
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+  apt-get update
+  apt-get install mongodb-org-server=4.4.18
+  if [ $? -ne 0 ]; then
+    echo "Failed installing MongoDB"
+    exit 1
+  fi
+
+  # This step is critical or it will upgrade to a newer version which does not work on a Raspberry PI 4 device
+  apt-mark hold mongodb-org-server
+  systemctl start mongod
+  systemctl enable mongod
+fi
