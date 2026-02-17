@@ -27,18 +27,18 @@ import {
   StatusType
 } from '@ipc/statusManager';
 import {
+  IpcWeatherManagerConfig,
+  SourceName,
+  SourceUnits,
+  WeatherManagerStatusDetails
+} from '@ipc/weatherManager';
+import {
   ipc,
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
-import {
-  IpcWeatherManagerConfig,
-  SOURCE_NAME,
-  SOURCE_UNITS,
-  WeatherManagerStatusDetails
-} from './types';
 import {
   WeatherRetriever,
   WeatherRetrieverStatus
@@ -113,12 +113,12 @@ export class WeatherManager {
         'interval' in payload.source && typeof payload.source.interval === 'number' &&
         'name' in payload.source && typeof payload.source.name === 'string' &&
         // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
+        Object.values(SourceName).find(name => name === payload.source.name) !== undefined &&
         'lat' in payload.source && typeof payload.source.lat === 'number' &&
         'lon' in payload.source && typeof payload.source.lon === 'number' &&
         'units' in payload.source && typeof payload.source.units === 'string' &&
         // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
+        Object.values(SourceUnits).find(units => units === payload.source.units) !== undefined &&
         'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 

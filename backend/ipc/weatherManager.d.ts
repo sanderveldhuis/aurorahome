@@ -25,14 +25,18 @@
 /**
  * The weather data source name.
  */
-export type SourceName = typeof SOURCE_NAME[number];
-export const SOURCE_NAME = ['openweathermapV3'] as const;
+export enum SourceName {
+  OpenWeatherMapV3 = 'openweathermapV3'
+}
 
 /**
  * The weather data unit.
  */
-export type SourceUnits = typeof SOURCE_UNITS[number];
-export const SOURCE_UNITS = ['standard', 'metric', 'imperial'] as const;
+export enum SourceUnits {
+  Standard = 'standard',
+  Metric = 'metric',
+  Imperial = 'imperial'
+}
 
 /**
  * The Weather Manager weather data source.

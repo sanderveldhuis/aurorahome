@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { IpcWeatherManagerConfig } from '@ipc/weatherManager';
 import { ipc } from 'glidelite';
 import readline from 'node:readline';
 import {
@@ -30,7 +31,6 @@ import {
   IpcWeatherManagerSetConfig
 } from '../configmanager/types';
 import { IpcShellyServerConfig } from '../shellyserver/types';
-import { IpcWeatherManagerConfig } from '../weathermanager/types';
 
 let userInput: readline.Interface | undefined;
 
