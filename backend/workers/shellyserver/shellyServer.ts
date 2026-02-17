@@ -23,6 +23,12 @@
  */
 
 import {
+  IpcSetLight,
+  IpcSetSwitch,
+  IpcShellyServerConfig,
+  ShellyServerStatusDetails
+} from '@ipc/shellyServer';
+import {
   StatusHealth,
   StatusType
 } from '@ipc/statusManager';
@@ -34,12 +40,6 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
-import {
-  IpcSetLight,
-  IpcSetSwitch,
-  IpcShellyServerConfig,
-  ShellyServerStatusDetails
-} from './types';
 
 /**
  * A Shelly Server handling Shelly devices using the MQTT protocol.

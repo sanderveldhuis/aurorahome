@@ -23,6 +23,10 @@
  */
 
 import {
+  IpcSetLight,
+  IpcSetSwitch
+} from '@ipc/shellyServer';
+import {
   StatusHealth,
   StatusType
 } from '@ipc/statusManager';
@@ -30,10 +34,6 @@ import { log } from 'glidelite';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
-import {
-  IpcSetLight,
-  IpcSetSwitch
-} from './types';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
 const SHELLY_MAX_NOF_COMPONENTS = 4;
