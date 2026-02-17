@@ -23,6 +23,10 @@
  */
 
 import {
+  StatusHealth,
+  StatusType
+} from '@shared/statusmanager';
+import {
   ipc,
   log
 } from 'glidelite';
@@ -61,8 +65,8 @@ export class ShellyServer {
     });
 
     // Start status reporting
-    status.shellyserver.start('worker');
-    status.shellyserver.setHealth('running');
+    status.shellyserver.start(StatusType.Worker);
+    status.shellyserver.setHealth(StatusHealth.Running);
 
     log.shellyserver.info('Started');
   }
@@ -176,7 +180,7 @@ export class ShellyServer {
   _handleShellyServerConfig(config: IpcShellyServerConfig): void {
     // Always cleanup for safety
     status.shellyserver.clearDetails();
-    status.shellyserver.setHealth('running');
+    status.shellyserver.setHealth(StatusHealth.Running);
 
     // If no settings are available the MQTT server should stop
     if (!config.mqtt) {
@@ -224,7 +228,7 @@ export class ShellyServer {
    * @param error the error
    */
   _onError(error: Error): void {
-    status.shellyserver.setHealth('instable');
+    status.shellyserver.setHealth(StatusHealth.Instable);
     log.shellyserver.error(error.message);
     this._server.close();
   }

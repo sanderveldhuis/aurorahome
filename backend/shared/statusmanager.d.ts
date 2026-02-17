@@ -25,14 +25,19 @@
 /**
  * The application type.
  */
-export type StatusType = typeof STATUS_TYPE[number];
-export const STATUS_TYPE = ['worker', 'shellydevice'] as const;
+export enum StatusType {
+  Worker = 'worker',
+  ShellyDevice = 'shellydevice'
+}
 
 /**
  * The application health.
  */
-export type StatusHealth = typeof STATUS_HEALTH[number];
-export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
+export enum StatusHealth {
+  Starting = 'starting',
+  Running = 'running',
+  Instable = 'instable'
+}
 
 /**
  * The IPC message for indicating statusses to the Status Manager.

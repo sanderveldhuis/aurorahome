@@ -23,14 +23,14 @@
  */
 
 import {
-  glconfig,
-  ipc
-} from 'glidelite';
-import {
   IpcApplicationStatus,
   StatusHealth,
   StatusType
-} from './types';
+} from '@shared/statusmanager';
+import {
+  glconfig,
+  ipc
+} from 'glidelite';
 
 /**
  * Helper class providing cyclic status reporting to the Status Manager.
@@ -44,7 +44,7 @@ export class StatusReporter {
    * @param name the application name
    */
   constructor(name: string) {
-    this._status = { name, type: 'worker', health: 'starting' };
+    this._status = { name, type: StatusType.Worker, health: StatusHealth.Starting };
   }
 
   /**

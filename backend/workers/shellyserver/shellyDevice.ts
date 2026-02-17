@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+import {
+  StatusHealth,
+  StatusType
+} from '@shared/statusmanager';
 import { log } from 'glidelite';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';
@@ -135,7 +139,7 @@ export class ShellyDevice {
    */
   _onConnect(name: string): void {
     this._name = name;
-    status[this._name].start('shellydevice');
+    status[this._name].start(StatusType.ShellyDevice);
     log.shellydevice.info(`Connected device with name: ${this._name}`);
   }
 
@@ -209,7 +213,7 @@ export class ShellyDevice {
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
     status[this._name].setDetails(this._status);
-    status[this._name].setHealth('running');
+    status[this._name].setHealth(StatusHealth.Running);
 
     // Handle Shelly component status
     for (let i = 0; i < SHELLY_MAX_NOF_COMPONENTS; i++) {

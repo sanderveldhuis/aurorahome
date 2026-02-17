@@ -23,6 +23,10 @@
  */
 
 import {
+  StatusHealth,
+  StatusType
+} from '@shared/statusmanager';
+import {
   ipc,
   log
 } from 'glidelite';
@@ -59,8 +63,8 @@ export class WeatherManager {
     });
 
     // Start status reporting
-    status.weathermanager.start('worker');
-    status.weathermanager.setHealth('running');
+    status.weathermanager.start(StatusType.Worker);
+    status.weathermanager.setHealth(StatusHealth.Running);
 
     log.weathermanager.info('Started');
   }
@@ -126,7 +130,7 @@ export class WeatherManager {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.clearDetails();
-    status.weathermanager.setHealth('running');
+    status.weathermanager.setHealth(StatusHealth.Running);
 
     // If no source is available the weather retrieval should stop
     if (!config.source) {
@@ -167,7 +171,7 @@ export class WeatherManager {
       // Set status details
       this._statusDetails.lastUpdate = Date.now();
       this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
-      status.weathermanager.setHealth('running');
+      status.weathermanager.setHealth(StatusHealth.Running);
 
       // Publish weather data if available
       if (result.data) {
@@ -177,7 +181,7 @@ export class WeatherManager {
     else {
       // Set status details
       this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
-      status.weathermanager.setHealth('instable');
+      status.weathermanager.setHealth(StatusHealth.Instable);
     }
   }
 }

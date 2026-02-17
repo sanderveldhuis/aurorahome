@@ -23,6 +23,10 @@
  */
 
 import {
+  StatusHealth,
+  StatusType
+} from '@shared/statusmanager';
+import {
   glconfig,
   ipc,
   log
@@ -56,7 +60,7 @@ export class ConfigManager {
     });
 
     // Start status reporting
-    status.configmanager.start('worker');
+    status.configmanager.start(StatusType.Worker);
 
     // Start database connection
     this._connectDatabase();
@@ -117,7 +121,7 @@ export class ConfigManager {
    * Handles database connection disconnect.
    */
   _handleDatabaseDisconnect(): void {
-    status.configmanager.setHealth('instable');
+    status.configmanager.setHealth(StatusHealth.Instable);
     log.configmanager.warn(`Disconnected from database '${glconfig.config.database as string}'`);
   }
 
@@ -141,7 +145,7 @@ export class ConfigManager {
         ipc.publish(`${config.name}Config`, config.config);
       }
 
-      status.configmanager.setHealth('running');
+      status.configmanager.setHealth(StatusHealth.Running);
       log.configmanager.info(`Published ${String(configs.length)} available configurations`);
     }).catch((error: unknown) => {
       if (this._isRunning) {
@@ -150,7 +154,7 @@ export class ConfigManager {
           this._publishAllConfigs();
         }, glconfig.config.databaseReadRetry);
 
-        status.configmanager.setHealth('instable');
+        status.configmanager.setHealth(StatusHealth.Instable);
         log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
       }
     });

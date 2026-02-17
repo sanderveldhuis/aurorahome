@@ -1,4 +1,12 @@
 {
   "extends": "@tsconfig/node-lts/tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
+  },
+  "references": [
+    { "path": "../shared" }
+  ],
   "include": ["**/*"]
 }
