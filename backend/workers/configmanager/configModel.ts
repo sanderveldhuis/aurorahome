@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
+import { IpcSetConfig } from '@ipc/configManager';
 import mongoose from 'mongoose';
-import { IpcSetConfig } from './types';
 
 /**
  * Describes the Config model schema for the database.

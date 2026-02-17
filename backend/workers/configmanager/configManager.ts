@@ -23,6 +23,11 @@
  */
 
 import {
+  ConfigName,
+  IpcSetConfig,
+  IpcSetConfigResponse
+} from '@ipc/configManager';
+import {
   StatusHealth,
   StatusType
 } from '@ipc/statusManager';
@@ -36,11 +41,6 @@ import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
 import { status } from '../statusmanager/statusReporter';
 import Config from './configModel';
-import {
-  CONFIG_NAME,
-  IpcSetConfig,
-  IpcSetConfigResponse
-} from './types';
 
 /**
  * A Config Manager handles configuration by storing it in a database and publishing it via IPC.
@@ -185,7 +185,7 @@ export class ConfigManager {
    */
   _isSetConfigMessage(name: string, payload: IpcPayload): payload is IpcSetConfig {
     return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-      'name' in payload && typeof payload.name === 'string' && CONFIG_NAME.find(name => name === payload.name) !== undefined &&
+      'name' in payload && typeof payload.name === 'string' && Object.values(ConfigName).find(name => name === payload.name) !== undefined &&
       'config' in payload && typeof payload.config === 'object' && payload.config !== null;
   }
 
