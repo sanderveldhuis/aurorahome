@@ -27,7 +27,7 @@ import {
   IpcStatus,
   StatusHealth,
   StatusType
-} from '@shared/statusmanager';
+} from '@shared/statusManager';
 import {
   glconfig,
   ipc,
