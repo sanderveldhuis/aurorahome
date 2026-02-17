@@ -26,7 +26,7 @@ import {
   IpcApplicationStatus,
   StatusHealth,
   StatusType
-} from '@shared/statusManager';
+} from '@ipc/statusManager';
 import {
   glconfig,
   ipc

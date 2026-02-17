@@ -25,7 +25,7 @@
 import {
   StatusHealth,
   StatusType
-} from '@shared/statusManager';
+} from '@ipc/statusManager';
 import { log } from 'glidelite';
 import net from 'node:net';
 import { status } from '../statusmanager/statusReporter';

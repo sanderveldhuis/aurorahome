@@ -10,7 +10,7 @@ export default tseslint.config(
   { ignores: ['output', 'node_modules'] },
   {
     extends: [eslint.configs.recommended, ...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylisticTypeChecked],
-    files: ['backend/shared/**'],
+    files: ['backend/ipc/**'],
     rules: {
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off'
@@ -19,7 +19,7 @@ export default tseslint.config(
       globals: globals.node,
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: ['./backend/shared/tsconfig.json', './backend/shared/tsconfig-eslint.json']
+        project: ['./backend/ipc/tsconfig.json', './backend/ipc/tsconfig-eslint.json']
       }
     }
   },

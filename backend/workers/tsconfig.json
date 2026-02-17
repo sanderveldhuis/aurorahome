@@ -2,11 +2,11 @@
   "extends": "@tsconfig/node-lts/tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@ipc/*": ["../ipc/*"]
     }
   },
   "references": [
-    { "path": "../shared" }
+    { "path": "../ipc" }
   ],
   "include": ["**/*"]
 }
