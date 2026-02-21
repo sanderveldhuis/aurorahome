@@ -23,15 +23,6 @@
  */
 
 import {
-  ConfigName,
-  IpcSetConfig,
-  IpcSetConfigResponse
-} from '@ipc/configManager';
-import {
-  StatusHealth,
-  StatusType
-} from '@ipc/statusManager';
-import {
   glconfig,
   ipc,
   log
@@ -39,6 +30,15 @@ import {
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
+import {
+  ConfigName,
+  IpcSetConfig,
+  IpcSetConfigResponse
+} from '../../ipc/configManager';
+import {
+  StatusHealth,
+  StatusType
+} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import Config from './configModel';
 

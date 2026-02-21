@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
+import { ipc } from 'glidelite';
+import readline from 'node:readline';
 import {
   ConfigName,
   IpcSetConfigResponse,
   IpcShellyServerSetConfig,
   IpcWeatherManagerSetConfig
-} from '@ipc/configManager';
-import { IpcShellyServerConfig } from '@ipc/shellyServer';
+} from '../../ipc/configManager';
+import { IpcShellyServerConfig } from '../../ipc/shellyServer';
 import {
   IpcWeatherManagerConfig,
   SourceName,
   SourceUnits
-} from '@ipc/weatherManager';
-import { ipc } from 'glidelite';
-import readline from 'node:readline';
+} from '../../ipc/weatherManager';
 
 let userInput: readline.Interface | undefined;
 

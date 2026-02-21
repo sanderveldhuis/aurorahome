@@ -23,20 +23,20 @@
  */
 
 import {
+  ipc,
+  log
+} from 'glidelite';
+import { IpcPayload } from 'glidelite/lib/ipcMessage';
+import {
   StatusHealth,
   StatusType
-} from '@ipc/statusManager';
+} from '../../ipc/statusManager';
 import {
   IpcWeatherManagerConfig,
   SourceName,
   SourceUnits,
   WeatherManagerStatusDetails
-} from '@ipc/weatherManager';
-import {
-  ipc,
-  log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from '../../ipc/weatherManager';
 import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
 import {

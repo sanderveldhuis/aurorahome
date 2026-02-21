@@ -23,21 +23,21 @@
  */
 
 import {
-  IpcSetLight,
-  IpcSetSwitch,
-  IpcShellyServerConfig,
-  ShellyServerStatusDetails
-} from '@ipc/shellyServer';
-import {
-  StatusHealth,
-  StatusType
-} from '@ipc/statusManager';
-import {
   ipc,
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import net from 'node:net';
+import {
+  IpcSetLight,
+  IpcSetSwitch,
+  IpcShellyServerConfig,
+  ShellyServerStatusDetails
+} from '../../ipc/shellyServer';
+import {
+  StatusHealth,
+  StatusType
+} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 

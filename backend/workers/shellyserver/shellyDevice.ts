@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
+import { log } from 'glidelite';
+import net from 'node:net';
 import {
   IpcSetLight,
   IpcSetSwitch
-} from '@ipc/shellyServer';
+} from '../../ipc/shellyServer';
 import {
   StatusHealth,
   StatusType
-} from '@ipc/statusManager';
-import { log } from 'glidelite';
-import net from 'node:net';
+} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 

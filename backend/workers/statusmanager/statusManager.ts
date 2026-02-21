@@ -23,17 +23,17 @@
  */
 
 import {
-  IpcApplicationStatus,
-  IpcStatus,
-  StatusHealth,
-  StatusType
-} from '@ipc/statusManager';
-import {
   glconfig,
   ipc,
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
+import {
+  IpcApplicationStatus,
+  IpcStatus,
+  StatusHealth,
+  StatusType
+} from '../../ipc/statusManager';
 
 /**
  * Defines the application status health, status details, and timestamp of the last update.

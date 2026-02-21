@@ -23,14 +23,14 @@
  */
 
 import {
-  IpcApplicationStatus,
-  StatusHealth,
-  StatusType
-} from '@ipc/statusManager';
-import {
   glconfig,
   ipc
 } from 'glidelite';
+import {
+  IpcApplicationStatus,
+  StatusHealth,
+  StatusType
+} from '../../ipc/statusManager';
 
 /**
  * Helper class providing cyclic status reporting to the Status Manager.

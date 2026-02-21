@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { IpcWeatherData } from '@ipc/weatherManager';
+import { IpcWeatherData } from '../../ipc/weatherManager';
 
 /**
  * The status of a weather data retrieval.

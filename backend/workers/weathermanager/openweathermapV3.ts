@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
+import { log } from 'glidelite';
+import syncFetch from 'sync-fetch';
 import {
   IpcWeatherData,
   SourceUnits
-} from '@ipc/weatherManager';
-import { log } from 'glidelite';
-import syncFetch from 'sync-fetch';
+} from '../../ipc/weatherManager';
 import {
   WeatherRetriever,
   WeatherRetrieverResult,
