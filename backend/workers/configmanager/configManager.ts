@@ -35,7 +35,7 @@ import {
   IpcSetConfig,
   IpcSetConfigResponse
 } from '../../ipc/configManager';
-import { status } from '../statusmanager/statusReporter';
+import { status } from '../../ipc/statusReporter';
 import Config from './configModel';
 
 /**

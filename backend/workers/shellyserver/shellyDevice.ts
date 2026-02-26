@@ -28,7 +28,7 @@ import {
   IpcSetLight,
   IpcSetSwitch
 } from '../../ipc/shellyServer';
-import { status } from '../statusmanager/statusReporter';
+import { status } from '../../ipc/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;

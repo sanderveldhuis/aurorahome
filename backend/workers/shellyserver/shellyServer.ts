@@ -34,7 +34,7 @@ import {
   IpcShellyServerConfig,
   ShellyServerStatusDetails
 } from '../../ipc/shellyServer';
-import { status } from '../statusmanager/statusReporter';
+import { status } from '../../ipc/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 
 /**

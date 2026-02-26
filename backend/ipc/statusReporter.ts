@@ -30,7 +30,7 @@ import {
   IpcApplicationStatus,
   StatusHealth,
   StatusType
-} from '../../ipc/statusManager';
+} from './statusManager';
 
 /**
  * Helper class providing cyclic status reporting to the Status Manager.

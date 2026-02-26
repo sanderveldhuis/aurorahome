@@ -27,13 +27,13 @@ import {
   log
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
+import { status } from '../../ipc/statusReporter';
 import {
   IpcWeatherManagerConfig,
   SOURCE_NAME,
   SOURCE_UNITS,
   WeatherManagerStatusDetails
 } from '../../ipc/weatherManager';
-import { status } from '../statusmanager/statusReporter';
 import { OpenWeatherMapV3 } from './openweathermapV3';
 import {
   WeatherRetriever,
