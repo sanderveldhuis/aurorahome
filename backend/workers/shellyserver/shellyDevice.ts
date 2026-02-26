@@ -28,10 +28,6 @@ import {
   IpcSetLight,
   IpcSetSwitch
 } from '../../ipc/shellyServer';
-import {
-  StatusHealth,
-  StatusType
-} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import { MqttProtocol } from './mqttProtocol';
 
@@ -139,7 +135,7 @@ export class ShellyDevice {
    */
   _onConnect(name: string): void {
     this._name = name;
-    status[this._name].start(StatusType.ShellyDevice);
+    status[this._name].start('shellydevice');
     log.shellydevice.info(`Connected device with name: ${this._name}`);
   }
 
@@ -213,7 +209,7 @@ export class ShellyDevice {
     this._status.ip = data.eth?.ip as string || data.wifi?.sta_ip as string;
     this._status.rssi = data.wifi?.rssi as number;
     status[this._name].setDetails(this._status);
-    status[this._name].setHealth(StatusHealth.Running);
+    status[this._name].setHealth('running');
 
     // Handle Shelly component status
     for (let i = 0; i < SHELLY_MAX_NOF_COMPONENTS; i++) {

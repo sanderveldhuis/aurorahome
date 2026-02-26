@@ -31,14 +31,10 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
 import {
-  ConfigName,
+  CONFIG_NAME,
   IpcSetConfig,
   IpcSetConfigResponse
 } from '../../ipc/configManager';
-import {
-  StatusHealth,
-  StatusType
-} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import Config from './configModel';
 
@@ -60,7 +56,7 @@ export class ConfigManager {
     });
 
     // Start status reporting
-    status.configmanager.start(StatusType.Worker);
+    status.configmanager.start('worker');
 
     // Start database connection
     this._connectDatabase();
@@ -121,7 +117,7 @@ export class ConfigManager {
    * Handles database connection disconnect.
    */
   _handleDatabaseDisconnect(): void {
-    status.configmanager.setHealth(StatusHealth.Instable);
+    status.configmanager.setHealth('instable');
     log.configmanager.warn(`Disconnected from database '${glconfig.config.database as string}'`);
   }
 
@@ -145,7 +141,7 @@ export class ConfigManager {
         ipc.publish(`${config.name}Config`, config.config);
       }
 
-      status.configmanager.setHealth(StatusHealth.Running);
+      status.configmanager.setHealth('running');
       log.configmanager.info(`Published ${String(configs.length)} available configurations`);
     }).catch((error: unknown) => {
       if (this._isRunning) {
@@ -154,7 +150,7 @@ export class ConfigManager {
           this._publishAllConfigs();
         }, glconfig.config.databaseReadRetry);
 
-        status.configmanager.setHealth(StatusHealth.Instable);
+        status.configmanager.setHealth('instable');
         log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
       }
     });
@@ -185,7 +181,7 @@ export class ConfigManager {
    */
   _isSetConfigMessage(name: string, payload: IpcPayload): payload is IpcSetConfig {
     return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-      'name' in payload && typeof payload.name === 'string' && Object.values(ConfigName).find(name => name === payload.name) !== undefined &&
+      'name' in payload && typeof payload.name === 'string' && CONFIG_NAME.find(name => name === payload.name) !== undefined &&
       'config' in payload && typeof payload.config === 'object' && payload.config !== null;
   }
 

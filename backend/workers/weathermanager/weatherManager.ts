@@ -28,13 +28,9 @@ import {
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import {
-  StatusHealth,
-  StatusType
-} from '../../ipc/statusManager';
-import {
   IpcWeatherManagerConfig,
-  SourceName,
-  SourceUnits,
+  SOURCE_NAME,
+  SOURCE_UNITS,
   WeatherManagerStatusDetails
 } from '../../ipc/weatherManager';
 import { status } from '../statusmanager/statusReporter';
@@ -63,8 +59,8 @@ export class WeatherManager {
     });
 
     // Start status reporting
-    status.weathermanager.start(StatusType.Worker);
-    status.weathermanager.setHealth(StatusHealth.Running);
+    status.weathermanager.start('worker');
+    status.weathermanager.setHealth('running');
 
     log.weathermanager.info('Started');
   }
@@ -113,12 +109,12 @@ export class WeatherManager {
         'interval' in payload.source && typeof payload.source.interval === 'number' &&
         'name' in payload.source && typeof payload.source.name === 'string' &&
         // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        Object.values(SourceName).find(name => name === payload.source.name) !== undefined &&
+        SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
         'lat' in payload.source && typeof payload.source.lat === 'number' &&
         'lon' in payload.source && typeof payload.source.lon === 'number' &&
         'units' in payload.source && typeof payload.source.units === 'string' &&
         // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        Object.values(SourceUnits).find(units => units === payload.source.units) !== undefined &&
+        SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
         'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 
@@ -130,7 +126,7 @@ export class WeatherManager {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.clearDetails();
-    status.weathermanager.setHealth(StatusHealth.Running);
+    status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
     if (!config.source) {
@@ -171,7 +167,7 @@ export class WeatherManager {
       // Set status details
       this._statusDetails.lastUpdate = Date.now();
       this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
-      status.weathermanager.setHealth(StatusHealth.Running);
+      status.weathermanager.setHealth('running');
 
       // Publish weather data if available
       if (result.data) {
@@ -181,7 +177,7 @@ export class WeatherManager {
     else {
       // Set status details
       this._statusDetails.nextUpdate = Date.now() + (interval * 1000);
-      status.weathermanager.setHealth(StatusHealth.Instable);
+      status.weathermanager.setHealth('instable');
     }
   }
 }

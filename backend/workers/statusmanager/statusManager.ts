@@ -31,6 +31,8 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import {
   IpcApplicationStatus,
   IpcStatus,
+  STATUS_HEALTH,
+  STATUS_TYPE,
   StatusHealth,
   StatusType
 } from '../../ipc/statusManager';
@@ -123,8 +125,8 @@ export class StatusManager {
   _isStatusMessage(name: string, payload: IpcPayload): payload is IpcApplicationStatus {
     return name === 'Status' && typeof payload === 'object' && payload !== null &&
       'name' in payload && typeof payload.name === 'string' &&
-      'type' in payload && typeof payload.type === 'string' && Object.values(StatusType).find(type => type === payload.type) !== undefined &&
-      'health' in payload && typeof payload.health === 'string' && Object.values(StatusHealth).find(health => health === payload.health) !== undefined &&
+      'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
+      'health' in payload && typeof payload.health === 'string' && STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
       (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
   }
 

@@ -34,10 +34,6 @@ import {
   IpcShellyServerConfig,
   ShellyServerStatusDetails
 } from '../../ipc/shellyServer';
-import {
-  StatusHealth,
-  StatusType
-} from '../../ipc/statusManager';
 import { status } from '../statusmanager/statusReporter';
 import { ShellyDevice } from './shellyDevice';
 
@@ -65,8 +61,8 @@ export class ShellyServer {
     });
 
     // Start status reporting
-    status.shellyserver.start(StatusType.Worker);
-    status.shellyserver.setHealth(StatusHealth.Running);
+    status.shellyserver.start('worker');
+    status.shellyserver.setHealth('running');
 
     log.shellyserver.info('Started');
   }
@@ -180,7 +176,7 @@ export class ShellyServer {
   _handleShellyServerConfig(config: IpcShellyServerConfig): void {
     // Always cleanup for safety
     status.shellyserver.clearDetails();
-    status.shellyserver.setHealth(StatusHealth.Running);
+    status.shellyserver.setHealth('running');
 
     // If no settings are available the MQTT server should stop
     if (!config.mqtt) {
@@ -228,7 +224,7 @@ export class ShellyServer {
    * @param error the error
    */
   _onError(error: Error): void {
-    status.shellyserver.setHealth(StatusHealth.Instable);
+    status.shellyserver.setHealth('instable');
     log.shellyserver.error(error.message);
     this._server.close();
   }

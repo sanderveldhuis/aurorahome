@@ -44,7 +44,7 @@ export class StatusReporter {
    * @param name the application name
    */
   constructor(name: string) {
-    this._status = { name, type: StatusType.Worker, health: StatusHealth.Starting };
+    this._status = { name, type: 'worker', health: 'starting' };
   }
 
   /**

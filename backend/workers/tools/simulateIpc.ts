@@ -25,17 +25,12 @@
 import { ipc } from 'glidelite';
 import readline from 'node:readline';
 import {
-  ConfigName,
   IpcSetConfigResponse,
   IpcShellyServerSetConfig,
   IpcWeatherManagerSetConfig
 } from '../../ipc/configManager';
 import { IpcShellyServerConfig } from '../../ipc/shellyServer';
-import {
-  IpcWeatherManagerConfig,
-  SourceName,
-  SourceUnits
-} from '../../ipc/weatherManager';
+import { IpcWeatherManagerConfig } from '../../ipc/weatherManager';
 
 let userInput: readline.Interface | undefined;
 
@@ -76,7 +71,7 @@ function handleUserInput(input: string): void {
   // Handle command
   if (command[0] === 'WeatherManager' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the Weather Manager`);
-    const setConfig: IpcWeatherManagerSetConfig = { name: ConfigName.WeatherManager, config: {} };
+    const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
       const response = payload as IpcSetConfigResponse;
       console.log('Stop the Weather Manager result:', response.result);
@@ -84,8 +79,8 @@ function handleUserInput(input: string): void {
   }
   else if (command[0] === 'WeatherManager' && command.length === 2) {
     console.log(`Start the Weather Manager`);
-    const config: IpcWeatherManagerConfig = { source: { interval: 10, name: SourceName.OpenWeatherMapV3, units: SourceUnits.Metric, lat: 52.368212, lon: 6.772371, apiKey: command[1] } };
-    const setConfig: IpcWeatherManagerSetConfig = { name: ConfigName.WeatherManager, config };
+    const config: IpcWeatherManagerConfig = { source: { interval: 10, name: 'openweathermapV3', units: 'metric', lat: 52.368212, lon: 6.772371, apiKey: command[1] } };
+    const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
       const response = payload as IpcSetConfigResponse;
       console.log('Start the Weather Manager result:', response.result);
@@ -93,7 +88,7 @@ function handleUserInput(input: string): void {
   }
   else if (command[0] === 'ShellyServer' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the Shelly Server`);
-    const setConfig: IpcShellyServerSetConfig = { name: ConfigName.ShellyServer, config: {} };
+    const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config: {} };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
       const response = payload as IpcSetConfigResponse;
       console.log('Stop the Shelly Server result:', response.result);
@@ -102,7 +97,7 @@ function handleUserInput(input: string): void {
   else if (command[0] === 'ShellyServer' && command.length === 2 && !Number.isNaN(command[1])) {
     console.log(`Start the Shelly Server`);
     const config: IpcShellyServerConfig = { mqtt: { port: Number(command[1]), hostname: '0.0.0.0', username: 'test1', password: 'test2' } };
-    const setConfig: IpcShellyServerSetConfig = { name: ConfigName.ShellyServer, config };
+    const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
       const response = payload as IpcSetConfigResponse;
       console.log('Start the Shelly Server result:', response.result);
