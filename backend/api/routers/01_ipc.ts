@@ -22,20 +22,12 @@
  * SOFTWARE.
  */
 
-import mongoose from 'mongoose';
-import { IpcSetConfig } from '../../ipc/configManager';
+import { ipc } from 'glidelite';
 
-/**
- * Describes the Config model schema for the database.
- */
-const schema = new mongoose.Schema<IpcSetConfig>({
-  name: { type: String, required: true, unique: true },
-  config: { type: Object, required: true }
-}, { timestamps: true });
+// Start IPC communication
+ipc.start('apiserver', 'statusmanager');
 
-/**
- * Constructs the Config model for the database based on the schema.
- */
-const Config = mongoose.model('Config', schema);
-
-export default Config;
+// Gracefully shutdown
+process.on('SIGINT', () => {
+  ipc.stop();
+});

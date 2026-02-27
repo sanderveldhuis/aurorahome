@@ -24,12 +24,12 @@
 
 import { log } from 'glidelite';
 import net from 'node:net';
-import { status } from '../statusmanager/statusReporter';
-import { MqttProtocol } from './mqttProtocol';
 import {
   IpcSetLight,
   IpcSetSwitch
-} from './types';
+} from '../../ipc/shellyServer';
+import { status } from '../../ipc/statusReporter';
+import { MqttProtocol } from './mqttProtocol';
 
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
 const SHELLY_MAX_NOF_COMPONENTS = 4;

@@ -29,12 +29,13 @@ import {
 } from 'glidelite';
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import {
+  IpcApplicationStatus,
   IpcStatus,
   STATUS_HEALTH,
   STATUS_TYPE,
   StatusHealth,
   StatusType
-} from './types';
+} from '../../ipc/statusManager';
 
 /**
  * Defines the application status health, status details, and timestamp of the last update.
@@ -92,10 +93,10 @@ export class StatusManager {
    */
   _cleanupExpiredStatusses(): void {
     const now = Date.now();
-    for (const applications of Object.values(this._applicationStatus)) {
-      for (const name of Object.keys(applications)) {
-        if (applications[name].timestamp + Number(glconfig.status.validity) < now) {
-          delete applications[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
+    for (const type of Object.values(this._applicationStatus)) {
+      for (const name of Object.keys(type)) {
+        if (type[name].timestamp + Number(glconfig.status.validity) < now) {
+          delete type[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
         }
       }
     }
@@ -121,7 +122,7 @@ export class StatusManager {
    * @param payload the message payload
    * @returns `true` when the message is a Status message, or `false` otherwise
    */
-  _isStatusMessage(name: string, payload: IpcPayload): payload is IpcStatus {
+  _isStatusMessage(name: string, payload: IpcPayload): payload is IpcApplicationStatus {
     return name === 'Status' && typeof payload === 'object' && payload !== null &&
       'name' in payload && typeof payload.name === 'string' &&
       'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
@@ -133,13 +134,29 @@ export class StatusManager {
    * Handles Status message.
    * @param status the Status message
    */
-  _handleStatusMessage(status: IpcStatus): void {
+  _handleStatusMessage(status: IpcApplicationStatus): void {
     // Add type to application status list
     if (!Object.keys(this._applicationStatus).includes(status.type)) {
       this._applicationStatus[status.type] = {} as Record<string, ApplicationStatus>;
     }
 
+    // Check if status is changed
+    const isStatusChanged = !Object.keys(this._applicationStatus[status.type]).includes(status.name) ||
+      this._applicationStatus[status.type][status.name].health !== status.health ||
+      JSON.stringify(this._applicationStatus[status.type][status.name].details) !== JSON.stringify(status.details);
+
     // Add application status to application status list
     this._applicationStatus[status.type][status.name] = { timestamp: Date.now(), health: status.health, details: status.details };
+
+    // Publish application statusses only if changed
+    if (isStatusChanged) {
+      const statusMsg: IpcStatus = { applications: [] };
+      Object.entries(this._applicationStatus).forEach(([type, application]) => {
+        Object.entries(application).forEach(([name, status]) => {
+          statusMsg.applications.push({ name, type: type as StatusType, health: status.health, details: status.details });
+        });
+      });
+      ipc.publish('Status', statusMsg);
+    }
   }
 }

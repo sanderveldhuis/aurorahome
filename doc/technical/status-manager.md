@@ -22,7 +22,7 @@ Each application should report its status via IPC to the Status Manager in a pre
 A helper class is available for applications to report the status to the Status Manager:
 
 ```typescript
-import { status } from '../statusmanager/statusReporter';
+import { status } from '../../ipc/statusReporter';
 
 // Start status reporting
 status.applicationname.start('worker');

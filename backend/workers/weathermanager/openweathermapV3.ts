@@ -27,7 +27,7 @@ import syncFetch from 'sync-fetch';
 import {
   IpcWeatherData,
   SourceUnits
-} from './types';
+} from '../../ipc/weatherManager';
 import {
   WeatherRetriever,
   WeatherRetrieverResult,

@@ -28,9 +28,9 @@ import {
   IpcSetConfigResponse,
   IpcShellyServerSetConfig,
   IpcWeatherManagerSetConfig
-} from '../configmanager/types';
-import { IpcShellyServerConfig } from '../shellyserver/types';
-import { IpcWeatherManagerConfig } from '../weathermanager/types';
+} from '../../ipc/configManager';
+import { IpcShellyServerConfig } from '../../ipc/shellyServer';
+import { IpcWeatherManagerConfig } from '../../ipc/weatherManager';
 
 let userInput: readline.Interface | undefined;
 

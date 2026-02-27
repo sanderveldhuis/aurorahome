@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { IpcShellyServerConfig } from '../shellyserver/types';
-import { IpcWeatherManagerConfig } from '../weathermanager/types';
+import { IpcShellyServerConfig } from './shellyServer';
+import { IpcWeatherManagerConfig } from './weatherManager';
 
 /**
  * The application name of the configuration.

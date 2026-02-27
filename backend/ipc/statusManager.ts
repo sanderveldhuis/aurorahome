@@ -38,7 +38,7 @@ export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
  * The IPC message for indicating statusses to the Status Manager.
  * @details the message ID for this message is 'Status'
  */
-export interface IpcStatus {
+export interface IpcApplicationStatus {
   /** The applicaton name */
   name: string;
   /** The application status type */
@@ -47,4 +47,12 @@ export interface IpcStatus {
   health: StatusHealth;
   /** Application status details (optional) */
   details?: object;
+}
+
+/**
+ * The IPC message for published statusses from the Status Manager.
+ * @details the message ID for this message is 'Status'
+ */
+export interface IpcStatus {
+  applications: IpcApplicationStatus[];
 }

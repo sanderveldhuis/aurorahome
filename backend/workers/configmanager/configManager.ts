@@ -30,13 +30,13 @@ import {
 import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
-import { status } from '../statusmanager/statusReporter';
-import Config from './configModel';
 import {
   CONFIG_NAME,
   IpcSetConfig,
   IpcSetConfigResponse
-} from './types';
+} from '../../ipc/configManager';
+import { status } from '../../ipc/statusReporter';
+import Config from './configModel';
 
 /**
  * A Config Manager handles configuration by storing it in a database and publishing it via IPC.

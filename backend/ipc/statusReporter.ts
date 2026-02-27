@@ -27,16 +27,16 @@ import {
   ipc
 } from 'glidelite';
 import {
-  IpcStatus,
+  IpcApplicationStatus,
   StatusHealth,
   StatusType
-} from './types';
+} from './statusManager';
 
 /**
  * Helper class providing cyclic status reporting to the Status Manager.
  */
 export class StatusReporter {
-  _status: IpcStatus;
+  _status: IpcApplicationStatus;
   _reportTimer: NodeJS.Timeout | undefined;
 
   /**
