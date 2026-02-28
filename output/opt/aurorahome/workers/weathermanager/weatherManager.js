@@ -25,9 +25,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WeatherManager = void 0;
 const glidelite_1 = require("glidelite");
-const statusReporter_1 = require("../statusmanager/statusReporter");
+const statusReporter_1 = require("../../ipc/statusReporter");
+const weatherManager_1 = require("../../ipc/weatherManager");
 const openweathermapV3_1 = require("./openweathermapV3");
-const types_1 = require("./types");
 const weatherRetriever_1 = require("./weatherRetriever");
 /**
  * A Weather Manager retrieving weather data from a configured source and publishing the weather data via IPC.
@@ -89,12 +89,12 @@ class WeatherManager {
                 'interval' in payload.source && typeof payload.source.interval === 'number' &&
                 'name' in payload.source && typeof payload.source.name === 'string' &&
                 // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-                types_1.SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
+                weatherManager_1.SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
                 'lat' in payload.source && typeof payload.source.lat === 'number' &&
                 'lon' in payload.source && typeof payload.source.lon === 'number' &&
                 'units' in payload.source && typeof payload.source.units === 'string' &&
                 // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-                types_1.SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
+                weatherManager_1.SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
                 'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
     }
     /**
