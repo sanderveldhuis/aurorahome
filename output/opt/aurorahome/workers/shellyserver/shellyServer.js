@@ -29,7 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShellyServer = void 0;
 const glidelite_1 = require("glidelite");
 const node_net_1 = __importDefault(require("node:net"));
-const statusReporter_1 = require("../statusmanager/statusReporter");
+const statusReporter_1 = require("../../ipc/statusReporter");
 const shellyDevice_1 = require("./shellyDevice");
 /**
  * A Shelly Server handling Shelly devices using the MQTT protocol.
