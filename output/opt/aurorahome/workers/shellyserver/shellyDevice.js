@@ -25,7 +25,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShellyDevice = void 0;
 const glidelite_1 = require("glidelite");
-const statusReporter_1 = require("../statusmanager/statusReporter");
+const statusReporter_1 = require("../../ipc/statusReporter");
 const mqttProtocol_1 = require("./mqttProtocol");
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
 const SHELLY_MAX_NOF_COMPONENTS = 4;

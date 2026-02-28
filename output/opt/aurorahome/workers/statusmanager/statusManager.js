@@ -25,7 +25,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatusManager = void 0;
 const glidelite_1 = require("glidelite");
-const types_1 = require("./types");
+const statusManager_1 = require("../../ipc/statusManager");
 /**
  * A Status Manager keeping track of all application statusses, i.e.: application type, health, and additional detailed runtime information.
  */
@@ -63,10 +63,10 @@ class StatusManager {
      */
     _cleanupExpiredStatusses() {
         const now = Date.now();
-        for (const applications of Object.values(this._applicationStatus)) {
-            for (const name of Object.keys(applications)) {
-                if (applications[name].timestamp + Number(glidelite_1.glconfig.status.validity) < now) {
-                    delete applications[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
+        for (const type of Object.values(this._applicationStatus)) {
+            for (const name of Object.keys(type)) {
+                if (type[name].timestamp + Number(glidelite_1.glconfig.status.validity) < now) {
+                    delete type[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
                 }
             }
         }
@@ -93,8 +93,8 @@ class StatusManager {
     _isStatusMessage(name, payload) {
         return name === 'Status' && typeof payload === 'object' && payload !== null &&
             'name' in payload && typeof payload.name === 'string' &&
-            'type' in payload && typeof payload.type === 'string' && types_1.STATUS_TYPE.find(type => type === payload.type) !== undefined &&
-            'health' in payload && typeof payload.health === 'string' && types_1.STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
+            'type' in payload && typeof payload.type === 'string' && statusManager_1.STATUS_TYPE.find(type => type === payload.type) !== undefined &&
+            'health' in payload && typeof payload.health === 'string' && statusManager_1.STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
             (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
     }
     /**
@@ -106,8 +106,22 @@ class StatusManager {
         if (!Object.keys(this._applicationStatus).includes(status.type)) {
             this._applicationStatus[status.type] = {};
         }
+        // Check if status is changed
+        const isStatusChanged = !Object.keys(this._applicationStatus[status.type]).includes(status.name) ||
+            this._applicationStatus[status.type][status.name].health !== status.health ||
+            JSON.stringify(this._applicationStatus[status.type][status.name].details) !== JSON.stringify(status.details);
         // Add application status to application status list
         this._applicationStatus[status.type][status.name] = { timestamp: Date.now(), health: status.health, details: status.details };
+        // Publish application statusses only if changed
+        if (isStatusChanged) {
+            const statusMsg = { applications: [] };
+            Object.entries(this._applicationStatus).forEach(([type, application]) => {
+                Object.entries(application).forEach(([name, status]) => {
+                    statusMsg.applications.push({ name, type: type, health: status.health, details: status.details });
+                });
+            });
+            glidelite_1.ipc.publish('Status', statusMsg);
+        }
     }
 }
 exports.StatusManager = StatusManager;
