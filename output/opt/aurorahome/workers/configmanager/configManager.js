@@ -30,9 +30,9 @@ exports.ConfigManager = void 0;
 const glidelite_1 = require("glidelite");
 const mongoose_1 = __importDefault(require("mongoose"));
 const mongoose_2 = require("mongoose");
-const statusReporter_1 = require("../statusmanager/statusReporter");
+const configManager_1 = require("../../ipc/configManager");
+const statusReporter_1 = require("../../ipc/statusReporter");
 const configModel_1 = __importDefault(require("./configModel"));
-const types_1 = require("./types");
 /**
  * A Config Manager handles configuration by storing it in a database and publishing it via IPC.
  */
@@ -157,7 +157,7 @@ class ConfigManager {
      */
     _isSetConfigMessage(name, payload) {
         return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-            'name' in payload && typeof payload.name === 'string' && types_1.CONFIG_NAME.find(name => name === payload.name) !== undefined &&
+            'name' in payload && typeof payload.name === 'string' && configManager_1.CONFIG_NAME.find(name => name === payload.name) !== undefined &&
             'config' in payload && typeof payload.config === 'object' && payload.config !== null;
     }
     /**
