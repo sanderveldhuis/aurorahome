@@ -40,6 +40,7 @@ function useInterval(handler: () => void, timeout: number) {
     const id = setInterval(() => {
       onTimeout();
     }, timeout);
+    onTimeout();
 
     return () => {
       // Clean up the interval timer

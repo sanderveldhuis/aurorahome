@@ -22,30 +22,52 @@
  * SOFTWARE.
  */
 
-import Http from '../hooks/api';
+import Api from '../hooks/api';
 import useInterval from '../hooks/useInterval';
 import './widget.css';
 import ApplicationConfig from './applicationConfig';
 import ApplicationState from './applicationState';
 
-function getStatusForName(name: string, result: any): Record<string, unknown> | undefined {
-  if (typeof result !== 'object' || !Array.isArray(result)) {
-    return;
-  }
-  // TODO: can we use API interfaces (just like IPC) to ensure TypeScript safety between API and frontend?
-  for (const obj of result) {
-    if (typeof obj !== 'object' || obj === null) {
-      continue;
-    }
-    const application = obj as object;
-    if (
-      'name' in application && typeof application.name === 'string' && application.name === name
-    ) {
-      return application;
-    }
-  }
+/**
+ * The application health.
+ */
+type StatusHealth = typeof STATUS_HEALTH[number];
+const STATUS_HEALTH = ['starting', 'running', 'instable', 'stopped'] as const;
 
-  return undefined;
+/**
+ * The API message containing application statusses.
+ */
+interface ApiApplicationStatus {
+  /** The applicaton name */
+  name: string;
+  /** The application status health */
+  health: StatusHealth;
+  /** Application status details (optional) */
+  details?: object;
+}
+
+/**
+ * Searches for the application status with the specified name in the result.
+ * @param name the application name
+ * @param result the result to search in
+ * @returns the application status
+ */
+function getStatusForName(name: string, result: any): ApiApplicationStatus {
+  if (typeof result === 'object' || Array.isArray(result)) {
+    for (const obj of result) {
+      if (typeof obj === 'object' && obj !== null) {
+        const application = obj as object;
+        if (
+          'name' in application && typeof application.name === 'string' && application.name === name &&
+          'health' in application && typeof application.health === 'string' && STATUS_HEALTH.find(health => health === application.health) !== undefined &&
+          (!('details' in application) || ('details' in application && typeof application.details === 'object' && application.details !== null))
+        ) {
+          return application as ApiApplicationStatus;
+        }
+      }
+    }
+  }
+  return { name, health: 'stopped' };
 }
 
 function ConfigWidget() {
@@ -54,79 +76,53 @@ function ConfigWidget() {
   const shellyServerState = new ApplicationState('Shelly Server');
 
   useInterval(() => {
-    Http.get('http://localhost:12002/status')
+    // TODO: replace by GlideLite API helper to /status
+    Api.get('http://localhost:12002/status')
       .then(result => {
+        // Handle Config Manager status
         let status = getStatusForName('configmanager', result);
-        if (status) {
-          // TODO: can we use API interfaces (just like IPC) to ensure TypeScript safety between API and frontend?
-          const health = 'health' in status && typeof status.health === 'string' ? status.health : 'stopped';
-          const details = 'details' in status && typeof status.details === 'object' && status.details !== null ? status.details as object : {};
-          configManagerState.setHealth(health);
-          const record: Record<string, string> = {};
-          configManagerState.setDetails(record);
-        }
-        else {
-          configManagerState.setHealth('stopped');
-          configManagerState.setDetails({});
-        }
+        configManagerState.setHealth(status.health);
+        let record: Record<string, string> = {};
+        configManagerState.setDetails(record);
 
+        // Handle Weather Manager status
         status = getStatusForName('weathermanager', result);
-        if (status) {
-          const health = 'health' in status && typeof status.health === 'string' ? status.health : 'stopped';
-          const details = 'details' in status && typeof status.details === 'object' && status.details !== null ? status.details as object : {};
-          weatherManagerState.setHealth(health);
-          const record: Record<string, string> = {};
-          if ('source' in details && typeof details.source === 'string') {
-            record['Source'] = details.source;
-          }
-          if ('lastUpdate' in details && typeof details.lastUpdate === 'number') {
-            // TODO: get locale string from settings
-            record['Last update'] = new Date(details.lastUpdate).toLocaleString('nl-NL');
-          }
-          if ('nextUpdate' in details && typeof details.nextUpdate === 'number') {
-            // TODO: get locale string from settings
-            record['Next update'] = new Date(details.nextUpdate).toLocaleString('nl-NL');
-          }
-          weatherManagerState.setDetails(record);
+        weatherManagerState.setHealth(status.health);
+        record = {};
+        if (status.details && 'source' in status.details && typeof status.details.source === 'string') {
+          record['Source'] = status.details.source;
         }
-        else {
-          weatherManagerState.setHealth('stopped');
-          weatherManagerState.setDetails({});
+        if (status.details && 'lastUpdate' in status.details && typeof status.details.lastUpdate === 'number') {
+          // TODO: get locale string from settings
+          record['Last update'] = new Date(status.details.lastUpdate).toLocaleString('nl-NL');
         }
+        if (status.details && 'nextUpdate' in status.details && typeof status.details.nextUpdate === 'number') {
+          // TODO: get locale string from settings
+          record['Next update'] = new Date(status.details.nextUpdate).toLocaleString('nl-NL');
+        }
+        weatherManagerState.setDetails(record);
 
+        // Handle Shelly Server status
         status = getStatusForName('shellyserver', result);
-        if (status) {
-          const health = 'health' in status && typeof status.health === 'string' ? status.health : 'stopped';
-          const details = 'details' in status && typeof status.details === 'object' && status.details !== null ? status.details as object : {};
-          shellyServerState.setHealth(health);
-          const record: Record<string, string> = {};
-          if ('hostname' in details && typeof details.hostname === 'string') {
-            record['Hostname'] = details.hostname;
-          }
-          if ('port' in details && typeof details.port === 'number') {
-            record['Port'] = String(details.port);
-          }
-          shellyServerState.setDetails(record);
+        shellyServerState.setHealth(status.health);
+        record = {};
+        if (status.details && 'hostname' in status.details && typeof status.details.hostname === 'string') {
+          record['Hostname'] = status.details.hostname;
         }
-        else {
-          shellyServerState.setHealth('stopped');
-          shellyServerState.setDetails({});
+        if (status.details && 'port' in status.details && typeof status.details.port === 'number') {
+          record['Port'] = String(status.details.port);
         }
-      }).catch((error: unknown) => {
+        shellyServerState.setDetails(record);
+      }).catch(() => {
+        // On failure display the placeholder
         configManagerState.setHealth('');
+        configManagerState.setDetails({});
         weatherManagerState.setHealth('');
+        weatherManagerState.setDetails({});
         shellyServerState.setHealth('');
-        if (typeof error === 'number') {
-          // TODO: somehow the 404 does not work
-          console.log(`Code: ${error}`);
-        }
-        else {
-          console.log(error);
-        }
-        // TODO: display popup in the screen which does not overflood on each request
-        // TODO: ensure to display 'placeholder' again
+        shellyServerState.setDetails({});
       });
-  }, 1000); // TODO: configure time somewhere
+  }, 5000); // TODO: configure time somewhere
 
   return (
     <>
