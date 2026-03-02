@@ -11,5 +11,18 @@ export default defineConfig({
     alias: {
       '~bootstrap': path.resolve(__dirname, '../node_modules/bootstrap')
     }
+  },
+  // Silence Sass deprecation warnings
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: [
+          'import',
+          'if-function',
+          'color-functions',
+          'global-builtin'
+        ]
+      }
+    }
   }
 });
