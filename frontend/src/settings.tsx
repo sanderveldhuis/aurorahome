@@ -23,6 +23,7 @@
  */
 
 import './settings.css';
+import ConfigWidget from './configwidget/widget';
 
 function Settings({ component }: { component: string; }) {
   if (component !== 'Settings') {
@@ -33,11 +34,7 @@ function Settings({ component }: { component: string; }) {
     <>
       <div className='row mb-3 mt-1 mt-md-3'>
         <div className='col-12'>
-          <div className='card'>
-            <div className='card-body'>
-              Single card
-            </div>
-          </div>
+          <ConfigWidget />
         </div>
       </div>
       <div className='row mb-3'>
