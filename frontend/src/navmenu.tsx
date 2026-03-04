@@ -56,7 +56,7 @@ function NavMenu({ component, setComponent }: { component: string; setComponent:
                 >
                   <div className='triangle' />
                   <button type='button' className={'nav-link d-flex align-items-center gap-2 mx-5' + (expanded ? '' : ' mx-md-3')}>
-                    <svg width='16' height='16' viewBox='0 0 16 16'>{item.svgPaths.map(path => <path key={`path-${Math.random()}`} d={path} />)}</svg> <div className={expanded ? '' : 'd-md-none'}>{item.name}</div>
+                    <svg width='16' height='16' viewBox='0 0 16 16'>{item.svgPaths.map(path => <path key={`path-${String(Math.random())}`} d={path} />)}</svg> <div className={expanded ? '' : 'd-md-none'}>{item.name}</div>
                   </button>
                 </li>
               ))}
