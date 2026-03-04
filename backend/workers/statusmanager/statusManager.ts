@@ -31,8 +31,7 @@ import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import {
   IpcApplicationStatus,
   IpcStatus,
-  STATUS_HEALTH,
-  STATUS_TYPE,
+  isIpcApplicationStatusMessage,
   StatusHealth,
   StatusType
 } from '../../ipc/statusManager';
@@ -108,8 +107,8 @@ export class StatusManager {
    * @param payload the indication payload
    */
   _onIndication(name: string, payload: IpcPayload): void {
-    if (this._isStatusMessage(name, payload)) {
-      this._handleStatusMessage(payload);
+    if (isIpcApplicationStatusMessage(name, payload)) {
+      this._handleApplicationStatusMessage(payload);
     }
     else {
       log.statusmanager.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
@@ -117,24 +116,10 @@ export class StatusManager {
   }
 
   /**
-   * Checks whether the specified message is a Status message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a Status message, or `false` otherwise
-   */
-  _isStatusMessage(name: string, payload: IpcPayload): payload is IpcApplicationStatus {
-    return name === 'Status' && typeof payload === 'object' && payload !== null &&
-      'name' in payload && typeof payload.name === 'string' &&
-      'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
-      'health' in payload && typeof payload.health === 'string' && STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
-      (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
-  }
-
-  /**
    * Handles Status message.
    * @param status the Status message
    */
-  _handleStatusMessage(status: IpcApplicationStatus): void {
+  _handleApplicationStatusMessage(status: IpcApplicationStatus): void {
     // Add type to application status list
     if (!Object.keys(this._applicationStatus).includes(status.type)) {
       this._applicationStatus[status.type] = {} as Record<string, ApplicationStatus>;

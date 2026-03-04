@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { IpcPayload } from 'glidelite/lib/ipcMessage';
+
 /**
  * The weather data source name.
  */
@@ -59,6 +61,27 @@ export interface WeatherManagerSource {
 export interface IpcWeatherManagerConfig {
   /** The source of the weather data, `undefined` means no weather should be retrieved */
   source?: WeatherManagerSource;
+}
+
+/**
+ * Checks whether the specified message is an IPC WeatherManagerConfig message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
+ */
+export function isIpcWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is IpcWeatherManagerConfig {
+  return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
+    (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
+      'interval' in payload.source && typeof payload.source.interval === 'number' &&
+      'name' in payload.source && typeof payload.source.name === 'string' &&
+      // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
+      SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
+      'lat' in payload.source && typeof payload.source.lat === 'number' &&
+      'lon' in payload.source && typeof payload.source.lon === 'number' &&
+      'units' in payload.source && typeof payload.source.units === 'string' &&
+      // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
+      SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
+      'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
 }
 
 /**

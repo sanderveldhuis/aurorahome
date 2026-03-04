@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { IpcPayload } from 'glidelite/lib/ipcMessage';
+
 /**
  * The application type.
  */
@@ -47,6 +49,20 @@ export interface IpcApplicationStatus {
   health: StatusHealth;
   /** Application status details (optional) */
   details?: object;
+}
+
+/**
+ * Checks whether the specified message is an IPC Status message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a Status message, or `false` otherwise
+ */
+export function isIpcApplicationStatusMessage(name: string, payload: IpcPayload): payload is IpcApplicationStatus {
+  return name === 'Status' && typeof payload === 'object' && payload !== null &&
+    'name' in payload && typeof payload.name === 'string' &&
+    'type' in payload && typeof payload.type === 'string' && STATUS_TYPE.find(type => type === payload.type) !== undefined &&
+    'health' in payload && typeof payload.health === 'string' && STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
+    (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
 }
 
 /**

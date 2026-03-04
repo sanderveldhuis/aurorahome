@@ -20,14 +20,13 @@ Applications can create/update Shelly Server configuration by using the IPC requ
 
 ```typescript
 import { ipc } from 'glidelite';
-import { IpcShellyServerSetConfig } from '../configmanager/types';
-import { IpcSetConfigResponse } from '../configmanager/types';
+import { IpcShellyServerSetConfig, isSetConfigReponseMessage } from '../../ipc/configmanager';
 
 const config: IpcShellyServerSetConfig = { ... };
 ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
-  // It is adviced to check the payload before casting to the dedicated interface
-  const response = payload as IpcSetConfigResponse;
-  ...
+  if (isSetConfigReponseMessage(name, payload)) {
+    ...
+  }
 });
 ```
 

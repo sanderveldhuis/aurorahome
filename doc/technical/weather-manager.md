@@ -9,7 +9,7 @@ Applications can subscribe to weather data by using the IPC subscription message
 
 ```typescript
 import { ipc } from 'glidelite';
-import { IpcWeatherData } from '../weathermanager/types';
+import { IpcWeatherData } from '../../ipc/weathermanager';
 
 ipc.to.weathermanager.subscribe('WeatherData', (name, payload) => {
   // It is adviced to check the payload before casting to the dedicated interface
@@ -24,14 +24,13 @@ Applications can create/update Weather Manager configuration by using the IPC re
 
 ```typescript
 import { ipc } from 'glidelite';
-import { IpcWeatherManagerSetConfig } from '../configmanager/types';
-import { IpcSetConfigResponse } from '../configmanager/types';
+import { IpcWeatherManagerSetConfig, isSetConfigReponseMessage } from '../../ipc/configmanager';
 
 const config: IpcWeatherManagerSetConfig = { ... };
 ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
-  // It is adviced to check the payload before casting to the dedicated interface
-  const response = payload as IpcSetConfigResponse;
-  ...
+  if (isSetConfigReponseMessage(name, payload)) {
+    ...
+  }
 });
 ```
 

@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { IpcPayload } from 'glidelite/lib/ipcMessage';
 import { IpcShellyServerConfig } from './shellyServer';
 import { IpcWeatherManagerConfig } from './weatherManager';
 
@@ -43,11 +44,40 @@ export interface IpcSetConfig {
 }
 
 /**
+ * Checks whether the specified message is an IPC SetConfig message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a SetConfig message, or `false` otherwise
+ */
+export function isIpcSetConfigMessage(name: string, payload: IpcPayload): payload is IpcSetConfig {
+  return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
+    'name' in payload && typeof payload.name === 'string' && CONFIG_NAME.find(name => name === payload.name) !== undefined &&
+    'config' in payload && typeof payload.config === 'object' && payload.config !== null;
+}
+
+/**
+ * The result of setting the configuration.
+ */
+export type SetConfigResult = typeof SET_CONFIG_RESULT[number];
+export const SET_CONFIG_RESULT = ['ok', 'disconnected', 'error'] as const;
+
+/**
  * The IPC response message for setting configuration in the Config Manager.
  */
 export interface IpcSetConfigResponse {
   /** The result of setting the configuration */
-  result: 'ok' | 'disconnected' | 'error';
+  result: SetConfigResult;
+}
+
+/**
+ * Checks whether the specified message is an IPC SetConfigResponse message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a SetConfigResponse message, or `false` otherwise
+ */
+export function isIpcSetConfigReponseMessage(name: string, payload: IpcPayload): payload is IpcSetConfigResponse {
+  return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
+    'result' in payload && typeof payload.result === 'string' && SET_CONFIG_RESULT.find(result => result === payload.result) !== undefined;
 }
 
 /**
