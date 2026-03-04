@@ -26,7 +26,7 @@ import Api from '../hooks/api';
 import useInterval from '../hooks/useInterval';
 import './widget.css';
 import ApplicationConfig from './applicationConfig';
-import ApplicationState from './applicationState';
+import useApplicationState from './hooks/useApplicationState';
 
 /**
  * The application health.
@@ -71,14 +71,16 @@ function getStatusForName(name: string, result: any): ApiApplicationStatus {
 }
 
 function ConfigWidget() {
-  const configManagerState = new ApplicationState('Config Manager');
-  const weatherManagerState = new ApplicationState('Weather Manager');
-  const shellyServerState = new ApplicationState('Shelly Server');
+  const configManagerState = useApplicationState('Config Manager');
+  const weatherManagerState = useApplicationState('Weather Manager');
+  const shellyServerState = useApplicationState('Shelly Server');
 
   useInterval(() => {
-    // TODO: replace by GlideLite API helper to /status
+    // TODO: replace by GlideLite API helper to /api/status
     Api.get('http://localhost:12002/status')
       .then(result => {
+        // TODO: instead checking the message in each 'getStatusForName' do it only once here to make it more lightweight?
+
         // Handle Config Manager status
         let status = getStatusForName('configmanager', result);
         configManagerState.setHealth(status.health);
@@ -90,7 +92,7 @@ function ConfigWidget() {
         weatherManagerState.setHealth(status.health);
         record = {};
         if (status.details && 'source' in status.details && typeof status.details.source === 'string') {
-          record['Source'] = status.details.source;
+          record.Source = status.details.source;
         }
         if (status.details && 'lastUpdate' in status.details && typeof status.details.lastUpdate === 'number') {
           // TODO: get locale string from settings
@@ -107,10 +109,10 @@ function ConfigWidget() {
         shellyServerState.setHealth(status.health);
         record = {};
         if (status.details && 'hostname' in status.details && typeof status.details.hostname === 'string') {
-          record['Hostname'] = status.details.hostname;
+          record.Hostname = status.details.hostname;
         }
         if (status.details && 'port' in status.details && typeof status.details.port === 'number') {
-          record['Port'] = String(status.details.port);
+          record.Port = String(status.details.port);
         }
         shellyServerState.setDetails(record);
       }).catch(() => {
@@ -130,13 +132,13 @@ function ConfigWidget() {
         <div className='card-body'>
           <div className='row'>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig state={configManagerState} />
+              <ApplicationConfig {...configManagerState} />
             </div>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig state={weatherManagerState} />
+              <ApplicationConfig {...weatherManagerState} />
             </div>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig state={shellyServerState} />
+              <ApplicationConfig {...shellyServerState} />
             </div>
           </div>
         </div>

@@ -23,81 +23,63 @@
  */
 
 import { useState } from 'react';
-import { toHtmlId } from '../utils/html';
+import { toHtmlId } from '../../utils/html';
 
 /**
- * Defines an application state.
+ * The application state.
  */
-class ApplicationState {
-  _id: string;
-  _name: string;
-  _health: string;
-  _setHealth: React.Dispatch<React.SetStateAction<string>>;
-  _details: Record<string, string>;
-  _setDetails: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-
-  /**
-   * Constructs an application state.
-   * @param name the application name
-   */
-  constructor(name: string) {
-    this._id = toHtmlId(name);
-    this._name = name;
-    [this._health, this._setHealth] = useState('');
-    [this._details, this._setDetails] = useState({});
-  }
-
-  /**
-   * Returns the application HTML identifier.
-   * @returns the application HTML identifier
-   */
-  getId(): string {
-    return this._id;
-  }
-
-  /**
-   * Returns the application name.
-   * @returns the application name
-   */
-  getName(): string {
-    return this._name;
-  }
-
-  /**
-   * Returns the application health.
-   * @returns the application health
-   */
-  getHealth(): string {
-    return this._health;
-  }
-
+interface ApplicationState {
+  /** The HTML element identifier */
+  id: string;
+  /** The application name */
+  name: string;
+  /** The application health */
+  health: string;
+  /** The application details */
+  details: Record<string, string>;
   /**
    * Sets the application health.
    * @param value the application health
    */
-  setHealth(value: string): void {
-    this._setHealth(value);
-  }
-
-  /**
-   * Returns the application details.
-   * @returns the application details
-   */
-  getDetails(): Record<string, string> {
-    return this._details;
-  }
-
+  setHealth: (value: string) => void;
   /**
    * Sets the application details.
    * @param value the application details
    */
-  setDetails(value: Record<string, string>): void {
-    // Check for changes in object because objects are references and assignment of
-    // an object will always trigger a refresh as it is seen as a change in value
-    if (JSON.stringify(value) !== JSON.stringify(this._details)) {
-      this._setDetails(value);
-    }
-  }
+  setDetails: (value: Record<string, string>) => void;
 }
 
-export default ApplicationState;
+/**
+ * Defines an application state.
+ * @param applicationName the application name
+ * @returns the application state
+ */
+function useApplicationState(applicationName: string): ApplicationState {
+  const id = toHtmlId(applicationName);
+  const name = applicationName;
+  const [health, setHealthInternal] = useState('');
+  const [details, setDetailsInternal] = useState<Record<string, string>>({});
+
+  function setHealth(value: string): void {
+    setHealthInternal(value);
+  }
+
+  function setDetails(value: Record<string, string>): void {
+    // Check for changes in object because objects are references and assignment of
+    // an object will always trigger a refresh as it is seen as a change in value
+    if (JSON.stringify(value) !== JSON.stringify(details)) {
+      setDetailsInternal(value);
+    }
+  }
+
+  return {
+    id,
+    name,
+    health,
+    details,
+    setHealth,
+    setDetails
+  };
+}
+
+export default useApplicationState;

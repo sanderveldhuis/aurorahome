@@ -23,11 +23,10 @@
  */
 
 import './applicationConfig.css';
-import type ApplicationState from './applicationState';
 
-function ApplicationConfig({ state }: { state: ApplicationState; }) {
+function ApplicationConfig({ id, name, health, details }: { id: string; name: string; health: string; details: Record<string, string>; }) {
   let svgPath = '';
-  switch (state.getHealth()) {
+  switch (health) {
     case 'starting':
       svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6';
       break;
@@ -44,11 +43,11 @@ function ApplicationConfig({ state }: { state: ApplicationState; }) {
       break;
   }
 
-  let detailText = [];
-  for (const key of Object.keys(state.getDetails())) {
+  const detailText = [];
+  for (const key of Object.keys(details)) {
     detailText.push(
       <>
-        <strong>{key}:</strong> {state.getDetails()[key]}
+        <strong>{key}:</strong> {details[key]}
         <br />
       </>
     );
@@ -57,17 +56,17 @@ function ApplicationConfig({ state }: { state: ApplicationState; }) {
   return (
     <>
       <div className='application-config placeholder-glow'>
-        <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target={`#application-status-${state.getId()}`}>
-          <div className={`me-auto ${state.getHealth() ? '' : 'placeholder'}`}>{state.getName()}</div>
-          <svg className={`ms-1 mt-1 ${state.getHealth() ? state.getHealth() : 'placeholder'}`} width='20' height='20'>
+        <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target={`#application-status-${id}`}>
+          <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
+          <svg className={`ms-1 mt-1 ${health ? health : 'placeholder'}`} width='20' height='20'>
             <path d={svgPath} />
           </svg>
         </button>
-        <div className='collapse' id={`application-status-${state.getId()}`}>
+        <div className='collapse' id={`application-status-${id}`}>
           <div className='card card-body'>
-            <div className={`alert ${state.getHealth() ? state.getHealth() : 'placeholder'}`} role='alert'>
+            <div className={`alert ${health ? health : 'placeholder'}`} role='alert'>
               <p className='mb-0'>
-                <strong>Health:</strong> {state.getHealth()}
+                <strong>Health:</strong> {health}
                 <br />
                 {detailText}
               </p>
