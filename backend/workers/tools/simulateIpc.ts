@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite';
+import { ipc } from 'glidelite/backend';
 import readline from 'node:readline';
 import {
   IpcShellyServerSetConfig,

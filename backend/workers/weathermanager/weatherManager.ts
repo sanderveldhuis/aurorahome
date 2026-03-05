@@ -24,9 +24,9 @@
 
 import {
   ipc,
+  IpcPayload,
   log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from 'glidelite/backend';
 import { status } from '../../ipc/statusReporter';
 import {
   IpcWeatherManagerConfig,

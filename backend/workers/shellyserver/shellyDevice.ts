@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { log } from 'glidelite';
+import { log } from 'glidelite/backend';
 import net from 'node:net';
 import {
   IpcSetLight,

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite';
+import { ipc } from 'glidelite/backend';
 
 // Start IPC communication
 ipc.start('apiserver', 'statusmanager');

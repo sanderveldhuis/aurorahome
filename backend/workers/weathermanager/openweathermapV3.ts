@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { log } from 'glidelite';
+import { log } from 'glidelite/backend';
 import syncFetch from 'sync-fetch';
 import {
   IpcWeatherData,

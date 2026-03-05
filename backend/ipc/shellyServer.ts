@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+import { IpcPayload } from 'glidelite/backend';
 
 /**
  * The IPC message for setting a Shelly switch.

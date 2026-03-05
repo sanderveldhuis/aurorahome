@@ -25,7 +25,7 @@
 import {
   glconfig,
   ipc
-} from 'glidelite';
+} from 'glidelite/backend';
 import {
   IpcApplicationStatus,
   StatusHealth,

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+import { IpcPayload } from 'glidelite/backend';
 import { IpcShellyServerConfig } from './shellyServer';
 import { IpcWeatherManagerConfig } from './weatherManager';
 

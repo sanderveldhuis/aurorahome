@@ -25,9 +25,9 @@
 import express from 'express';
 import {
   ipc,
+  IpcPayload,
   log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from 'glidelite/backend';
 import {
   IpcApplicationStatus,
   IpcStatus,

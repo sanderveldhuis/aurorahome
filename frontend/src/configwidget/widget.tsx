@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import Api from '../hooks/api';
+import { api } from 'glidelite/frontend';
 import useInterval from '../hooks/useInterval';
 import './widget.css';
 import ApplicationConfig from './applicationConfig';
@@ -52,8 +52,8 @@ interface ApiApplicationStatus {
  * @param result the result to search in
  * @returns the application status
  */
-function getStatusForName(name: string, result: any): ApiApplicationStatus {
-  if (typeof result === 'object' || Array.isArray(result)) {
+function getStatusForName(name: string, result: object | null): ApiApplicationStatus {
+  if (Array.isArray(result)) {
     for (const obj of result) {
       if (typeof obj === 'object' && obj !== null) {
         const application = obj as object;
@@ -76,11 +76,8 @@ function ConfigWidget() {
   const shellyServerState = useApplicationState('Shelly Server');
 
   useInterval(() => {
-    // TODO: replace by GlideLite API helper to /api/status
-    Api.get('http://localhost:12002/status')
+    api.get({ path: '/status', responseType: 'json', timeout: 800 })
       .then(result => {
-        // TODO: instead checking the message in each 'getStatusForName' do it only once here to make it more lightweight?
-
         // Handle Config Manager status
         let status = getStatusForName('configmanager', result);
         configManagerState.setHealth(status.health);
@@ -124,7 +121,7 @@ function ConfigWidget() {
         shellyServerState.setHealth('');
         shellyServerState.setDetails({});
       });
-  }, 5000); // TODO: configure time somewhere
+  }, 1000);
 
   return (
     <>

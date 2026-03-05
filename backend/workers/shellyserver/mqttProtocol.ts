@@ -25,7 +25,7 @@
 import {
   glconfig,
   log
-} from 'glidelite';
+} from 'glidelite/backend';
 import mqtt from 'mqtt-packet';
 import net from 'node:net';
 
