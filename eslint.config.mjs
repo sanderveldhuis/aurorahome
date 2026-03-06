@@ -10,7 +10,7 @@ export default tseslint.config(
   { ignores: ['output', 'node_modules'] },
   {
     extends: [eslint.configs.recommended, ...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylisticTypeChecked],
-    files: ['backend/**'],
+    files: ['backend/**', 'shared/**'],
     rules: {
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off'
@@ -19,7 +19,7 @@ export default tseslint.config(
       globals: globals.node,
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: ['./backend/tsconfig.json', './backend/tsconfig-eslint.json']
+        project: ['./tsconfig.json', './tsconfig-eslint.json']
       }
     }
   },
@@ -31,7 +31,7 @@ export default tseslint.config(
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite
     ],
-    files: ['frontend/**'],
+    files: ['frontend/**', 'shared/**'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
