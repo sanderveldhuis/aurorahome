@@ -30,7 +30,7 @@ import { IpcWeatherManagerConfig } from './weatherManager';
  * The application name of the configuration.
  */
 export type ConfigName = typeof CONFIG_NAME[number];
-export const CONFIG_NAME = ['WeatherManager', 'ShellyServer'] as const;
+const CONFIG_NAME = ['WeatherManager', 'ShellyServer'] as const;
 
 /**
  * The IPC message for setting configuration in the Config Manager.
@@ -59,7 +59,7 @@ export function isIpcSetConfigMessage(name: string, payload: IpcPayload): payloa
  * The result of setting the configuration.
  */
 export type SetConfigResult = typeof SET_CONFIG_RESULT[number];
-export const SET_CONFIG_RESULT = ['ok', 'disconnected', 'error'] as const;
+const SET_CONFIG_RESULT = ['ok', 'disconnected', 'error'] as const;
 
 /**
  * The IPC response message for setting configuration in the Config Manager.

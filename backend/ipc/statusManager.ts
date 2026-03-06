@@ -28,13 +28,13 @@ import { IpcPayload } from 'glidelite/backend';
  * The application type.
  */
 export type StatusType = typeof STATUS_TYPE[number];
-export const STATUS_TYPE = ['worker', 'shellydevice'] as const;
+const STATUS_TYPE = ['worker', 'shellydevice'] as const;
 
 /**
  * The application health.
  */
 export type StatusHealth = typeof STATUS_HEALTH[number];
-export const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
+const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
 
 /**
  * The IPC message for indicating statusses to the Status Manager.
@@ -71,4 +71,37 @@ export function isIpcApplicationStatusMessage(name: string, payload: IpcPayload)
  */
 export interface IpcStatus {
   applications: IpcApplicationStatus[];
+}
+
+/**
+ * Checks whether the specified message is an IPC Status message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a Status message, or `false` otherwise
+ */
+export function isIpcStatusMessage(name: string, payload: IpcPayload): payload is IpcStatus {
+  if (name !== 'Status' || typeof payload !== 'object' || payload === null || !('applications' in payload) || !Array.isArray(payload.applications)) {
+    return false;
+  }
+  for (const obj of payload.applications) {
+    if (typeof obj === 'object' && obj !== null) {
+      const applicationStatus = obj as object;
+      if (
+        'name' in applicationStatus && typeof applicationStatus.name === 'string' &&
+        'type' in applicationStatus && typeof applicationStatus.type === 'string' && STATUS_TYPE.find(type => type === applicationStatus.type) !== undefined &&
+        'health' in applicationStatus && typeof applicationStatus.health === 'string' && STATUS_HEALTH.find(health => health === applicationStatus.health) !== undefined &&
+        (!('details' in applicationStatus) || (typeof applicationStatus.details === 'object' && applicationStatus.details !== null))
+      ) {
+        // Application status is ok
+        continue;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+  return true;
 }

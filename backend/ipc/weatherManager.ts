@@ -28,13 +28,13 @@ import { IpcPayload } from 'glidelite/backend';
  * The weather data source name.
  */
 export type SourceName = typeof SOURCE_NAME[number];
-export const SOURCE_NAME = ['openweathermapV3'] as const;
+const SOURCE_NAME = ['openweathermapV3'] as const;
 
 /**
  * The weather data unit.
  */
 export type SourceUnits = typeof SOURCE_UNITS[number];
-export const SOURCE_UNITS = ['standard', 'metric', 'imperial'] as const;
+const SOURCE_UNITS = ['standard', 'metric', 'imperial'] as const;
 
 /**
  * The Weather Manager weather data source.

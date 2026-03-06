@@ -25,61 +25,25 @@
 import express from 'express';
 import {
   ipc,
-  IpcPayload,
   log
 } from 'glidelite/backend';
 import {
-  IpcApplicationStatus,
-  IpcStatus,
-  STATUS_HEALTH,
-  STATUS_TYPE
-} from '../../ipc/statusManager';
+  ApiApplicationStatus,
+  ApiStatusResponse
+} from '../../../shared/apiStatus';
+import { isIpcStatusMessage } from '../../ipc/statusManager';
 
-let statusses: IpcApplicationStatus[] = [];
-
-/**
- * Checks whether the specified message is a Status message.
- * @param name the message name
- * @param payload the message payload
- * @returns `true` when the message is a Status message, or `false` otherwise
- */
-function isStatusMessage(name: string, payload: IpcPayload): payload is IpcStatus {
-  if (
-    name === 'Status' && typeof payload === 'object' && payload !== null &&
-    'applications' in payload && typeof payload.applications === 'object' && Array.isArray(payload.applications)
-  ) {
-    for (const obj of payload.applications) {
-      if (typeof obj === 'object' && obj !== null) {
-        const applicationStatus = obj as object;
-        if (
-          'name' in applicationStatus && typeof applicationStatus.name === 'string' &&
-          'type' in applicationStatus && typeof applicationStatus.type === 'string' && STATUS_TYPE.find(type => type === applicationStatus.type) !== undefined &&
-          'health' in applicationStatus && typeof applicationStatus.health === 'string' && STATUS_HEALTH.find(health => health === applicationStatus.health) !== undefined &&
-          (!('details' in applicationStatus) || ('details' in applicationStatus && typeof applicationStatus.details === 'object' && applicationStatus.details !== null))
-        ) {
-          // Application status is ok
-          continue;
-        }
-        else {
-          return false;
-        }
-      }
-      else {
-        return false;
-      }
-    }
-  }
-  else {
-    return false;
-  }
-
-  return true;
-}
+// Caches published application statusses
+const statusses: ApiStatusResponse = { applications: [] };
 
 // Subscribe to updates from the Status Manager
 ipc.to.statusmanager.subscribe('Status', (name, payload) => {
-  if (isStatusMessage(name, payload)) {
-    statusses = payload.applications;
+  if (isIpcStatusMessage(name, payload)) {
+    const applications: ApiApplicationStatus[] = [];
+    for (const application of payload.applications) {
+      applications.push({ name: application.name, health: application.health, details: application.details });
+    }
+    statusses.applications = applications;
   }
   else {
     log.apiserver.warn(`Received unknown IPC publish with name: ${name}: ${JSON.stringify(payload)}`);
