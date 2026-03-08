@@ -1,7 +1,7 @@
 
 # System Overview
 
-The image below gives a brief overview of all components in the AuroraHome system, or Dive deeper into the components of AuroraHome:
+The image below gives a brief overview of all components in the AuroraHome system, or dive deeper into the components of AuroraHome:
 
 * [Status Manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/status-manager.md)
 * [Config Manager](https://github.com/sanderveldhuis/aurorahome/blob/main/doc/technical/config-manager.md)
