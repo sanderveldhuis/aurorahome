@@ -8,7 +8,6 @@ System_Ext(OpenWeatherMap, "OpenWeatherMap", "")
 ContainerDb(MongoDb, "MongoDB", "")
 
 System_Boundary(Ui, "UI") {
-  System(StatusWidget, "StatusWidget", "")
   System(ConfigWidget, "ConfigWidget", "")
   System(WeatherWidget, "WeatherWidget", "")
   System(LogWidget, "LogWidget", "")
@@ -31,7 +30,7 @@ System_Boundary(Workers, "Workers") {
 Rel_D(User, Api, "HTTPS", "GET/POST/PUT/DELETE")
 Rel_L(User, Ui, "HTTPS", "GET")
 
-Rel_D(StatusWidget, StatusApi, "HTTPS", "GET")
+Rel_D(ConfigWidget, StatusApi, "HTTPS", "GET")
 Rel_D(ConfigWidget, WeatherApi, "HTTPS", "GET/POST")
 Rel_D(WeatherWidget, WeatherApi, "HTTPS", "GET")
 Rel_D(ConfigWidget, ShellyApi, "HTTPS", "GET/POST")
@@ -49,6 +48,7 @@ Rel_U(ConfigManager, ShellyApi, "IPC pub/sub", "ShellyServerConfig")
 Rel_D(ConfigManager, StatusManager, "IPC ind", "ConfigManagerStatus")
 Rel_D(WeatherManager, StatusManager, "IPC ind", "WeatherManagerStatus")
 Rel_D(ShellyServer, StatusManager, "IPC ind", "ShellyServerStatus")
+Rel_U(StatusManager, StatusApi, "IPC pub/sub", "Status")
 
 Rel_R(ConfigManager, MongoDb, "read/write")
 Rel_R(WeatherManager, OpenWeatherMap, "HTTPS", "GET")

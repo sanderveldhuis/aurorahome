@@ -22,12 +22,16 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
-
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager');
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
-});
+/**
+ * Convert a string to HTML identifier usable for HTML elements.
+ * @param input the input string
+ * @returns the HTML identifier
+ */
+export function toHtmlId(input: string): string {
+  return input
+    .toLowerCase() // Convert the string to lowercase
+    .replace(/[^a-z0-9\s-]/g, '') // Remove all non-alphanumeric characters except spaces and hyphens
+    .trim() // Remove leading and trailing spaces
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Replace multiple hyphens with a single hyphen
+}

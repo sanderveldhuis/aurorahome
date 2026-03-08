@@ -22,12 +22,31 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+import {
+  useEffect,
+  useEffectEvent
+} from 'react';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager');
+/**
+ * Invokes the specified handler on each timeout.
+ * @param handler the handler invoked after timeout
+ * @param timeout the timeout in milliseconds
+ */
+function useInterval(handler: () => void, timeout: number) {
+  const onTimeout = useEffectEvent(handler);
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
-});
+  // Create the interval timer
+  useEffect(() => {
+    const id = setInterval(() => {
+      onTimeout();
+    }, timeout);
+    onTimeout();
+
+    return () => {
+      // Clean up the interval timer
+      clearInterval(id);
+    };
+  }, [timeout]);
+}
+
+export default useInterval;

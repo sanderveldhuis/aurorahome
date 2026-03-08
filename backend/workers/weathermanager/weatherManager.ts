@@ -24,14 +24,13 @@
 
 import {
   ipc,
+  IpcPayload,
   log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from 'glidelite/backend';
 import { status } from '../../ipc/statusReporter';
 import {
   IpcWeatherManagerConfig,
-  SOURCE_NAME,
-  SOURCE_UNITS,
+  isIpcWeatherManagerConfigMessage,
   WeatherManagerStatusDetails
 } from '../../ipc/weatherManager';
 import { OpenWeatherMapV3 } from './openweathermapV3';
@@ -60,7 +59,7 @@ export class WeatherManager {
 
     // Start status reporting
     status.weathermanager.start('worker');
-    status.weathermanager.setHealth('running');
+    status.weathermanager.setHealth('disabled');
 
     log.weathermanager.info('Started');
   }
@@ -88,34 +87,13 @@ export class WeatherManager {
    * @param payload the publish payload
    */
   _onPublish(name: string, payload: IpcPayload): void {
-    if (this._isWeatherManagerConfigMessage(name, payload)) {
+    if (isIpcWeatherManagerConfigMessage(name, payload)) {
       log.weathermanager.info('Received WeatherManagerConfig publish via IPC');
       this._handleWeatherManagerConfig(payload);
     }
     else {
       log.weathermanager.warn(`Received unknown IPC publish with name '${name}': ${JSON.stringify(payload)}`);
     }
-  }
-
-  /**
-   * Checks whether the specified message is a WeatherManagerConfig message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
-   */
-  _isWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is IpcWeatherManagerConfig {
-    return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
-      (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
-        'interval' in payload.source && typeof payload.source.interval === 'number' &&
-        'name' in payload.source && typeof payload.source.name === 'string' &&
-        // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
-        'lat' in payload.source && typeof payload.source.lat === 'number' &&
-        'lon' in payload.source && typeof payload.source.lon === 'number' &&
-        'units' in payload.source && typeof payload.source.units === 'string' &&
-        // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-        SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
-        'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
   }
 
   /**
@@ -126,10 +104,10 @@ export class WeatherManager {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.clearDetails();
-    status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
     if (!config.source) {
+      status.weathermanager.setHealth('disabled');
       log.weathermanager.info(`Stopped weather retrieval`);
       return;
     }
@@ -137,6 +115,7 @@ export class WeatherManager {
     // Construct the status details
     this._statusDetails = { source: config.source.name };
     status.weathermanager.setDetails(this._statusDetails);
+    status.weathermanager.setHealth('running');
 
     // Construct the dedicated weather retriever
     // TODO: currently only supporting OpenWeatherMapV3, add if-statement once more protocols are supported

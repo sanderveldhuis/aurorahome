@@ -24,14 +24,15 @@
 
 import {
   ipc,
+  IpcPayload,
   log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from 'glidelite/backend';
 import net from 'node:net';
 import {
-  IpcSetLight,
-  IpcSetSwitch,
   IpcShellyServerConfig,
+  isIpcSetLightMessage,
+  isIpcSetSwitchMessage,
+  isIpcShellyServerConfigMessage,
   ShellyServerStatusDetails
 } from '../../ipc/shellyServer';
 import { status } from '../../ipc/statusReporter';
@@ -62,7 +63,7 @@ export class ShellyServer {
 
     // Start status reporting
     status.shellyserver.start('worker');
-    status.shellyserver.setHealth('running');
+    status.shellyserver.setHealth('disabled');
 
     log.shellyserver.info('Started');
   }
@@ -95,13 +96,13 @@ export class ShellyServer {
    * @param payload the indication payload
    */
   _onIndication(name: string, payload: IpcPayload): void {
-    if (this._isSetSwitchMessage(name, payload)) {
+    if (isIpcSetSwitchMessage(name, payload)) {
       log.shellyserver.info(`Received SetSwitch indication via IPC for MAC address: ${name}`);
       for (const device of Object.values(this._devices)) {
         device.setSwitch(name, payload);
       }
     }
-    else if (this._isSetLightMessage(name, payload)) {
+    else if (isIpcSetLightMessage(name, payload)) {
       log.shellyserver.info(`Received SetLight indication via IPC for MAC address: ${name}`);
       for (const device of Object.values(this._devices)) {
         device.setLight(name, payload);
@@ -118,7 +119,7 @@ export class ShellyServer {
    * @param payload the publish payload
    */
   _onPublish(name: string, payload: IpcPayload): void {
-    if (this._isShellyServerConfigMessage(name, payload)) {
+    if (isIpcShellyServerConfigMessage(name, payload)) {
       log.shellyserver.info('Received ShellyServerConfig publish via IPC');
       this._handleShellyServerConfig(payload);
     }
@@ -128,65 +129,24 @@ export class ShellyServer {
   }
 
   /**
-   * Checks whether the specified message is a SetSwitch message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a SetSwitch message, or `false` otherwise
-   */
-  _isSetSwitchMessage(name: string, payload: IpcPayload): payload is IpcSetSwitch {
-    // The message name should contain the Shelly device MAC address, it is checked later
-    return typeof payload === 'object' && payload !== null &&
-      'id' in payload && typeof payload.id === 'number' &&
-      'on' in payload && typeof payload.on === 'boolean';
-  }
-
-  /**
-   * Checks whether the specified message is a SetLight message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a SetLight message, or `false` otherwise
-   */
-  _isSetLightMessage(name: string, payload: IpcPayload): payload is IpcSetLight {
-    // The message name should contain the Shelly device MAC address, it is checked later
-    return typeof payload === 'object' && payload !== null &&
-      'id' in payload && typeof payload.id === 'number' &&
-      (!('on' in payload) || typeof payload.on === 'boolean') &&
-      (!('brightness' in payload) || typeof payload.brightness === 'number');
-  }
-
-  /**
-   * Checks whether the specified message is a ShellyServerConfig message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a ShellyServerConfig message, or `false` otherwise
-   */
-  _isShellyServerConfigMessage(name: string, payload: IpcPayload): payload is IpcShellyServerConfig {
-    return name === 'ShellyServerConfig' && typeof payload === 'object' && payload !== null &&
-      (!('mqtt' in payload) || (typeof payload.mqtt === 'object' && payload.mqtt !== null &&
-        'port' in payload.mqtt && typeof payload.mqtt.port === 'number' &&
-        'hostname' in payload.mqtt && typeof payload.mqtt.hostname === 'string' &&
-        'username' in payload.mqtt && typeof payload.mqtt.username === 'string' &&
-        'password' in payload.mqtt && typeof payload.mqtt.password === 'string'));
-  }
-
-  /**
    * Handles ShellyServerConfig message.
    * @param config the ShellyServerConfig message
    */
   _handleShellyServerConfig(config: IpcShellyServerConfig): void {
     // Always cleanup for safety
     status.shellyserver.clearDetails();
-    status.shellyserver.setHealth('running');
 
     // If no settings are available the MQTT server should stop
     if (!config.mqtt) {
       this._server.close();
+      status.shellyserver.setHealth('disabled');
       return;
     }
 
     // Construct the status details
     this._statusDetails = { port: config.mqtt.port, hostname: config.mqtt.hostname };
     status.shellyserver.setDetails(this._statusDetails);
+    status.shellyserver.setHealth('running');
 
     // Store credentials for future use
     this._username = config.mqtt.username;

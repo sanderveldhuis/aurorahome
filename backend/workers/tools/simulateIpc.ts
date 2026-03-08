@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite';
+import { ipc } from 'glidelite/backend';
 import readline from 'node:readline';
 import {
-  IpcSetConfigResponse,
   IpcShellyServerSetConfig,
-  IpcWeatherManagerSetConfig
+  IpcWeatherManagerSetConfig,
+  isIpcSetConfigReponseMessage
 } from '../../ipc/configManager';
 import { IpcShellyServerConfig } from '../../ipc/shellyServer';
 import { IpcWeatherManagerConfig } from '../../ipc/weatherManager';
@@ -73,8 +73,12 @@ function handleUserInput(input: string): void {
     console.log(`Stop the Weather Manager`);
     const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config: {} };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-      const response = payload as IpcSetConfigResponse;
-      console.log('Stop the Weather Manager result:', response.result);
+      if (isIpcSetConfigReponseMessage(name, payload)) {
+        console.log('Stop the Weather Manager result:', name, payload.result);
+      }
+      else {
+        console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+      }
     });
   }
   else if (command[0] === 'WeatherManager' && command.length === 2) {
@@ -82,16 +86,24 @@ function handleUserInput(input: string): void {
     const config: IpcWeatherManagerConfig = { source: { interval: 10, name: 'openweathermapV3', units: 'metric', lat: 52.368212, lon: 6.772371, apiKey: command[1] } };
     const setConfig: IpcWeatherManagerSetConfig = { name: 'WeatherManager', config };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-      const response = payload as IpcSetConfigResponse;
-      console.log('Start the Weather Manager result:', response.result);
+      if (isIpcSetConfigReponseMessage(name, payload)) {
+        console.log('Start the Weather Manager result:', payload.result);
+      }
+      else {
+        console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+      }
     });
   }
   else if (command[0] === 'ShellyServer' && command.length === 2 && command[1] === 'stop') {
     console.log(`Stop the Shelly Server`);
     const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config: {} };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-      const response = payload as IpcSetConfigResponse;
-      console.log('Stop the Shelly Server result:', response.result);
+      if (isIpcSetConfigReponseMessage(name, payload)) {
+        console.log('Stop the Shelly Server result:', payload.result);
+      }
+      else {
+        console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+      }
     });
   }
   else if (command[0] === 'ShellyServer' && command.length === 2 && !Number.isNaN(command[1])) {
@@ -99,8 +111,12 @@ function handleUserInput(input: string): void {
     const config: IpcShellyServerConfig = { mqtt: { port: Number(command[1]), hostname: '0.0.0.0', username: 'test1', password: 'test2' } };
     const setConfig: IpcShellyServerSetConfig = { name: 'ShellyServer', config };
     ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-      const response = payload as IpcSetConfigResponse;
-      console.log('Start the Shelly Server result:', response.result);
+      if (isIpcSetConfigReponseMessage(name, payload)) {
+        console.log('Start the Shelly Server result:', payload.result);
+      }
+      else {
+        console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+      }
     });
   }
   else {

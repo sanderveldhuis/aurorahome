@@ -23,7 +23,7 @@
  */
 
 import express from 'express';
-import { glconfig } from 'glidelite';
+import { glconfig } from 'glidelite/backend';
 
 // Construct the Express router
 const router = express.Router();

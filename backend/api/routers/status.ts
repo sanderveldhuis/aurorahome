@@ -22,12 +22,40 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+import express from 'express';
+import {
+  ipc,
+  log
+} from 'glidelite/backend';
+import {
+  ApiApplicationStatus,
+  ApiStatusResponse
+} from '../../../shared/apiStatus';
+import { isIpcStatusMessage } from '../../ipc/statusManager';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager');
+// Caches published application statusses
+const statusses: ApiStatusResponse = { applications: [] };
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
+// Subscribe to updates from the Status Manager
+ipc.to.statusmanager.subscribe('Status', (name, payload) => {
+  if (isIpcStatusMessage(name, payload)) {
+    const applications: ApiApplicationStatus[] = [];
+    for (const application of payload.applications) {
+      applications.push({ name: application.name, health: application.health, details: application.details });
+    }
+    statusses.applications = applications;
+  }
+  else {
+    log.apiserver.warn(`Received unknown IPC publish with name: ${name}: ${JSON.stringify(payload)}`);
+  }
 });
+
+// Construct the Express router
+const router = express.Router();
+
+// The router implementation
+router.get('/status', (req, res) => {
+  res.status(200).json(statusses);
+});
+
+export default router;

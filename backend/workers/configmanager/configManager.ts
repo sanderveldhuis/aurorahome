@@ -25,15 +25,15 @@
 import {
   glconfig,
   ipc,
+  IpcPayload,
   log
-} from 'glidelite';
-import { IpcPayload } from 'glidelite/lib/ipcMessage';
+} from 'glidelite/backend';
 import mongoose from 'mongoose';
 import { ConnectionStates } from 'mongoose';
 import {
-  CONFIG_NAME,
   IpcSetConfig,
-  IpcSetConfigResponse
+  IpcSetConfigResponse,
+  isIpcSetConfigMessage
 } from '../../ipc/configManager';
 import { status } from '../../ipc/statusReporter';
 import Config from './configModel';
@@ -163,7 +163,7 @@ export class ConfigManager {
    * @param response the response function
    */
   _onRequest(name: string, payload: IpcPayload, response: (payload?: IpcPayload) => void): void {
-    if (this._isSetConfigMessage(name, payload)) {
+    if (isIpcSetConfigMessage(name, payload)) {
       log.configmanager.info(`Received SetConfig request via IPC for name '${payload.name}'`);
       this._handleSetConfigMessage(payload, response);
     }
@@ -171,18 +171,6 @@ export class ConfigManager {
       log.configmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
       response({ result: 'error' } as IpcSetConfigResponse);
     }
-  }
-
-  /**
-   * Checks whether the specified message is a SetConfig message.
-   * @param name the message name
-   * @param payload the message payload
-   * @returns `true` when the message is a SetConfig message, or `false` otherwise
-   */
-  _isSetConfigMessage(name: string, payload: IpcPayload): payload is IpcSetConfig {
-    return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-      'name' in payload && typeof payload.name === 'string' && CONFIG_NAME.find(name => name === payload.name) !== undefined &&
-      'config' in payload && typeof payload.config === 'object' && payload.config !== null;
   }
 
   /**

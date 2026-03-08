@@ -17,8 +17,8 @@ E.g.: an application named `HelloWorld` can subscribe and receive its configurat
 
 ```typescript
 import { ipc, log } from 'glidelite';
-// The `Ipc<Application>Config` interface should be described in `backend/workers/<application>/types.ts`
-import { IpcHelloWorldConfig } from '../helloworld/types';
+// The `Ipc<Application>Config` interface should be described in `backend/ipc/<application>.ts`
+import { IpcHelloWorldConfig } from '../../ipc/helloworld';
 
 ipc.to.configmanager.subscribe('HelloWorldConfig', (name, payload) => {
   // It is adviced to check the payload before casting to the dedicated interface
@@ -37,13 +37,16 @@ E.g.: creating/updating the configuration for an application named `HelloWorld` 
 
 ```typescript
 import { ipc, log } from 'glidelite';
-// The `HelloWorld` application name and `IpcHelloWorldSetConfig` interface should be described in `backend/workers/configmanager/types.ts`
-import { IpcHelloWorldSetConfig, IpcSetConfigResponse } from '../configmanager/types';
+// The `HelloWorld` application name and `IpcHelloWorldSetConfig` interface should be described in `backend/ipc/configmanager.ts`
+import { IpcHelloWorldSetConfig, isSetConfigReponseMessage } from '../../ipc/configmanager';
 
 const config: IpcHelloWorldSetConfig = { name: 'HelloWorld', config: { hello: 'world' } };
 ipc.to.configmanager.request('SetConfig', config, (name, payload) => {
-  // It is adviced to check the payload before casting to the dedicated interface
-  const response = payload as IpcSetConfigResponse;
-  log.helloworld.info('Setting HelloWorld config result:', response.result);
+  if (isSetConfigReponseMessage(name, payload)) {
+    console.log('Setting HelloWorld config result:', payload.result);
+  }
+  else {
+    console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+  }
 });
 ```

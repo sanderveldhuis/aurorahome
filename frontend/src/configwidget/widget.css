@@ -21,13 +21,3 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { ipc } from 'glidelite/backend';
-
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager');
-
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
-});

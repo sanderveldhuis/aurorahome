@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { IpcPayload } from 'glidelite/backend';
+
 /**
  * The IPC message for setting a Shelly switch.
  * @details the IPC message name should be the Shelly device MAC address
@@ -31,6 +33,19 @@ export interface IpcSetSwitch {
   id: number;
   /** `true` for switch on, or `false` otherwise  */
   on: boolean;
+}
+
+/**
+ * Checks whether the specified message is an IPC SetSwitch message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a SetSwitch message, or `false` otherwise
+ */
+export function isIpcSetSwitchMessage(name: string, payload: IpcPayload): payload is IpcSetSwitch {
+  // The message name should contain the Shelly device MAC address, it is checked later
+  return typeof payload === 'object' && payload !== null &&
+    'id' in payload && typeof payload.id === 'number' &&
+    'on' in payload && typeof payload.on === 'boolean';
 }
 
 /**
@@ -44,6 +59,20 @@ export interface IpcSetLight {
   on?: boolean;
   /** Brightness level of the light (optional) */
   brightness?: number;
+}
+
+/**
+ * Checks whether the specified message is an IPC SetLight message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a SetLight message, or `false` otherwise
+ */
+export function isIpcSetLightMessage(name: string, payload: IpcPayload): payload is IpcSetLight {
+  // The message name should contain the Shelly device MAC address, it is checked later
+  return typeof payload === 'object' && payload !== null &&
+    'id' in payload && typeof payload.id === 'number' &&
+    (!('on' in payload) || typeof payload.on === 'boolean') &&
+    (!('brightness' in payload) || typeof payload.brightness === 'number');
 }
 
 /**
@@ -67,6 +96,21 @@ export interface ShellyServerMqtt {
 export interface IpcShellyServerConfig {
   /** The MQTT settings, `undefined` means no MQTT server should be started */
   mqtt?: ShellyServerMqtt;
+}
+
+/**
+ * Checks whether the specified message is an IPC ShellyServerConfig message.
+ * @param name the message name
+ * @param payload the message payload
+ * @returns `true` when the message is a ShellyServerConfig message, or `false` otherwise
+ */
+export function isIpcShellyServerConfigMessage(name: string, payload: IpcPayload): payload is IpcShellyServerConfig {
+  return name === 'ShellyServerConfig' && typeof payload === 'object' && payload !== null &&
+    (!('mqtt' in payload) || (typeof payload.mqtt === 'object' && payload.mqtt !== null &&
+      'port' in payload.mqtt && typeof payload.mqtt.port === 'number' &&
+      'hostname' in payload.mqtt && typeof payload.mqtt.hostname === 'string' &&
+      'username' in payload.mqtt && typeof payload.mqtt.username === 'string' &&
+      'password' in payload.mqtt && typeof payload.mqtt.password === 'string'));
 }
 
 /**
