@@ -59,7 +59,7 @@ export class WeatherManager {
 
     // Start status reporting
     status.weathermanager.start('worker');
-    status.weathermanager.setHealth('running');
+    status.weathermanager.setHealth('disabled');
 
     log.weathermanager.info('Started');
   }
@@ -104,10 +104,10 @@ export class WeatherManager {
     // Always cleanup for safety
     clearInterval(this._retrievalTimer);
     status.weathermanager.clearDetails();
-    status.weathermanager.setHealth('running');
 
     // If no source is available the weather retrieval should stop
     if (!config.source) {
+      status.weathermanager.setHealth('disabled');
       log.weathermanager.info(`Stopped weather retrieval`);
       return;
     }
@@ -115,6 +115,7 @@ export class WeatherManager {
     // Construct the status details
     this._statusDetails = { source: config.source.name };
     status.weathermanager.setDetails(this._statusDetails);
+    status.weathermanager.setHealth('running');
 
     // Construct the dedicated weather retriever
     // TODO: currently only supporting OpenWeatherMapV3, add if-statement once more protocols are supported

@@ -63,7 +63,7 @@ export class ShellyServer {
 
     // Start status reporting
     status.shellyserver.start('worker');
-    status.shellyserver.setHealth('running');
+    status.shellyserver.setHealth('disabled');
 
     log.shellyserver.info('Started');
   }
@@ -135,17 +135,18 @@ export class ShellyServer {
   _handleShellyServerConfig(config: IpcShellyServerConfig): void {
     // Always cleanup for safety
     status.shellyserver.clearDetails();
-    status.shellyserver.setHealth('running');
 
     // If no settings are available the MQTT server should stop
     if (!config.mqtt) {
       this._server.close();
+      status.shellyserver.setHealth('disabled');
       return;
     }
 
     // Construct the status details
     this._statusDetails = { port: config.mqtt.port, hostname: config.mqtt.hostname };
     status.shellyserver.setDetails(this._statusDetails);
+    status.shellyserver.setHealth('running');
 
     // Store credentials for future use
     this._username = config.mqtt.username;

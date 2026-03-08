@@ -34,7 +34,7 @@ const STATUS_TYPE = ['worker', 'shellydevice'] as const;
  * The application health.
  */
 export type StatusHealth = typeof STATUS_HEALTH[number];
-const STATUS_HEALTH = ['starting', 'running', 'instable'] as const;
+const STATUS_HEALTH = ['starting', 'running', 'instable', 'disabled'] as const;
 
 /**
  * The IPC message for indicating statusses to the Status Manager.

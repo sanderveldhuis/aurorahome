@@ -56,6 +56,16 @@
   --bs-alert-border-color: var(--bs-warning-border-subtle);
 }
 
+.application-config svg.disabled {
+  fill: darkgray;
+}
+
+.application-config .alert.disabled {
+  --bs-alert-color: var(--bs-dark-text-emphasis);
+  --bs-alert-bg: var(--bs-dark-bg-subtle);
+  --bs-alert-border-color: var(--bs-dark-border-subtle);
+}
+
 .application-config svg.stopped {
   fill: orangered;
 }
