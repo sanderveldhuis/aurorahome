@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MqttProtocol = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const mqtt_packet_1 = __importDefault(require("mqtt-packet"));
 /**
  * Executes the MQTT protocol on a socket.
@@ -65,7 +65,7 @@ class MqttProtocol {
         this._publishCallback = publishCallback;
         this._parser = mqtt_packet_1.default.parser();
         this._clientId = 'unknown';
-        this._protocolVersion = glidelite_1.glconfig.mqtt.version;
+        this._protocolVersion = backend_1.glconfig.mqtt.version;
         this._cache = {};
         this._messageId = 1;
     }
@@ -159,7 +159,7 @@ class MqttProtocol {
      * @param error the error
      */
     _onError(error) {
-        glidelite_1.log.shellydevice.error(`Error occurred in device '${this._clientId}', message: ${error.message}`);
+        backend_1.log.shellydevice.error(`Error occurred in device '${this._clientId}', message: ${error.message}`);
         this._socket.destroy();
     }
     /**
@@ -215,7 +215,7 @@ class MqttProtocol {
                 break;
             }
             default: {
-                glidelite_1.log.shellydevice.warn(`Unknown packet from device '${this._clientId}', command: ${packet.cmd}`);
+                backend_1.log.shellydevice.warn(`Unknown packet from device '${this._clientId}', command: ${packet.cmd}`);
                 break;
             }
         }
@@ -227,7 +227,7 @@ class MqttProtocol {
     _onConnect(packet) {
         // Store received settings for future use
         this._clientId = packet.clientId;
-        this._protocolVersion = packet.protocolVersion ?? glidelite_1.glconfig.mqtt.version;
+        this._protocolVersion = packet.protocolVersion ?? backend_1.glconfig.mqtt.version;
         this._socket.setTimeout((packet.keepalive ?? 0) * 1500);
         // Validate credentials
         if (packet.username === this._username && packet.password?.toString() === this._password) {
@@ -236,7 +236,7 @@ class MqttProtocol {
             this._connectCallback(this._clientId);
         }
         else {
-            glidelite_1.log.shellydevice.warn(`Invalid credentials from device '${this._clientId}'`);
+            backend_1.log.shellydevice.warn(`Invalid credentials from device '${this._clientId}'`);
             const data = mqtt_packet_1.default.generate({ cmd: 'connack', returnCode: 4 }, { protocolVersion: this._protocolVersion });
             this._socket.write(data);
         }
@@ -365,7 +365,7 @@ class MqttProtocol {
             this._cache[messageId] = { command, count: 0, message };
         }
         // Check if retries already exceeded
-        if (this._cache[messageId].count >= glidelite_1.glconfig.mqtt.retryMax) {
+        if (this._cache[messageId].count >= backend_1.glconfig.mqtt.retryMax) {
             return;
         }
         // Clear any running timeout
@@ -393,7 +393,7 @@ class MqttProtocol {
                     break;
             }
             this._setRetryTimeout(command, messageId, message);
-        }, glidelite_1.glconfig.mqtt.retryTimeout);
+        }, backend_1.glconfig.mqtt.retryTimeout);
     }
 }
 exports.MqttProtocol = MqttProtocol;
