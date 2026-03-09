@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenWeatherMapV3 = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const sync_fetch_1 = __importDefault(require("sync-fetch"));
 const weatherRetriever_1 = require("./weatherRetriever");
 /**
@@ -61,12 +61,12 @@ class OpenWeatherMapV3 {
             response = (0, sync_fetch_1.default)(`https://api.openweathermap.org/data/3.0/onecall?lat=${String(this._lat)}&lon=${String(this._lon)}&appid=${this._apiKey}&units=${this._units}`);
         }
         catch (error) {
-            glidelite_1.log.weathermanager.error(`Failed retrieving weather data from 'openweathermapV3': ${error instanceof Error ? error.message : 'unknown'}`);
+            backend_1.log.weathermanager.error(`Failed retrieving weather data from 'openweathermapV3': ${error instanceof Error ? error.message : 'unknown'}`);
             return { status: weatherRetriever_1.WeatherRetrieverStatus.Error };
         }
         // Stop if failed to retrieve the weather data
         if (response.status !== 200) {
-            glidelite_1.log.weathermanager.error(`Failed retrieving weather data from 'openweathermapV3': status code ${String(response.status)}`);
+            backend_1.log.weathermanager.error(`Failed retrieving weather data from 'openweathermapV3': status code ${String(response.status)}`);
             return { status: weatherRetriever_1.WeatherRetrieverStatus.Failed };
         }
         // Construct the response JSON and return data

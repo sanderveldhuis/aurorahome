@@ -26,8 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const node_readline_1 = __importDefault(require("node:readline"));
+const configManager_1 = require("../../ipc/configManager");
 let userInput;
 /**
  * Prints the help manual.
@@ -64,35 +65,51 @@ function handleUserInput(input) {
     if (command[0] === 'WeatherManager' && command.length === 2 && command[1] === 'stop') {
         console.log(`Stop the Weather Manager`);
         const setConfig = { name: 'WeatherManager', config: {} };
-        glidelite_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-            const response = payload;
-            console.log('Stop the Weather Manager result:', response.result);
+        backend_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+            if ((0, configManager_1.isIpcSetConfigReponseMessage)(name, payload)) {
+                console.log('Stop the Weather Manager result:', name, payload.result);
+            }
+            else {
+                console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+            }
         });
     }
     else if (command[0] === 'WeatherManager' && command.length === 2) {
         console.log(`Start the Weather Manager`);
         const config = { source: { interval: 10, name: 'openweathermapV3', units: 'metric', lat: 52.368212, lon: 6.772371, apiKey: command[1] } };
         const setConfig = { name: 'WeatherManager', config };
-        glidelite_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-            const response = payload;
-            console.log('Start the Weather Manager result:', response.result);
+        backend_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+            if ((0, configManager_1.isIpcSetConfigReponseMessage)(name, payload)) {
+                console.log('Start the Weather Manager result:', payload.result);
+            }
+            else {
+                console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+            }
         });
     }
     else if (command[0] === 'ShellyServer' && command.length === 2 && command[1] === 'stop') {
         console.log(`Stop the Shelly Server`);
         const setConfig = { name: 'ShellyServer', config: {} };
-        glidelite_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-            const response = payload;
-            console.log('Stop the Shelly Server result:', response.result);
+        backend_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+            if ((0, configManager_1.isIpcSetConfigReponseMessage)(name, payload)) {
+                console.log('Stop the Shelly Server result:', payload.result);
+            }
+            else {
+                console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+            }
         });
     }
     else if (command[0] === 'ShellyServer' && command.length === 2 && !Number.isNaN(command[1])) {
         console.log(`Start the Shelly Server`);
         const config = { mqtt: { port: Number(command[1]), hostname: '0.0.0.0', username: 'test1', password: 'test2' } };
         const setConfig = { name: 'ShellyServer', config };
-        glidelite_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
-            const response = payload;
-            console.log('Start the Shelly Server result:', response.result);
+        backend_1.ipc.to.configmanager.request('SetConfig', setConfig, (name, payload) => {
+            if ((0, configManager_1.isIpcSetConfigReponseMessage)(name, payload)) {
+                console.log('Start the Shelly Server result:', payload.result);
+            }
+            else {
+                console.log(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`);
+            }
         });
     }
     else {
@@ -101,8 +118,8 @@ function handleUserInput(input) {
     }
 }
 // Start IPC
-glidelite_1.ipc.start('ipcsimulator', 'configmanager', 'weathermanager');
-glidelite_1.ipc.to.weathermanager.subscribe('WeatherData', (name, payload) => {
+backend_1.ipc.start('ipcsimulator', 'configmanager', 'weathermanager');
+backend_1.ipc.to.weathermanager.subscribe('WeatherData', (name, payload) => {
     console.log('Received weather data:', JSON.stringify(payload));
 });
 // Handle user input as commands
@@ -112,5 +129,5 @@ waitForUserInput();
 // Gracefully shutdown
 process.on('SIGINT', () => {
     userInput?.close();
-    glidelite_1.ipc.stop();
+    backend_1.ipc.stop();
 });
