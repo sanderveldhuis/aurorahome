@@ -1,2 +1,2 @@
-@reboot root node /opt/aurorahome/node_modules/glidelite/lib/api.js 12002 >> /var/log/aurorahome/api.log &
-* * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/node_modules/glidelite/lib/api.js 12002" || node /opt/aurorahome/node_modules/glidelite/lib/api.js 12002 >> /var/log/aurorahome/api.log &
+@reboot root node /opt/aurorahome/node_modules/glidelite/lib/apiserver/run.js 12002 >> /var/log/aurorahome/api.log &
+* * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/node_modules/glidelite/lib/apiserver/run.js 12002" || node /opt/aurorahome/node_modules/glidelite/lib/apiserver/run.js 12002 >> /var/log/aurorahome/api.log &
