@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 // Start IPC communication
-glidelite_1.ipc.start('apiserver', 'statusmanager');
+backend_1.ipc.start('apiserver', 'statusmanager');
 // Gracefully shutdown
 process.on('SIGINT', () => {
-    glidelite_1.ipc.stop();
+    backend_1.ipc.stop();
 });
