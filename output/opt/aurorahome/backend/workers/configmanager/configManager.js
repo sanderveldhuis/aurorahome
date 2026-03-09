@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigManager = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const mongoose_1 = __importDefault(require("mongoose"));
 const mongoose_2 = require("mongoose");
 const configManager_1 = require("../../ipc/configManager");
@@ -44,15 +44,15 @@ class ConfigManager {
      */
     start() {
         // Start IPC communication
-        glidelite_1.ipc.start('configmanager', 'statusmanager');
-        glidelite_1.ipc.onRequest((name, payload, response) => {
+        backend_1.ipc.start('configmanager', 'statusmanager');
+        backend_1.ipc.onRequest((name, payload, response) => {
             this._onRequest(name, payload, response);
         });
         // Start status reporting
         statusReporter_1.status.configmanager.start('worker');
         // Start database connection
         this._connectDatabase();
-        glidelite_1.log.configmanager.info('Started');
+        backend_1.log.configmanager.info('Started');
     }
     /**
      * Stops the Config Manager.
@@ -70,15 +70,15 @@ class ConfigManager {
         // Stop status reporting
         statusReporter_1.status.configmanager.stop();
         // Stop IPC communication
-        glidelite_1.ipc.stop();
-        glidelite_1.log.configmanager.info('Stopped');
+        backend_1.ipc.stop();
+        backend_1.log.configmanager.info('Stopped');
     }
     /**
      * Connects to the database.
      */
     _connectDatabase() {
         // Start the connection
-        mongoose_1.default.connect(glidelite_1.glconfig.config.database, { serverSelectionTimeoutMS: 1000 }).then(() => {
+        mongoose_1.default.connect(backend_1.glconfig.config.database, { serverSelectionTimeoutMS: 1000 }).then(() => {
             // Add listeners for future disconnect and connect events
             mongoose_1.default.connection.addListener('disconnected', () => {
                 this._handleDatabaseDisconnect();
@@ -100,13 +100,13 @@ class ConfigManager {
      */
     _handleDatabaseDisconnect() {
         statusReporter_1.status.configmanager.setHealth('instable');
-        glidelite_1.log.configmanager.warn(`Disconnected from database '${glidelite_1.glconfig.config.database}'`);
+        backend_1.log.configmanager.warn(`Disconnected from database '${backend_1.glconfig.config.database}'`);
     }
     /**
      * Handles database connection establishment.
      */
     _handleDatabaseConnect() {
-        glidelite_1.log.configmanager.info(`Connected to database '${glidelite_1.glconfig.config.database}'`);
+        backend_1.log.configmanager.info(`Connected to database '${backend_1.glconfig.config.database}'`);
         this._publishAllConfigs();
     }
     /**
@@ -118,18 +118,18 @@ class ConfigManager {
         configModel_1.default.find().then(configs => {
             // Publish all available configurations
             for (const config of configs) {
-                glidelite_1.ipc.publish(`${config.name}Config`, config.config);
+                backend_1.ipc.publish(`${config.name}Config`, config.config);
             }
             statusReporter_1.status.configmanager.setHealth('running');
-            glidelite_1.log.configmanager.info(`Published ${String(configs.length)} available configurations`);
+            backend_1.log.configmanager.info(`Published ${String(configs.length)} available configurations`);
         }).catch((error) => {
             if (this._isRunning) {
                 // Start retry timer for publishing all available configurations
                 this._publishRetryTimer = setTimeout(() => {
                     this._publishAllConfigs();
-                }, glidelite_1.glconfig.config.databaseReadRetry);
+                }, backend_1.glconfig.config.databaseReadRetry);
                 statusReporter_1.status.configmanager.setHealth('instable');
-                glidelite_1.log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
+                backend_1.log.configmanager.error(`Failed getting all available configurations from database: ${error instanceof Error ? error.message : 'unknown'}`);
             }
         });
     }
@@ -140,25 +140,14 @@ class ConfigManager {
      * @param response the response function
      */
     _onRequest(name, payload, response) {
-        if (this._isSetConfigMessage(name, payload)) {
-            glidelite_1.log.configmanager.info(`Received SetConfig request via IPC for name '${payload.name}'`);
+        if ((0, configManager_1.isIpcSetConfigMessage)(name, payload)) {
+            backend_1.log.configmanager.info(`Received SetConfig request via IPC for name '${payload.name}'`);
             this._handleSetConfigMessage(payload, response);
         }
         else {
-            glidelite_1.log.configmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
+            backend_1.log.configmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
             response({ result: 'error' });
         }
-    }
-    /**
-     * Checks whether the specified message is a SetConfig message.
-     * @param name the message name
-     * @param payload the message payload
-     * @returns `true` when the message is a SetConfig message, or `false` otherwise
-     */
-    _isSetConfigMessage(name, payload) {
-        return name === 'SetConfig' && typeof payload === 'object' && payload !== null &&
-            'name' in payload && typeof payload.name === 'string' && configManager_1.CONFIG_NAME.find(name => name === payload.name) !== undefined &&
-            'config' in payload && typeof payload.config === 'object' && payload.config !== null;
     }
     /**
      * Handles SetConfig message.
@@ -175,9 +164,9 @@ class ConfigManager {
         configModel_1.default.findOneAndUpdate({ name: setConfig.name }, setConfig, { upsert: true }).then(() => {
             response({ result: 'ok' });
             // Publish the new configuration
-            glidelite_1.ipc.publish(`${setConfig.name}Config`, setConfig.config);
+            backend_1.ipc.publish(`${setConfig.name}Config`, setConfig.config);
         }).catch((error) => {
-            glidelite_1.log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error instanceof Error ? error.message : 'unknown'}`);
+            backend_1.log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error instanceof Error ? error.message : 'unknown'}`);
             response({ result: 'error' });
         });
     }
