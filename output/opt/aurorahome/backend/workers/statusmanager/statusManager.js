@@ -24,7 +24,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatusManager = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const statusManager_1 = require("../../ipc/statusManager");
 /**
  * A Status Manager keeping track of all application statusses, i.e.: application type, health, and additional detailed runtime information.
@@ -37,15 +37,15 @@ class StatusManager {
      */
     start() {
         // Start IPC communication
-        glidelite_1.ipc.start('statusmanager');
-        glidelite_1.ipc.onIndication((name, payload) => {
+        backend_1.ipc.start('statusmanager');
+        backend_1.ipc.onIndication((name, payload) => {
             this._onIndication(name, payload);
         });
         // Start cleanup timer
         this._cleanupTimer = setInterval(() => {
             this._cleanupExpiredStatusses();
-        }, glidelite_1.glconfig.status.cleanup);
-        glidelite_1.log.statusmanager.info('Started');
+        }, backend_1.glconfig.status.cleanup);
+        backend_1.log.statusmanager.info('Started');
     }
     /**
      * Stops the Status Manager.
@@ -55,8 +55,8 @@ class StatusManager {
         // Stop cleanup timer
         clearInterval(this._cleanupTimer);
         // Stop IPC communication
-        glidelite_1.ipc.stop();
-        glidelite_1.log.statusmanager.info('Stopped');
+        backend_1.ipc.stop();
+        backend_1.log.statusmanager.info('Stopped');
     }
     /**
      * Cleans applications which do not report a status anymore to prevent overflooding memory.
@@ -65,7 +65,7 @@ class StatusManager {
         const now = Date.now();
         for (const type of Object.values(this._applicationStatus)) {
             for (const name of Object.keys(type)) {
-                if (type[name].timestamp + Number(glidelite_1.glconfig.status.validity) < now) {
+                if (type[name].timestamp + Number(backend_1.glconfig.status.validity) < now) {
                     delete type[name]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
                 }
             }
@@ -77,31 +77,18 @@ class StatusManager {
      * @param payload the indication payload
      */
     _onIndication(name, payload) {
-        if (this._isStatusMessage(name, payload)) {
-            this._handleStatusMessage(payload);
+        if ((0, statusManager_1.isIpcApplicationStatusMessage)(name, payload)) {
+            this._handleApplicationStatusMessage(payload);
         }
         else {
-            glidelite_1.log.statusmanager.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
+            backend_1.log.statusmanager.warn(`Received unknown IPC indication with name: ${name}: ${JSON.stringify(payload)}`);
         }
-    }
-    /**
-     * Checks whether the specified message is a Status message.
-     * @param name the message name
-     * @param payload the message payload
-     * @returns `true` when the message is a Status message, or `false` otherwise
-     */
-    _isStatusMessage(name, payload) {
-        return name === 'Status' && typeof payload === 'object' && payload !== null &&
-            'name' in payload && typeof payload.name === 'string' &&
-            'type' in payload && typeof payload.type === 'string' && statusManager_1.STATUS_TYPE.find(type => type === payload.type) !== undefined &&
-            'health' in payload && typeof payload.health === 'string' && statusManager_1.STATUS_HEALTH.find(health => health === payload.health) !== undefined &&
-            (!('details' in payload) || (typeof payload.details === 'object' && payload.details !== null));
     }
     /**
      * Handles Status message.
      * @param status the Status message
      */
-    _handleStatusMessage(status) {
+    _handleApplicationStatusMessage(status) {
         // Add type to application status list
         if (!Object.keys(this._applicationStatus).includes(status.type)) {
             this._applicationStatus[status.type] = {};
@@ -120,7 +107,7 @@ class StatusManager {
                     statusMsg.applications.push({ name, type: type, health: status.health, details: status.details });
                 });
             });
-            glidelite_1.ipc.publish('Status', statusMsg);
+            backend_1.ipc.publish('Status', statusMsg);
         }
     }
 }

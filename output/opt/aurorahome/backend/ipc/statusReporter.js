@@ -24,7 +24,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.status = exports.StatusReporter = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 /**
  * Helper class providing cyclic status reporting to the Status Manager.
  */
@@ -47,8 +47,8 @@ class StatusReporter {
         this._status.type = type;
         this._status.details = details;
         this._reportTimer = setInterval(() => {
-            glidelite_1.ipc.to.statusmanager.indication('Status', this._status);
-        }, glidelite_1.glconfig.status.interval);
+            backend_1.ipc.to.statusmanager.indication('Status', this._status);
+        }, backend_1.glconfig.status.interval);
     }
     /**
      * Stops reporting the status to the Status Manager.
