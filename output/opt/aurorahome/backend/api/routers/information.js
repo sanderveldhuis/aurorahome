@@ -22,7 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SOURCE_UNITS = exports.SOURCE_NAME = void 0;
-exports.SOURCE_NAME = ['openweathermapV3'];
-exports.SOURCE_UNITS = ['standard', 'metric', 'imperial'];
+const express_1 = __importDefault(require("express"));
+const backend_1 = require("glidelite/backend");
+// Construct the Express router
+const router = express_1.default.Router();
+// The router implementation
+router.get('/', (req, res) => {
+    res.status(200).json({ version: (backend_1.glconfig.version ?? 'develop'), timestamp: Math.floor(Date.now() / 1000) });
+});
+exports.default = router;
