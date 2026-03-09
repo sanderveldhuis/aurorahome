@@ -28,8 +28,7 @@ rm -rf /etc/cron.d/aurorahome_workers
 rm -rf /etc/nginx/sites-available/aurorahome.*.conf
 rm -rf /etc/nginx/sites-enabled/aurorahome.*.conf
 rm -rf /opt/aurorahome
-pkill -f "node /opt/aurorahome/node_modules"
-pkill -f "node /opt/aurorahome/workers"
+pkill -f "node /opt/aurorahome"
 
 # Copy new project
 mkdir -p /var/log/aurorahome

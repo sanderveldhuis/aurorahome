@@ -24,7 +24,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShellyDevice = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const statusReporter_1 = require("../../ipc/statusReporter");
 const mqttProtocol_1 = require("./mqttProtocol");
 const SHELLY_GET_STATUS_TIMEOUT = 60000;
@@ -85,11 +85,11 @@ class ShellyDevice {
     setSwitch(mac, set) {
         if (mac === this._status.mac) {
             if (this._status.type === 'switch') {
-                glidelite_1.log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
+                backend_1.log.shellydevice.info(`Executing Switch.Set command in device with name: ${this._name}`);
                 this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Switch.Set', src: 'shellyserver', method: 'Switch.Set', params: set }));
             }
             else {
-                glidelite_1.log.shellydevice.warn(`Failed executing Switch.Set command in device with name: ${this._name}`);
+                backend_1.log.shellydevice.warn(`Failed executing Switch.Set command in device with name: ${this._name}`);
             }
         }
     }
@@ -101,11 +101,11 @@ class ShellyDevice {
     setLight(mac, set) {
         if (mac === this._status.mac) {
             if (this._status.type === 'light') {
-                glidelite_1.log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
+                backend_1.log.shellydevice.info(`Executing Light.Set command in device with name: ${this._name}`);
                 this._mqtt.publish(`${this._name}/rpc`, JSON.stringify({ id: 'Light.Set', src: 'shellyserver', method: 'Light.Set', params: set }));
             }
             else {
-                glidelite_1.log.shellydevice.warn(`Failed executing Light.Set command in device with name: ${this._name}`);
+                backend_1.log.shellydevice.warn(`Failed executing Light.Set command in device with name: ${this._name}`);
             }
         }
     }
@@ -116,7 +116,7 @@ class ShellyDevice {
     _onConnect(name) {
         this._name = name;
         statusReporter_1.status[this._name].start('shellydevice');
-        glidelite_1.log.shellydevice.info(`Connected device with name: ${this._name}`);
+        backend_1.log.shellydevice.info(`Connected device with name: ${this._name}`);
     }
     /**
      * Handles closure of the Shelly device.
@@ -124,7 +124,7 @@ class ShellyDevice {
     _onClose() {
         clearInterval(this._statusTimer);
         statusReporter_1.status[this._name].stop();
-        glidelite_1.log.shellydevice.info(`Closed device with name: ${this._name}`);
+        backend_1.log.shellydevice.info(`Closed device with name: ${this._name}`);
     }
     /**
      * Handles a subscription from the Shelly device.
@@ -174,7 +174,7 @@ class ShellyDevice {
     _handleDeviceStatus(data) {
         // If no data is received or no MAC address is available the device cannot be used
         if (data === undefined || data.sys?.mac === undefined) {
-            glidelite_1.log.shellydevice.error(`Error occurred in device with name: ${this._name}, message: status did not contain a MAC address`);
+            backend_1.log.shellydevice.error(`Error occurred in device with name: ${this._name}, message: status did not contain a MAC address`);
             this.stop();
             return;
         }

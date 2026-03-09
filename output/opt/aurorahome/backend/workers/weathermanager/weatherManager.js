@@ -24,7 +24,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WeatherManager = void 0;
-const glidelite_1 = require("glidelite");
+const backend_1 = require("glidelite/backend");
 const statusReporter_1 = require("../../ipc/statusReporter");
 const weatherManager_1 = require("../../ipc/weatherManager");
 const openweathermapV3_1 = require("./openweathermapV3");
@@ -41,14 +41,14 @@ class WeatherManager {
      */
     start() {
         // Start IPC communication
-        glidelite_1.ipc.start('weathermanager', 'statusmanager', 'configmanager');
-        glidelite_1.ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
+        backend_1.ipc.start('weathermanager', 'statusmanager', 'configmanager');
+        backend_1.ipc.to.configmanager.subscribe('WeatherManagerConfig', (name, payload) => {
             this._onPublish(name, payload);
         });
         // Start status reporting
         statusReporter_1.status.weathermanager.start('worker');
-        statusReporter_1.status.weathermanager.setHealth('running');
-        glidelite_1.log.weathermanager.info('Started');
+        statusReporter_1.status.weathermanager.setHealth('disabled');
+        backend_1.log.weathermanager.info('Started');
     }
     /**
      * Stops the Weather Manager.
@@ -60,8 +60,8 @@ class WeatherManager {
         // Stop status reporting
         statusReporter_1.status.weathermanager.stop();
         // Stop IPC communication
-        glidelite_1.ipc.stop();
-        glidelite_1.log.weathermanager.info('Stopped');
+        backend_1.ipc.stop();
+        backend_1.log.weathermanager.info('Stopped');
     }
     /**
      * Handles received IPC publishes.
@@ -69,33 +69,13 @@ class WeatherManager {
      * @param payload the publish payload
      */
     _onPublish(name, payload) {
-        if (this._isWeatherManagerConfigMessage(name, payload)) {
-            glidelite_1.log.weathermanager.info('Received WeatherManagerConfig publish via IPC');
+        if ((0, weatherManager_1.isIpcWeatherManagerConfigMessage)(name, payload)) {
+            backend_1.log.weathermanager.info('Received WeatherManagerConfig publish via IPC');
             this._handleWeatherManagerConfig(payload);
         }
         else {
-            glidelite_1.log.weathermanager.warn(`Received unknown IPC publish with name '${name}': ${JSON.stringify(payload)}`);
+            backend_1.log.weathermanager.warn(`Received unknown IPC publish with name '${name}': ${JSON.stringify(payload)}`);
         }
-    }
-    /**
-     * Checks whether the specified message is a WeatherManagerConfig message.
-     * @param name the message name
-     * @param payload the message payload
-     * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
-     */
-    _isWeatherManagerConfigMessage(name, payload) {
-        return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
-            (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
-                'interval' in payload.source && typeof payload.source.interval === 'number' &&
-                'name' in payload.source && typeof payload.source.name === 'string' &&
-                // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-                weatherManager_1.SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
-                'lat' in payload.source && typeof payload.source.lat === 'number' &&
-                'lon' in payload.source && typeof payload.source.lon === 'number' &&
-                'units' in payload.source && typeof payload.source.units === 'string' &&
-                // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-                weatherManager_1.SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
-                'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
     }
     /**
      * Handles WeatherManagerConfig message.
@@ -105,15 +85,16 @@ class WeatherManager {
         // Always cleanup for safety
         clearInterval(this._retrievalTimer);
         statusReporter_1.status.weathermanager.clearDetails();
-        statusReporter_1.status.weathermanager.setHealth('running');
         // If no source is available the weather retrieval should stop
         if (!config.source) {
-            glidelite_1.log.weathermanager.info(`Stopped weather retrieval`);
+            statusReporter_1.status.weathermanager.setHealth('disabled');
+            backend_1.log.weathermanager.info(`Stopped weather retrieval`);
             return;
         }
         // Construct the status details
         this._statusDetails = { source: config.source.name };
         statusReporter_1.status.weathermanager.setDetails(this._statusDetails);
+        statusReporter_1.status.weathermanager.setHealth('running');
         // Construct the dedicated weather retriever
         // TODO: currently only supporting OpenWeatherMapV3, add if-statement once more protocols are supported
         this._weatherRetriever = new openweathermapV3_1.OpenWeatherMapV3(config.source.lat, config.source.lon, config.source.units, config.source.apiKey);
@@ -122,7 +103,7 @@ class WeatherManager {
             this._executeWeatherRetriever(config.source?.interval ?? 0);
         }, config.source.interval * 1000);
         this._executeWeatherRetriever(config.source.interval);
-        glidelite_1.log.weathermanager.info(`Started weather retrieval from '${config.source.name}' each ${String(config.source.interval)} seconds`);
+        backend_1.log.weathermanager.info(`Started weather retrieval from '${config.source.name}' each ${String(config.source.interval)} seconds`);
     }
     /**
      * Executes the weather retriever and stores the results.
@@ -142,7 +123,7 @@ class WeatherManager {
             statusReporter_1.status.weathermanager.setHealth('running');
             // Publish weather data if available
             if (result.data) {
-                glidelite_1.ipc.publish('WeatherData', result.data);
+                backend_1.ipc.publish('WeatherData', result.data);
             }
         }
         else {

@@ -22,6 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CONFIG_NAME = void 0;
-exports.CONFIG_NAME = ['WeatherManager', 'ShellyServer'];
+const express_1 = __importDefault(require("express"));
+const backend_1 = require("glidelite/backend");
+const statusManager_1 = require("../../ipc/statusManager");
+// Caches published application statusses
+const statusses = { applications: [] };
+// Subscribe to updates from the Status Manager
+backend_1.ipc.to.statusmanager.subscribe('Status', (name, payload) => {
+    if ((0, statusManager_1.isIpcStatusMessage)(name, payload)) {
+        const applications = [];
+        for (const application of payload.applications) {
+            applications.push({ name: application.name, health: application.health, details: application.details });
+        }
+        statusses.applications = applications;
+    }
+    else {
+        backend_1.log.apiserver.warn(`Received unknown IPC publish with name: ${name}: ${JSON.stringify(payload)}`);
+    }
+});
+// Construct the Express router
+const router = express_1.default.Router();
+// The router implementation
+router.get('/status', (req, res) => {
+    res.status(200).json(statusses);
+});
+exports.default = router;
