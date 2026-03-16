@@ -25,7 +25,7 @@
 import { ipc } from 'glidelite/backend';
 
 // Start IPC communication
-ipc.start('apiserver', 'statusmanager');
+ipc.start('apiserver', 'statusmanager', 'configmanager');
 
 // Gracefully shutdown
 process.on('SIGINT', () => {
