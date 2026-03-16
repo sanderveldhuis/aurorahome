@@ -30,7 +30,7 @@
     "dist": "npm run format && npm run lint && npm run clean && npm run build && npm run test"
   },
   "dependencies": {
-    "mongoose": "^9.1.5",
+    "mongoose": "^9.3.0",
     "mqtt-packet": "^9.0.2",
     "sync-fetch": "^0.6.0"
   },
