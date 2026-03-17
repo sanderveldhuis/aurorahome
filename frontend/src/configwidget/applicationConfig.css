@@ -22,6 +22,30 @@
  * SOFTWARE.
  */
 
+.application-config {
+  --bs-body-bg: rgb(0, 8, 31);
+  --bs-border-color: rgb(62, 64, 73);
+}
+
+.application-config .input-group .form-control::placeholder {
+  --bs-secondary-color: rgb(62, 64, 73);
+}
+
+.application-config .input-group .form-control:disabled::placeholder {
+  opacity: 0.5;
+}
+
+.application-config .input-group .form-control:disabled {
+  color: rgb(62, 64, 73);
+  --bs-secondary-bg: rgb(22, 27, 46);
+}
+
+.application-config .input-group .input-group-text {
+  fill: white;
+  --bs-tertiary-bg: rgb(0, 8, 31);
+  --bs-border-color: rgb(62, 64, 73);
+}
+
 .application-config svg.placeholder {
   margin-top: .125rem !important;
 }
