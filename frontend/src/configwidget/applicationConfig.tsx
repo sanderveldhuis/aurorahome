@@ -22,8 +22,70 @@
  * SOFTWARE.
  */
 
-import { useState } from 'react';
+import {
+  useEffect,
+  useState
+} from 'react';
+import {
+  type ApiShellyDisable,
+  type ApiShellyEnable,
+  isApiShellyConfigResponse
+} from '../../../shared/apiConfig';
 import './applicationConfig.css';
+import {
+  api,
+  ApiError
+} from 'glidelite/frontend';
+import validator from 'validator';
+
+/**
+ * Saves the Shelly configuration using the dedicated API.
+ * @param enable indicates whether Shelly is enabled
+ * @param host the MQTT hostname and port in format `hostname:port`
+ * @param username the MQTT username
+ * @param password the MQTT password
+ * @param setHostInvalid function to set the host as invalid
+ * @param setUsernameInvalid function to set the username as invalid
+ * @param setPasswordInvalid function to set the password as invalid
+ */
+function saveConfig(enable: boolean, host: string, username: string, password: string, setHostInvalid: React.Dispatch<React.SetStateAction<boolean>>, setUsernameInvalid: React.Dispatch<React.SetStateAction<boolean>>, setPasswordInvalid: React.Dispatch<React.SetStateAction<boolean>>): void {
+  // Reset validation
+  setHostInvalid(false);
+  setUsernameInvalid(false);
+  setPasswordInvalid(false);
+
+  // Validate input
+  let inputOk = true;
+  const hostnamePort = host.split(':');
+  if (enable) {
+    if (hostnamePort.length !== 2 || !validator.isPort(hostnamePort[1]) || !validator.isIP(hostnamePort[0])) {
+      setHostInvalid(true);
+      inputOk = false;
+    }
+    if (!validator.isByteLength(username, { max: 65535 })) {
+      setUsernameInvalid(true);
+      inputOk = false;
+    }
+    if (!validator.isByteLength(password, { max: 65535 })) {
+      setPasswordInvalid(true);
+      inputOk = false;
+    }
+  }
+
+  if (inputOk) {
+    let request: ApiShellyDisable | ApiShellyEnable = { enable: false };
+    if (enable) {
+      request = { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username: username, password: password };
+    }
+    api.post({ path: '/config/shelly', responseType: 'json', params: request }).then(() => {
+      // TODO: implement
+    }).catch((error: unknown) => {
+      if (error instanceof ApiError) {
+        console.log(error.status);
+      }
+    });
+  }
+}
 
 function ApplicationConfig({ id, name, health, details }: { id: string; name: string; health: string; details: Record<string, string>; }) {
   let svgPath = '';
@@ -59,8 +121,32 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
 
   const [isEnabled, setEnabled] = useState(false);
   const [host, setHost] = useState('');
+  const [hostInvalid, setHostInvalid] = useState(false);
   const [username, setUsername] = useState('');
+  const [usernameInvalid, setUsernameInvalid] = useState(false);
   const [password, setPassword] = useState('');
+  const [passwordInvalid, setPasswordInvalid] = useState(false);
+
+  useEffect(() => {
+    api.get({ path: '/config/shelly', responseType: 'json' })
+      .then(payload => {
+        // Validate response payload
+        if (!isApiShellyConfigResponse(payload)) {
+          throw new Error();
+        }
+
+        // Set the values
+        setEnabled(payload.enable);
+        setHost(payload.hostname && payload.port ? `${payload.hostname}:${String(payload.port)}` : '');
+        setUsername(payload.username ?? '');
+      }).catch(() => {
+        // TODO: implement
+      });
+
+    return () => {
+      // Nothing to do
+    };
+  }, []);
 
   return (
     <>
@@ -105,7 +191,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 </div>
                 <input
                   type='text'
-                  className='form-control'
+                  className={`form-control ${hostInvalid ? 'is-invalid' : ''}`}
                   placeholder='Eg: 0.0.0.0:1883'
                   disabled={!isEnabled}
                   value={host}
@@ -114,6 +200,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                     setHost(input.value);
                   }}
                 />
+                <div className='invalid-feedback'>Enter a hostname and port, eg: 0.0.0.0:1883</div>
               </div>
             </div>
             <div className='mb-2'>
@@ -125,7 +212,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 </div>
                 <input
                   type='text'
-                  className='form-control'
+                  className={`form-control ${usernameInvalid ? 'is-invalid' : ''}`}
                   placeholder='Username'
                   disabled={!isEnabled}
                   value={username}
@@ -134,6 +221,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                     setUsername(input.value);
                   }}
                 />
+                <div className='invalid-feedback'>Maximum allowed length is 65535 characters</div>
               </div>
             </div>
             <div className='mb-3'>
@@ -145,7 +233,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 </div>
                 <input
                   type='password'
-                  className='form-control'
+                  className={`form-control ${passwordInvalid ? 'is-invalid' : ''}`}
                   placeholder='Password'
                   disabled={!isEnabled}
                   value={password}
@@ -154,6 +242,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                     setPassword(input.value);
                   }}
                 />
+                <div className='invalid-feedback'>Maximum allowed length is 65535 characters</div>
               </div>
             </div>
             <div className='input-group'>
@@ -161,7 +250,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 type='submit'
                 className='form-control btn btn-primary'
                 onClick={() => {
-                  saveConfig(isEnabled, host, username, password);
+                  saveConfig(isEnabled, host, username, password, setHostInvalid, setUsernameInvalid, setPasswordInvalid);
                 }}
               >
                 Save
