@@ -32,11 +32,12 @@ import {
   isApiShellyConfigResponse
 } from '../../../shared/apiConfig';
 import './applicationConfig.css';
-import {
-  api,
-  ApiError
-} from 'glidelite/frontend';
+import { api } from 'glidelite/frontend';
 import validator from 'validator';
+import {
+  type MessagePopupContextType,
+  useMessagePopup
+} from '../hooks/useMessagePopup';
 
 /**
  * Saves the Shelly configuration using the dedicated API.
@@ -44,15 +45,18 @@ import validator from 'validator';
  * @param host the MQTT hostname and port in format `hostname:port`
  * @param username the MQTT username
  * @param password the MQTT password
- * @param setHostInvalid function to set the host as invalid
- * @param setUsernameInvalid function to set the username as invalid
- * @param setPasswordInvalid function to set the password as invalid
+ * @param setHostInvalid function to set the host as valid/invalid
+ * @param setUsernameInvalid function to set the username as valid/invalid
+ * @param setPasswordInvalid function to set the password as valid/invalid
+ * @param setSaveEnabled function to set the save button enabled/disabled
+ * @param messagePopup the Message Popup used to display messages
  */
-function saveConfig(enable: boolean, host: string, username: string, password: string, setHostInvalid: React.Dispatch<React.SetStateAction<boolean>>, setUsernameInvalid: React.Dispatch<React.SetStateAction<boolean>>, setPasswordInvalid: React.Dispatch<React.SetStateAction<boolean>>): void {
-  // Reset validation
+function saveConfig(enable: boolean, host: string, username: string, password: string, setHostInvalid: React.Dispatch<React.SetStateAction<boolean>>, setUsernameInvalid: React.Dispatch<React.SetStateAction<boolean>>, setPasswordInvalid: React.Dispatch<React.SetStateAction<boolean>>, setSaveEnabled: React.Dispatch<React.SetStateAction<boolean>>, messagePopup: MessagePopupContextType): void {
+  // Reset validation and disable save button
   setHostInvalid(false);
   setUsernameInvalid(false);
   setPasswordInvalid(false);
+  setSaveEnabled(false);
 
   // Validate input
   let inputOk = true;
@@ -78,12 +82,15 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
       request = { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username: username, password: password };
     }
     api.post({ path: '/config/shelly', responseType: 'json', params: request }).then(() => {
-      // TODO: implement
-    }).catch((error: unknown) => {
-      if (error instanceof ApiError) {
-        console.log(error.status);
-      }
+      messagePopup.showSuccess('Shelly settings changed successfully');
+      setSaveEnabled(true);
+    }).catch(() => {
+      messagePopup.showError('An unexpected error occurred');
+      setSaveEnabled(true);
     });
+  }
+  else {
+    setSaveEnabled(true);
   }
 }
 
@@ -119,13 +126,15 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
     );
   }
 
-  const [isEnabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(false);
   const [host, setHost] = useState('');
   const [hostInvalid, setHostInvalid] = useState(false);
   const [username, setUsername] = useState('');
   const [usernameInvalid, setUsernameInvalid] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordInvalid, setPasswordInvalid] = useState(false);
+  const [saveEnabled, setSaveEnabled] = useState(true);
+  const messagePopup = useMessagePopup();
 
   useEffect(() => {
     api.get({ path: '/config/shelly', responseType: 'json' })
@@ -164,7 +173,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 <input
                   type='checkbox'
                   className='form-check-input'
-                  checked={isEnabled}
+                  checked={enabled}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
                     setEnabled(input.checked);
@@ -193,7 +202,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                   type='text'
                   className={`form-control ${hostInvalid ? 'is-invalid' : ''}`}
                   placeholder='Eg: 0.0.0.0:1883'
-                  disabled={!isEnabled}
+                  disabled={!enabled}
                   value={host}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -214,7 +223,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                   type='text'
                   className={`form-control ${usernameInvalid ? 'is-invalid' : ''}`}
                   placeholder='Username'
-                  disabled={!isEnabled}
+                  disabled={!enabled}
                   value={username}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -235,7 +244,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                   type='password'
                   className={`form-control ${passwordInvalid ? 'is-invalid' : ''}`}
                   placeholder='Password'
-                  disabled={!isEnabled}
+                  disabled={!enabled}
                   value={password}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -249,8 +258,9 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
               <button
                 type='submit'
                 className='form-control btn btn-primary'
+                disabled={!saveEnabled}
                 onClick={() => {
-                  saveConfig(isEnabled, host, username, password, setHostInvalid, setUsernameInvalid, setPasswordInvalid);
+                  saveConfig(enabled, host, username, password, setHostInvalid, setUsernameInvalid, setPasswordInvalid, setSaveEnabled, messagePopup);
                 }}
               >
                 Save

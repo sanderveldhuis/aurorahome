@@ -22,39 +22,25 @@
  * SOFTWARE.
  */
 
-import { useState } from 'react';
-import './app.css';
-import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
-import Navbar from './navbar.tsx';
-import NavMenu from './navmenu.tsx';
-import Profile from './profile.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import Settings from './settings.tsx';
-import UserMenu from './usermenu.tsx';
+import {
+  type ReactNode,
+  useState
+} from 'react';
+import { MessagePopupContext } from '../hooks/useMessagePopup';
 
-function App() {
-  const [component, setComponent] = useState('Dashboard');
+/**
+ * Defines the provider for the Message Popup.
+ * @param children the child nodes for this provider
+ */
+function MessagePopupProvider({ children }: { children: ReactNode; }) {
+  const [error, showError] = useState('');
+  const [success, showSuccess] = useState('');
 
   return (
-    <>
-      <MessagePopupProvider>
-        <MessagePopup />
-        <Navbar />
-        <UserMenu setComponent={setComponent} />
-        <div className='container-fluid'>
-          <div className='container-row row'>
-            <NavMenu component={component} setComponent={setComponent} />
-            <main className='container-col col h-100 overflow-y-auto'>
-              <Dashboard component={component} />
-              <Settings component={component} />
-              <Profile component={component} />
-            </main>
-          </div>
-        </div>
-      </MessagePopupProvider>
-    </>
+    <MessagePopupContext.Provider value={{ error, success, showError, showSuccess }}>
+      {children}
+    </MessagePopupContext.Provider>
   );
 }
 
-export default App;
+export default MessagePopupProvider;

@@ -22,39 +22,34 @@
  * SOFTWARE.
  */
 
-import { useState } from 'react';
-import './app.css';
-import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
-import Navbar from './navbar.tsx';
-import NavMenu from './navmenu.tsx';
-import Profile from './profile.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import Settings from './settings.tsx';
-import UserMenu from './usermenu.tsx';
+import {
+  createContext,
+  useContext
+} from 'react';
 
-function App() {
-  const [component, setComponent] = useState('Dashboard');
-
-  return (
-    <>
-      <MessagePopupProvider>
-        <MessagePopup />
-        <Navbar />
-        <UserMenu setComponent={setComponent} />
-        <div className='container-fluid'>
-          <div className='container-row row'>
-            <NavMenu component={component} setComponent={setComponent} />
-            <main className='container-col col h-100 overflow-y-auto'>
-              <Dashboard component={component} />
-              <Settings component={component} />
-              <Profile component={component} />
-            </main>
-          </div>
-        </div>
-      </MessagePopupProvider>
-    </>
-  );
+/**
+ * Interface defining the information of the Message Popup context.
+ */
+export interface MessagePopupContextType {
+  error: string;
+  success: string;
+  showError: React.Dispatch<React.SetStateAction<string>>;
+  showSuccess: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default App;
+/**
+ * Defines the Message Popup context.
+ */
+export const MessagePopupContext = createContext<MessagePopupContextType | undefined>(undefined);
+
+/**
+ * Returns the Message Popup, and functions to update it.
+ * @returns the Message Popup
+ */
+export const useMessagePopup = () => {
+  const context = useContext(MessagePopupContext);
+  if (!context) {
+    throw new Error('Component must be used within a MessagePopupProvider');
+  }
+  return context;
+};
