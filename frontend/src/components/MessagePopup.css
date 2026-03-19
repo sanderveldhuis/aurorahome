@@ -22,38 +22,47 @@
  * SOFTWARE.
  */
 
-import {
-  useEffect,
-  useEffectEvent
-} from 'react';
-
-/**
- * Invokes the specified handler on each timeout.
- * @param handler the handler invoked after timeout
- * @param timeout the timeout in milliseconds
- * @param running indicates whether the timer should be running (optional)
- */
-function useInterval(handler: () => void, timeout: number, running = true) {
-  const onTimeout = useEffectEvent(handler);
-
-  // Create the interval timer
-  useEffect(() => {
-    if (!running) {
-      return () => {
-        // Nothing to do
-      };
-    }
-
-    const id = setInterval(() => {
-      onTimeout();
-    }, timeout);
-    onTimeout();
-
-    return () => {
-      // Clean up the interval timer
-      clearInterval(id);
-    };
-  }, [timeout, running]);
+.message-popup {
+  --bs-modal-color: rgb(255, 255, 255);
+  --bs-modal-bg: rgb(22, 27, 46);
 }
 
-export default useInterval;
+.message-popup .modal-dialog {
+  display: flex;
+  align-items: end;
+  min-height: calc(100% - var(--bs-modal-margin) * 2);
+}
+
+.message-popup .progress {
+  --bs-progress-height: 5px;
+  --bs-progress-bg: rgb(0, 8, 31);
+  --bs-progress-bar-transition: none;
+}
+
+/* Success */
+
+.message-popup.success {
+  --bs-modal-border-color: rgb(107, 142, 35);
+}
+
+.message-popup.success svg {
+  fill: rgb(107, 142, 35);
+}
+
+.message-popup.success .progress-bar {
+  background-color: rgb(107, 142, 35) !important;
+}
+
+/* Error */
+
+.message-popup.error {
+  --bs-modal-border-color: rgb(220, 53, 69);
+}
+
+.message-popup.error svg {
+  fill: rgb(220, 53, 69);
+}
+
+.message-popup.error .progress-bar {
+  background-color: rgb(220, 53, 69) !important;
+}
