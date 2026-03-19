@@ -27,55 +27,53 @@
   --bs-border-color: rgb(62, 64, 73);
 }
 
-.application-config .input-group .form-control:focus {
+.application-config .form-control:focus {
   border-color: rgba(157, 54, 230, 0.5);
-  outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(157, 54, 230, 0.25);
 }
 
-.application-config .input-group .form-control::placeholder {
+.application-config .form-control::placeholder {
   --bs-secondary-color: rgb(62, 64, 73);
 }
 
-.application-config .input-group .form-control:disabled::placeholder {
+.application-config .form-control:disabled::placeholder {
   opacity: 0.5;
 }
 
-.application-config .input-group input.form-control:disabled {
+.application-config input.form-control:disabled {
   color: rgb(62, 64, 73);
   --bs-secondary-bg: rgb(22, 27, 46);
 }
 
-.application-config .input-group .input-group-text {
-  fill: white;
+.application-config .input-group-text {
   --bs-tertiary-bg: rgb(0, 8, 31);
   --bs-border-color: rgb(62, 64, 73);
+  fill: rgb(255, 255, 255);
 }
 
-.form-check-input:checked {
+.application-config .form-check-input:checked {
   background-color: rgba(157, 54, 230, 0.5);
   border-color: rgba(157, 54, 230, 0.5);
 }
 
-.form-check-input:focus {
+.application-config .form-check-input:focus {
   border-color: rgba(157, 54, 230, 0.5);
-  outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(157, 54, 230, 0.25);
 }
 
 .application-config .btn-primary {
-  --bs-btn-color: white;
+  --bs-btn-color: rgb(255, 255, 255);
   --bs-btn-bg: rgba(157, 54, 230, 0.5);
   --bs-btn-border-color: rgba(157, 54, 230, 0.5);
-  --bs-btn-hover-color: white;
+  --bs-btn-hover-color: rgb(255, 255, 255);
   --bs-btn-hover-bg: rgba(157, 54, 230, 0.4);
   --bs-btn-hover-border-color: rgba(157, 54, 230, 0.4);
   --bs-btn-focus-shadow-rgb: 255, 0, 0;
-  --bs-btn-active-color: white;
+  --bs-btn-active-color: rgb(255, 255, 255);
   --bs-btn-active-bg: rgba(157, 54, 230, 0.4);
   --bs-btn-active-border-color: rgba(157, 54, 230, 0.4);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: white;
+  --bs-btn-disabled-color: rgb(255, 255, 255);
   --bs-btn-disabled-bg: rgba(157, 54, 230, 0.5);
   --bs-btn-disabled-border-color: rgba(157, 54, 230, 0.5);
 }
@@ -84,52 +82,62 @@
   margin-top: .125rem !important;
 }
 
+/* Starting */
+
 .application-config svg.starting {
-  fill: cornflowerblue;
+  fill: rgb(100, 149, 237);
 }
 
 .application-config .alert.starting {
-  --bs-alert-color: white;
-  --bs-alert-bg: cornflowerblue;
-  --bs-alert-border-color: cornflowerblue;
+  --bs-alert-color: rgb(255, 255, 255);
+  --bs-alert-bg: rgb(100, 149, 237);
+  --bs-alert-border-color: rgb(100, 149, 237);
 }
 
+/* Running */
+
 .application-config svg.running {
-  fill: olivedrab;
+  fill: rgb(107, 142, 35);
 }
 
 .application-config .alert.running {
-  --bs-alert-color: white;
-  --bs-alert-bg: olivedrab;
-  --bs-alert-border-color: olivedrab;
+  --bs-alert-color: rgb(255, 255, 255);
+  --bs-alert-bg: rgb(107, 142, 35);
+  --bs-alert-border-color: rgb(107, 142, 35);
 }
 
+/* Instable */
+
 .application-config svg.instable {
-  fill: orange;
+  fill: rgb(255, 165, 0);
 }
 
 .application-config .alert.instable {
-  --bs-alert-color: white;
-  --bs-alert-bg: orange;
-  --bs-alert-border-color: orange;
+  --bs-alert-color: rgb(255, 255, 255);
+  --bs-alert-bg: rgb(255, 165, 0);
+  --bs-alert-border-color: rgb(255, 165, 0);
 }
 
+/* Disabled */
+
 .application-config svg.disabled {
-  fill: darkgray;
+  fill: rgb(169, 169, 169);
 }
 
 .application-config .alert.disabled {
-  --bs-alert-color: white;
-  --bs-alert-bg: darkgray;
-  --bs-alert-border-color: darkgray;
+  --bs-alert-color: rgb(255, 255, 255);
+  --bs-alert-bg: rgb(169, 169, 169);
+  --bs-alert-border-color: rgb(169, 169, 169);
 }
 
+/* Stopped */
+
 .application-config svg.stopped {
-  fill: orangered;
+  fill: rgb(220, 53, 69);
 }
 
 .application-config .alert.stopped {
-  --bs-alert-color: white;
-  --bs-alert-bg: orangered;
-  --bs-alert-border-color: orangered;
+  --bs-alert-color: rgb(255, 255, 255);
+  --bs-alert-bg: rgb(220, 53, 69);
+  --bs-alert-border-color: rgb(220, 53, 69);
 }
