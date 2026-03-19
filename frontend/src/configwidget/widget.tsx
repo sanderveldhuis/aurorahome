@@ -49,9 +49,9 @@ function getStatusForName(name: string, status: ApiStatusResponse): ApiApplicati
 }
 
 function ConfigWidget() {
-  const configManagerState = useApplicationState('Config Manager');
-  const weatherManagerState = useApplicationState('Weather Manager');
-  const shellyServerState = useApplicationState('Shelly Server');
+  const configManagerState = useApplicationState('Config');
+  const weatherManagerState = useApplicationState('Weather');
+  const shellyServerState = useApplicationState('Shelly');
 
   useInterval(() => {
     api.get({ path: '/status', responseType: 'json', timeout: 800 })

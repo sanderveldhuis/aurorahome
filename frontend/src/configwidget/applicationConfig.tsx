@@ -76,11 +76,9 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
     }
   }
 
+  // Execute API call when all input is valid
   if (inputOk) {
-    let request: ApiShellyDisable | ApiShellyEnable = { enable: false };
-    if (enable) {
-      request = { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username: username, password: password };
-    }
+    const request: ApiShellyDisable | ApiShellyEnable = enable ? { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username: username, password: password } : { enable: false };
     api.post({ path: '/config/shelly', responseType: 'json', params: request }).then(() => {
       messagePopup.showSuccess('Shelly settings changed successfully');
       setSaveEnabled(true);
@@ -94,28 +92,10 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
   }
 }
 
+/**
+ * The Shelly Config component showing configuration and status of Shelly.
+ */
 function ApplicationConfig({ id, name, health, details }: { id: string; name: string; health: string; details: Record<string, string>; }) {
-  let svgPath = '';
-  switch (health) {
-    case 'starting':
-      svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6';
-      break;
-    case 'running':
-      svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z';
-      break;
-    case 'instable':
-      svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2';
-      break;
-    case 'disabled':
-      svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5m3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5';
-      break;
-    case 'stopped':
-      svgPath = 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z';
-      break;
-    default:
-      break;
-  }
-
   const detailText = [];
   for (const key of Object.keys(details)) {
     detailText.push(
@@ -126,6 +106,10 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
     );
   }
 
+  // Use the Message Popup context
+  const messagePopup = useMessagePopup();
+
+  // States for this component
   const [enabled, setEnabled] = useState(false);
   const [host, setHost] = useState('');
   const [hostInvalid, setHostInvalid] = useState(false);
@@ -134,8 +118,8 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
   const [password, setPassword] = useState('');
   const [passwordInvalid, setPasswordInvalid] = useState(false);
   const [saveEnabled, setSaveEnabled] = useState(true);
-  const messagePopup = useMessagePopup();
 
+  // Fetch the current configuration from the API
   useEffect(() => {
     api.get({ path: '/config/shelly', responseType: 'json' })
       .then(payload => {
@@ -163,7 +147,11 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
         <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target={`#application-status-${id}`}>
           <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
           <svg className={`ms-1 mt-1 ${health ? health : 'placeholder'}`} width='20' height='20'>
-            <path d={svgPath} />
+            {health === 'starting' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6' />}
+            {health === 'running' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z' />}
+            {health === 'instable' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2' />}
+            {health === 'disabled' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5m3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5' />}
+            {health === 'stopped' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z' />}
           </svg>
         </button>
         <div className='collapse' id={`application-status-${id}`}>
