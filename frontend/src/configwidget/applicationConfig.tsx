@@ -22,10 +22,7 @@
  * SOFTWARE.
  */
 
-import {
-  useEffect,
-  useState
-} from 'react';
+import { useState } from 'react';
 import {
   type ApiShellyDisable,
   type ApiShellyEnable,
@@ -34,6 +31,7 @@ import {
 import './applicationConfig.css';
 import { api } from 'glidelite/frontend';
 import validator from 'validator';
+import useInterval from '../hooks/useInterval';
 import {
   type MessagePopupContextType,
   useMessagePopup
@@ -118,28 +116,30 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
   const [password, setPassword] = useState('');
   const [passwordInvalid, setPasswordInvalid] = useState(false);
   const [saveEnabled, setSaveEnabled] = useState(true);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   // Fetch the current configuration from the API
-  useEffect(() => {
-    api.get({ path: '/config/shelly', responseType: 'json' })
-      .then(payload => {
-        // Validate response payload
-        if (!isApiShellyConfigResponse(payload)) {
-          throw new Error();
-        }
+  useInterval(
+    () => {
+      api.get({ path: '/config/shelly', responseType: 'json', timeout: 1500 })
+        .then(payload => {
+          // Validate response payload
+          if (!isApiShellyConfigResponse(payload)) {
+            throw new Error();
+          }
 
-        // Set the values
-        setEnabled(payload.enable);
-        setHost(payload.hostname && payload.port ? `${payload.hostname}:${String(payload.port)}` : '');
-        setUsername(payload.username ?? '');
-      }).catch(() => {
-        // TODO: implement
-      });
-
-    return () => {
-      // Nothing to do
-    };
-  }, []);
+          // Set the values
+          setEnabled(payload.enable);
+          setHost(payload.hostname && payload.port ? `${payload.hostname}:${String(payload.port)}` : '');
+          setUsername(payload.username ?? '');
+          setConfigLoaded(true);
+        }).catch(() => {
+          // Nothing to do
+        });
+    },
+    2000,
+    !configLoaded
+  );
 
   return (
     <>
@@ -157,11 +157,12 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
         <div className='collapse' id={`application-status-${id}`}>
           <div className='card card-body'>
             <div className='mb-3'>
-              <div className='form-check'>
+              <div className={`form-check ${configLoaded ? '' : 'placeholder'}`}>
                 <input
                   type='checkbox'
                   className='form-check-input'
                   checked={enabled}
+                  hidden={!configLoaded}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
                     setEnabled(input.checked);
@@ -179,7 +180,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
             </div>
             <div className='mb-2'>
               <div className='input-group'>
-                <div className='input-group-text'>
+                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
                   <svg width='16' height='16'>
                     <path d='M14 10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1zM2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2z' />
                     <path d='M5 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M14 3a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z' />
@@ -188,9 +189,9 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
                 </div>
                 <input
                   type='text'
-                  className={`form-control ${hostInvalid ? 'is-invalid' : ''}`}
+                  className={`form-control ${hostInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
                   placeholder='Eg: 0.0.0.0:1883'
-                  disabled={!enabled}
+                  disabled={!enabled || !configLoaded}
                   value={host}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -202,16 +203,16 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
             </div>
             <div className='mb-2'>
               <div className='input-group'>
-                <div className='input-group-text'>
+                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
                   <svg width='16' height='16'>
                     <path d='M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6' />
                   </svg>
                 </div>
                 <input
                   type='text'
-                  className={`form-control ${usernameInvalid ? 'is-invalid' : ''}`}
+                  className={`form-control ${usernameInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
                   placeholder='Username'
-                  disabled={!enabled}
+                  disabled={!enabled || !configLoaded}
                   value={username}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -223,16 +224,16 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
             </div>
             <div className='mb-3'>
               <div className='input-group'>
-                <div className='input-group-text'>
+                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
                   <svg width='16' height='16'>
                     <path d='M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3' />
                   </svg>
                 </div>
                 <input
                   type='password'
-                  className={`form-control ${passwordInvalid ? 'is-invalid' : ''}`}
+                  className={`form-control ${passwordInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
                   placeholder='Password'
-                  disabled={!enabled}
+                  disabled={!enabled || !configLoaded}
                   value={password}
                   onChange={event => {
                     const input = event.target as HTMLInputElement;
@@ -246,7 +247,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
               <button
                 type='submit'
                 className='form-control btn btn-primary'
-                disabled={!saveEnabled}
+                disabled={!saveEnabled || !configLoaded}
                 onClick={() => {
                   saveConfig(enabled, host, username, password, setHostInvalid, setUsernameInvalid, setPasswordInvalid, setSaveEnabled, messagePopup);
                 }}
