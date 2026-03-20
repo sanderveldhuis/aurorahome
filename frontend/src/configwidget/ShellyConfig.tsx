@@ -28,7 +28,7 @@ import {
   type ApiShellyEnable,
   isApiShellyConfigResponse
 } from '../../../shared/apiConfig';
-import './applicationConfig.css';
+import './ShellyConfig.css';
 import { api } from 'glidelite/frontend';
 import validator from 'validator';
 import useInterval from '../hooks/useInterval';
@@ -76,7 +76,7 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
 
   // Execute API call when all input is valid
   if (inputOk) {
-    const request: ApiShellyDisable | ApiShellyEnable = enable ? { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username: username, password: password } : { enable: false };
+    const request: ApiShellyDisable | ApiShellyEnable = enable ? { enable: true, port: Number(hostnamePort[1]), hostname: hostnamePort[0], username, password } : { enable: false };
     api.post({ path: '/config/shelly', responseType: 'json', params: request }).then(() => {
       messagePopup.showSuccess('Shelly settings changed successfully');
       setSaveEnabled(true);
@@ -93,17 +93,7 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
 /**
  * The Shelly Config component showing configuration and status of Shelly.
  */
-function ApplicationConfig({ id, name, health, details }: { id: string; name: string; health: string; details: Record<string, string>; }) {
-  const detailText = [];
-  for (const key of Object.keys(details)) {
-    detailText.push(
-      <>
-        <strong>{key}:</strong> {details[key]}
-        <br />
-      </>
-    );
-  }
-
+function ShellyConfig({ health, details }: { health: string; details: Record<string, string>; }) {
   // Use the Message Popup context
   const messagePopup = useMessagePopup();
 
@@ -143,9 +133,9 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
 
   return (
     <>
-      <div className='application-config placeholder-glow'>
-        <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target={`#application-status-${id}`}>
-          <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
+      <div className='shelly-config placeholder-glow'>
+        <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target='#shelly-config'>
+          <div className={`me-auto ${health ? '' : 'placeholder'}`}>Shelly</div>
           <svg className={`ms-1 mt-1 ${health ? health : 'placeholder'}`} width='20' height='20'>
             {health === 'starting' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6' />}
             {health === 'running' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z' />}
@@ -154,7 +144,7 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
             {health === 'stopped' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z' />}
           </svg>
         </button>
-        <div className='collapse' id={`application-status-${id}`}>
+        <div className='collapse' id='shelly-config'>
           <div className='card card-body'>
             <div className='mb-3'>
               <div className={`form-check ${configLoaded ? '' : 'placeholder'}`}>
@@ -174,9 +164,17 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
             <div className={`alert ${health ? health : 'placeholder'}`} role='alert'>
               <p className='mb-0'>
                 <strong>Health:</strong> {health}
-                <br />
-                {detailText}
               </p>
+              {details.hostname && (
+                <p className='mb-0'>
+                  <strong>Hostname:</strong> {details.hostname}
+                </p>
+              )}
+              {details.port && (
+                <p className='mb-0'>
+                  <strong>Port:</strong> {details.port}
+                </p>
+              )}
             </div>
             <div className='mb-2'>
               <div className='input-group'>
@@ -262,4 +260,4 @@ function ApplicationConfig({ id, name, health, details }: { id: string; name: st
   );
 }
 
-export default ApplicationConfig;
+export default ShellyConfig;

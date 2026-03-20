@@ -22,46 +22,47 @@
  * SOFTWARE.
  */
 
-.application-config {
+.config-config {
   --bs-body-bg: rgb(0, 8, 31);
   --bs-border-color: rgb(62, 64, 73);
 }
 
-.application-config .form-control:focus {
+.config-config .form-control:focus {
   border-color: rgba(157, 54, 230, 0.5);
   box-shadow: 0 0 0 0.25rem rgba(157, 54, 230, 0.25);
 }
 
-.application-config .form-control::placeholder {
+.config-config .form-control::placeholder {
   --bs-secondary-color: rgb(62, 64, 73);
 }
 
-.application-config .form-control:disabled::placeholder {
+.config-config .form-control:disabled::placeholder {
   opacity: 0.5;
 }
 
-.application-config input.form-control:disabled {
+.config-config input.form-control:disabled,
+.config-config select.form-control:disabled {
   color: rgb(62, 64, 73);
   --bs-secondary-bg: rgb(22, 27, 46);
 }
 
-.application-config .input-group-text {
+.config-config .input-group-text {
   --bs-tertiary-bg: rgb(0, 8, 31);
   --bs-border-color: rgb(62, 64, 73);
   fill: rgb(255, 255, 255);
 }
 
-.application-config .form-check-input:checked {
+.config-config .form-check-input:checked {
   background-color: rgba(157, 54, 230, 0.5);
   border-color: rgba(157, 54, 230, 0.5);
 }
 
-.application-config .form-check-input:focus {
+.config-config .form-check-input:focus {
   border-color: rgba(157, 54, 230, 0.5);
   box-shadow: 0 0 0 0.25rem rgba(157, 54, 230, 0.25);
 }
 
-.application-config .btn-primary {
+.config-config .btn-primary {
   --bs-btn-color: rgb(255, 255, 255);
   --bs-btn-bg: rgba(157, 54, 230, 0.5);
   --bs-btn-border-color: rgba(157, 54, 230, 0.5);
@@ -78,17 +79,17 @@
   --bs-btn-disabled-border-color: rgba(157, 54, 230, 0.5);
 }
 
-.application-config svg.placeholder {
+.config-config svg.placeholder {
   margin-top: .125rem !important;
 }
 
 /* Starting */
 
-.application-config svg.starting {
+.config-config svg.starting {
   fill: rgb(100, 149, 237);
 }
 
-.application-config .alert.starting {
+.config-config .alert.starting {
   --bs-alert-color: rgb(255, 255, 255);
   --bs-alert-bg: rgb(100, 149, 237);
   --bs-alert-border-color: rgb(100, 149, 237);
@@ -96,11 +97,11 @@
 
 /* Running */
 
-.application-config svg.running {
+.config-config svg.running {
   fill: rgb(107, 142, 35);
 }
 
-.application-config .alert.running {
+.config-config .alert.running {
   --bs-alert-color: rgb(255, 255, 255);
   --bs-alert-bg: rgb(107, 142, 35);
   --bs-alert-border-color: rgb(107, 142, 35);
@@ -108,11 +109,11 @@
 
 /* Instable */
 
-.application-config svg.instable {
+.config-config svg.instable {
   fill: rgb(255, 165, 0);
 }
 
-.application-config .alert.instable {
+.config-config .alert.instable {
   --bs-alert-color: rgb(255, 255, 255);
   --bs-alert-bg: rgb(255, 165, 0);
   --bs-alert-border-color: rgb(255, 165, 0);
@@ -120,11 +121,11 @@
 
 /* Disabled */
 
-.application-config svg.disabled {
+.config-config svg.disabled {
   fill: rgb(169, 169, 169);
 }
 
-.application-config .alert.disabled {
+.config-config .alert.disabled {
   --bs-alert-color: rgb(255, 255, 255);
   --bs-alert-bg: rgb(169, 169, 169);
   --bs-alert-border-color: rgb(169, 169, 169);
@@ -132,11 +133,11 @@
 
 /* Stopped */
 
-.application-config svg.stopped {
+.config-config svg.stopped {
   fill: rgb(220, 53, 69);
 }
 
-.application-config .alert.stopped {
+.config-config .alert.stopped {
   --bs-alert-color: rgb(255, 255, 255);
   --bs-alert-bg: rgb(220, 53, 69);
   --bs-alert-border-color: rgb(220, 53, 69);
