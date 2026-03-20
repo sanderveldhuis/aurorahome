@@ -23,7 +23,7 @@
  */
 
 import './settings.css';
-import ConfigWidget from './configwidget/widget';
+import ConfigWidget from './configwidget/Widget';
 
 function Settings({ component }: { component: string; }) {
   if (component !== 'Settings') {
