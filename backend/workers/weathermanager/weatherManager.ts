@@ -113,7 +113,7 @@ export class WeatherManager {
     }
 
     // Construct the status details
-    this._statusDetails = { source: config.source.name };
+    this._statusDetails = {};
     status.weathermanager.setDetails(this._statusDetails);
     status.weathermanager.setHealth('running');
 

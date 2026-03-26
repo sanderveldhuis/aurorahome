@@ -47,11 +47,6 @@ function ConfigConfig({ health, details }: { health: string; details: Record<str
               <p className='mb-0'>
                 <strong>Health:</strong> {health}
               </p>
-              {details.database && (
-                <p className='mb-0'>
-                  <strong>Database:</strong> {details.database}
-                </p>
-              )}
             </div>
           </div>
         </div>

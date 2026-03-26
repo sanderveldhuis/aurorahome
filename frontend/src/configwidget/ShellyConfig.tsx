@@ -165,14 +165,9 @@ function ShellyConfig({ health, details }: { health: string; details: Record<str
               <p className='mb-0'>
                 <strong>Health:</strong> {health}
               </p>
-              {details.hostname && (
+              {'nofClients' in details && (
                 <p className='mb-0'>
-                  <strong>Hostname:</strong> {details.hostname}
-                </p>
-              )}
-              {details.port && (
-                <p className='mb-0'>
-                  <strong>Port:</strong> {details.port}
+                  <strong>Number of clients:</strong> {details.nofClients}
                 </p>
               )}
             </div>

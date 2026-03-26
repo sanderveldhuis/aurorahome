@@ -176,12 +176,12 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
               <p className='mb-0'>
                 <strong>Health:</strong> {health}
               </p>
-              {details.lastUpdate && ( // TODO: replace local by configuration value
+              {'lastUpdate' in details && ( // TODO: replace local by configuration value
                 <p className='mb-0'>
                   <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString('nl-NL')}
                 </p>
               )}
-              {details.nextUpdate && ( // TODO: replace local by configuration value
+              {'nextUpdate' in details && ( // TODO: replace local by configuration value
                 <p className='mb-0'>
                   <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString('nl-NL')}
                 </p>

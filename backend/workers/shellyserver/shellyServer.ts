@@ -23,6 +23,7 @@
  */
 
 import {
+  glconfig,
   ipc,
   IpcPayload,
   log
@@ -45,6 +46,7 @@ export class ShellyServer {
   _statusDetails: ShellyServerStatusDetails | undefined;
   _server: net.Server = new net.Server();
   _devices: ShellyDevice[] = [];
+  _cleanupTimer: NodeJS.Timeout | undefined;
   _username = '';
   _password = '';
 
@@ -61,6 +63,11 @@ export class ShellyServer {
       this._onPublish(name, payload);
     });
 
+    // Start cleanup timer
+    this._cleanupTimer = setInterval(() => {
+      this._cleanupDisconnectedDevices();
+    }, glconfig.mqtt.cleanup);
+
     // Start status reporting
     status.shellyserver.start('worker');
     status.shellyserver.setHealth('disabled');
@@ -73,6 +80,9 @@ export class ShellyServer {
    * @details the Shelly server should not be used anymore after being stopped
    */
   stop(): void {
+    // Stop cleanup timer
+    clearInterval(this._cleanupTimer);
+
     // Stop status reporting
     status.shellyserver.stop();
 
@@ -144,7 +154,7 @@ export class ShellyServer {
     }
 
     // Construct the status details
-    this._statusDetails = { port: config.mqtt.port, hostname: config.mqtt.hostname };
+    this._statusDetails = { nofClients: 0 };
     status.shellyserver.setDetails(this._statusDetails);
     status.shellyserver.setHealth('running');
 
@@ -173,10 +183,35 @@ export class ShellyServer {
   }
 
   /**
+   * Cleanup disconnected Shelly devices.
+   */
+  _cleanupDisconnectedDevices(): void {
+    // Cleanup devices
+    for (let i = 0; i < this._devices.length; i++) {
+      if (!this._devices[i].isConnected()) {
+        this._devices[i].stop();
+        this._devices.splice(i, 1);
+        i--;
+      }
+    }
+
+    // Update status details
+    if (this._statusDetails && this._statusDetails.nofClients !== this._devices.length) {
+      this._statusDetails.nofClients = this._devices.length;
+    }
+  }
+
+  /**
    * Handles successfull start of the Shelly server.
    */
   _onListening(): void {
-    log.shellyserver.info(`Started MQTT server on '${String(this._statusDetails?.hostname)}:${String(this._statusDetails?.port)}'`);
+    const address = this._server.address();
+    if (typeof address === 'string') {
+      log.shellyserver.info(`Started MQTT server on '${address}'`);
+    }
+    else {
+      log.shellyserver.info(`Started MQTT server on '${address?.address ?? ''}:${String(address?.port)}'`);
+    }
   }
 
   /**
@@ -202,20 +237,14 @@ export class ShellyServer {
    * @param socket the client socket
    */
   _onConnection(socket: net.Socket): void {
-    log.shellyserver.info(`Device connected with IP address: ${String(socket.remoteAddress)}, number of devices: ${String(this._devices.length + 1)}`);
-
     // Accept new connection
     const device = new ShellyDevice(socket, this._username, this._password);
     this._devices.push(device);
     device.start();
 
     // Cleanup disconnected Shelly devices
-    for (let i = 0; i < this._devices.length; i++) {
-      if (!this._devices[i].isConnected()) {
-        this._devices[i].stop();
-        this._devices.splice(i, 1);
-        i--;
-      }
-    }
+    this._cleanupDisconnectedDevices();
+
+    log.shellyserver.info(`Device connected with IP address: ${String(socket.remoteAddress)}, number of devices: ${String(this._devices.length)}`);
   }
 }
