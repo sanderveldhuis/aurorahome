@@ -50,6 +50,9 @@ function getStatusForName(name: string, status: ApiStatusResponse): ApiApplicati
   return undefined;
 }
 
+/**
+ * The Config Widget component showing configuration and status of components.
+ */
 function ConfigWidget() {
   const [configHealth, setConfigHealth] = useState('');
   const [configDetails, setConfigDetails] = useState({});
