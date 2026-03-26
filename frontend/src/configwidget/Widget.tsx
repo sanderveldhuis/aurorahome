@@ -55,7 +55,6 @@ function getStatusForName(name: string, status: ApiStatusResponse): ApiApplicati
  */
 function ConfigWidget() {
   const [configHealth, setConfigHealth] = useState('');
-  const [configDetails, setConfigDetails] = useState({});
   const [weatherHealth, setWeatherHealth] = useState('');
   const [weatherDetails, setWeatherDetails] = useState({});
   const [shellyHealth, setShellyHealth] = useState('');
@@ -74,10 +73,7 @@ function ConfigWidget() {
         // Handle Config Manager status
         status = getStatusForName('configmanager', payload);
         setConfigHealth(status ? status.health : 'stopped');
-        // Only update details when changed to prevent re-render on each received API response
-        if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(configDetails)) {
-          setConfigDetails(status?.details ?? {});
-        }
+        // No details available for Config Manager
 
         // Handle Weather Manager status
         status = getStatusForName('weathermanager', payload);
@@ -108,7 +104,7 @@ function ConfigWidget() {
         <div className='card-body'>
           <div className='row'>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ConfigConfig health={configHealth} details={configDetails} />
+              <ConfigConfig health={configHealth} />
             </div>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
               <WeatherConfig health={weatherHealth} details={weatherDetails} />

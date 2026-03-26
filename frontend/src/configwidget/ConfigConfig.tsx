@@ -27,7 +27,7 @@ import './ConfigConfig.css';
 /**
  * The Config Config component showing configuration and status of Config Manager.
  */
-function ConfigConfig({ health, details }: { health: string; details: Record<string, string>; }) { // eslint-disable-line @typescript-eslint/no-unused-vars
+function ConfigConfig({ health }: { health: string; }) {
   return (
     <>
       <div className='config-config placeholder-glow'>
