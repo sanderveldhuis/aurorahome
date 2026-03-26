@@ -88,8 +88,6 @@ export function isIpcWeatherManagerConfigMessage(name: string, payload: IpcPaylo
  * The Weather Manager status details.
  */
 export interface WeatherManagerStatusDetails {
-  /** The source of the weather data */
-  source: string;
   /** The timestamp of the last weather data update, `undefined` when not (yet) updated */
   lastUpdate?: number;
   /** The timestamp of the next weather data update */

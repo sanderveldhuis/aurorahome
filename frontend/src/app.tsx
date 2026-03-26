@@ -24,10 +24,12 @@
 
 import { useState } from 'react';
 import './app.css';
+import MessagePopup from './components/MessagePopup.tsx';
 import Dashboard from './dashboard.tsx';
 import Navbar from './navbar.tsx';
 import NavMenu from './navmenu.tsx';
 import Profile from './profile.tsx';
+import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import Settings from './settings.tsx';
 import UserMenu from './usermenu.tsx';
 
@@ -36,18 +38,21 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      <UserMenu setComponent={setComponent} />
-      <div className='container-fluid'>
-        <div className='container-row row'>
-          <NavMenu component={component} setComponent={setComponent} />
-          <main className='container-col col h-100 overflow-y-auto'>
-            <Dashboard component={component} />
-            <Settings component={component} />
-            <Profile component={component} />
-          </main>
+      <MessagePopupProvider>
+        <MessagePopup />
+        <Navbar />
+        <UserMenu setComponent={setComponent} />
+        <div className='container-fluid'>
+          <div className='container-row row'>
+            <NavMenu component={component} setComponent={setComponent} />
+            <main className='container-col col h-100 overflow-y-auto'>
+              <Dashboard component={component} />
+              <Settings component={component} />
+              <Profile component={component} />
+            </main>
+          </div>
         </div>
-      </div>
+      </MessagePopupProvider>
     </>
   );
 }

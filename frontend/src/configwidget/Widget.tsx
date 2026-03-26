@@ -24,14 +24,16 @@
 
 import { api } from 'glidelite/frontend';
 import useInterval from '../hooks/useInterval';
-import './widget.css';
+import './Widget.css';
+import { useState } from 'react';
 import {
   type ApiApplicationStatus,
   type ApiStatusResponse,
   isApiStatusResponse
 } from '../../../shared/apiStatus';
-import ApplicationConfig from './applicationConfig';
-import useApplicationState from './hooks/useApplicationState';
+import ConfigConfig from './ConfigConfig';
+import ShellyConfig from './ShellyConfig';
+import WeatherConfig from './WeatherConfig';
 
 /**
  * Searches for the application status with the specified name in the result.
@@ -48,10 +50,15 @@ function getStatusForName(name: string, status: ApiStatusResponse): ApiApplicati
   return undefined;
 }
 
+/**
+ * The Config Widget component showing configuration and status of components.
+ */
 function ConfigWidget() {
-  const configManagerState = useApplicationState('Config Manager');
-  const weatherManagerState = useApplicationState('Weather Manager');
-  const shellyServerState = useApplicationState('Shelly Server');
+  const [configHealth, setConfigHealth] = useState('');
+  const [weatherHealth, setWeatherHealth] = useState('');
+  const [weatherDetails, setWeatherDetails] = useState({});
+  const [shellyHealth, setShellyHealth] = useState('');
+  const [shellyDetails, setShellyDetails] = useState({});
 
   useInterval(() => {
     api.get({ path: '/status', responseType: 'json', timeout: 800 })
@@ -62,50 +69,32 @@ function ConfigWidget() {
         }
 
         let status: ApiApplicationStatus | undefined;
-        let details: Record<string, string>;
 
         // Handle Config Manager status
         status = getStatusForName('configmanager', payload);
-        configManagerState.setHealth(status ? status.health : 'stopped');
-        details = {};
-        configManagerState.setDetails(details);
+        setConfigHealth(status ? status.health : 'stopped');
+        // No details available for Config Manager
 
         // Handle Weather Manager status
         status = getStatusForName('weathermanager', payload);
-        weatherManagerState.setHealth(status ? status.health : 'stopped');
-        details = {};
-        if (status && status.details && 'source' in status.details && typeof status.details.source === 'string') {
-          details.Source = status.details.source;
+        setWeatherHealth(status ? status.health : 'stopped');
+        // Only update details when changed to prevent re-render on each received API response
+        if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(weatherDetails)) {
+          setWeatherDetails(status?.details ?? {});
         }
-        if (status && status.details && 'lastUpdate' in status.details && typeof status.details.lastUpdate === 'number') {
-          // TODO: get locale string from settings
-          details['Last update'] = new Date(status.details.lastUpdate).toLocaleString('nl-NL');
-        }
-        if (status && status.details && 'nextUpdate' in status.details && typeof status.details.nextUpdate === 'number') {
-          // TODO: get locale string from settings
-          details['Next update'] = new Date(status.details.nextUpdate).toLocaleString('nl-NL');
-        }
-        weatherManagerState.setDetails(details);
 
         // Handle Shelly Server status
         status = getStatusForName('shellyserver', payload);
-        shellyServerState.setHealth(status ? status.health : 'stopped');
-        details = {};
-        if (status && status.details && 'hostname' in status.details && typeof status.details.hostname === 'string') {
-          details.Hostname = status.details.hostname;
+        setShellyHealth(status ? status.health : 'stopped');
+        // Only update details when changed to prevent re-render on each received API response
+        if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(shellyDetails)) {
+          setShellyDetails(status?.details ?? {});
         }
-        if (status && status.details && 'port' in status.details && typeof status.details.port === 'number') {
-          details.Port = String(status.details.port);
-        }
-        shellyServerState.setDetails(details);
       }).catch(() => {
         // On failure display the placeholder
-        configManagerState.setHealth('');
-        configManagerState.setDetails({});
-        weatherManagerState.setHealth('');
-        weatherManagerState.setDetails({});
-        shellyServerState.setHealth('');
-        shellyServerState.setDetails({});
+        setConfigHealth('');
+        setWeatherHealth('');
+        setShellyHealth('');
       });
   }, 1000);
 
@@ -115,13 +104,13 @@ function ConfigWidget() {
         <div className='card-body'>
           <div className='row'>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig {...configManagerState} />
+              <ConfigConfig health={configHealth} />
             </div>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig {...weatherManagerState} />
+              <WeatherConfig health={weatherHealth} details={weatherDetails} />
             </div>
             <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ApplicationConfig {...shellyServerState} />
+              <ShellyConfig health={shellyHealth} details={shellyDetails} />
             </div>
           </div>
         </div>

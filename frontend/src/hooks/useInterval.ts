@@ -31,12 +31,19 @@ import {
  * Invokes the specified handler on each timeout.
  * @param handler the handler invoked after timeout
  * @param timeout the timeout in milliseconds
+ * @param running indicates whether the timer should be running (optional)
  */
-function useInterval(handler: () => void, timeout: number) {
+function useInterval(handler: () => void, timeout: number, running = true) {
   const onTimeout = useEffectEvent(handler);
 
   // Create the interval timer
   useEffect(() => {
+    if (!running) {
+      return () => {
+        // Nothing to do
+      };
+    }
+
     const id = setInterval(() => {
       onTimeout();
     }, timeout);
@@ -46,7 +53,7 @@ function useInterval(handler: () => void, timeout: number) {
       // Clean up the interval timer
       clearInterval(id);
     };
-  }, [timeout]);
+  }, [timeout, running]);
 }
 
 export default useInterval;

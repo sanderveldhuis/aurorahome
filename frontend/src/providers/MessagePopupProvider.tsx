@@ -22,12 +22,25 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+import {
+  type ReactNode,
+  useState
+} from 'react';
+import { MessagePopupContext } from '../hooks/useMessagePopup';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager', 'configmanager');
+/**
+ * Defines the provider for the Message Popup.
+ * @param children the child nodes for this provider
+ */
+function MessagePopupProvider({ children }: { children: ReactNode; }) {
+  const [error, showError] = useState('');
+  const [success, showSuccess] = useState('');
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
-});
+  return (
+    <MessagePopupContext.Provider value={{ error, success, showError, showSuccess }}>
+      {children}
+    </MessagePopupContext.Provider>
+  );
+}
+
+export default MessagePopupProvider;

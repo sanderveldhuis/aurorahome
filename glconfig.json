@@ -11,7 +11,8 @@
   "mqtt": {
     "version": 4,
     "retryTimeout": 5000,
-    "retryMax": 10
+    "retryMax": 10,
+    "cleanup": 5000
   },
   "ports": {
     "proxy": 12001,

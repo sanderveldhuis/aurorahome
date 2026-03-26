@@ -22,12 +22,34 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+import {
+  createContext,
+  useContext
+} from 'react';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager', 'configmanager');
+/**
+ * Interface defining the information of the Message Popup context.
+ */
+export interface MessagePopupContextType {
+  error: string;
+  success: string;
+  showError: React.Dispatch<React.SetStateAction<string>>;
+  showSuccess: React.Dispatch<React.SetStateAction<string>>;
+}
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
-});
+/**
+ * Defines the Message Popup context.
+ */
+export const MessagePopupContext = createContext<MessagePopupContextType | undefined>(undefined);
+
+/**
+ * Returns the Message Popup, and functions to update it.
+ * @returns the Message Popup
+ */
+export const useMessagePopup = () => {
+  const context = useContext(MessagePopupContext);
+  if (!context) {
+    throw new Error('Component must be used within a MessagePopupProvider');
+  }
+  return context;
+};

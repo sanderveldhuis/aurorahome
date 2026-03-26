@@ -117,8 +117,6 @@ export function isIpcShellyServerConfigMessage(name: string, payload: IpcPayload
  * The Shelly Server status details.
  */
 export interface ShellyServerStatusDetails {
-  /** The port number of the MQTT server */
-  port: number;
-  /** The host name of the MQTT server */
-  hostname: string;
+  /** The number of connected Shelly clients */
+  nofClients: number;
 }
