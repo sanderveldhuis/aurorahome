@@ -23,8 +23,8 @@
  */
 
 import { useState } from 'react';
-import './profile.css';
-import { useWindow } from './hooks/useWindow';
+import './Profile.css';
+import { useWindow } from '../hooks/useWindow';
 
 function displayProfile(onEdit: () => void) {
   // TODO: retrieve via API
