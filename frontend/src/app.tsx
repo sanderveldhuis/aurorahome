@@ -26,7 +26,7 @@ import './app.css';
 import Dashboard from './components/Dashboard.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
 import Navbar from './components/Navbar.tsx';
-import NavMenu from './navmenu.tsx';
+import NavMenu from './components/Navmenu.tsx';
 import Profile from './profile.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import WindowProvider from './providers/WindowProvider.tsx';
