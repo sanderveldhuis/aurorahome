@@ -22,28 +22,28 @@
  * SOFTWARE.
  */
 
-.navmenu,
-.navmenu .offcanvas-md {
+.nav-menu,
+.nav-menu .offcanvas-md {
   background-color: rgb(22, 27, 46);
 }
 
-.navmenu .nav-link {
+.nav-menu .nav-link {
   height: 50px;
   color: #fff;
   font-size: .875rem;
   font-weight: 400;
 }
 
-.navmenu .nav-link svg {
+.nav-menu .nav-link svg {
   vertical-align: -.125em;
   fill: currentColor;
 }
 
-.navmenu .nav-item.active {
+.nav-menu .nav-item.active {
   background: linear-gradient(180deg,rgba(210, 252, 240, 0.1) 0%, rgba(157, 54, 230, 0.3) 50%, rgba(47, 61, 217, 0.3) 100%) !important;
 }
 
-.navmenu .nav-item.active .triangle {
+.nav-menu .nav-item.active .triangle {
   position: absolute;
   width: 20px;
   height: 50px;

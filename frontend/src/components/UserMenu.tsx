@@ -34,7 +34,7 @@ function UserMenu() {
 
   return (
     <>
-      <div className='usermenu offcanvas offcanvas-start' id='userMenu'>
+      <div className='user-menu offcanvas offcanvas-start' id='userMenu'>
         <div className='offcanvas-header'>
           <button type='button' className='btn-close btn-close-white' data-bs-dismiss='offcanvas' data-bs-target='#userMenu' />
         </div>

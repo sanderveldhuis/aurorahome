@@ -38,7 +38,7 @@ function NavMenu() {
 
   return (
     <>
-      <div className='navmenu col-auto p-0'>
+      <div className='nav-menu col-auto p-0'>
         <div className='offcanvas-md offcanvas-end' id='navMenu'>
           <div className='offcanvas-header'>
             <button type='button' className='btn-close btn-close-white' data-bs-dismiss='offcanvas' data-bs-target='#navMenu' />
