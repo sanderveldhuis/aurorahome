@@ -26,6 +26,9 @@ import { useState } from 'react';
 import './NavMenu.css';
 import { useWindow } from '../hooks/useWindow';
 
+/**
+ * The Navigation Menu component showing application related pages.
+ */
 function NavMenu() {
   const window = useWindow();
   const [expanded, setExpanded] = useState(false);

@@ -24,6 +24,9 @@
 
 import './NavBar.css';
 
+/**
+ * The Navigation Bar component showing application related pages.
+ */
 function NavBar() {
   // TODO: retrieve values via API
 

@@ -33,6 +33,9 @@ import UserMenu from './components/UserMenu.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import WindowProvider from './providers/WindowProvider.tsx';
 
+/**
+ * The App component showing the full application.
+ */
 function App() {
   return (
     <>

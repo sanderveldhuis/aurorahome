@@ -25,10 +25,16 @@
 import { useWindow } from '../hooks/useWindow';
 import './UserMenu.css';
 
+/**
+ * Ensures the current user is signed out.
+ */
 function signOut() {
   // TODO: implement
 }
 
+/**
+ * The User Menu component showing user related pages.
+ */
 function UserMenu() {
   const window = useWindow();
 

@@ -25,6 +25,9 @@
 import './Dashboard.css';
 import { useWindow } from '../hooks/useWindow';
 
+/**
+ * The Dashboard component showing actual application information.
+ */
 function Dashboard() {
   const window = useWindow();
 

@@ -26,6 +26,10 @@ import { useState } from 'react';
 import './Profile.css';
 import { useWindow } from '../hooks/useWindow';
 
+/**
+ * Shows the profile information.
+ * @param onEdit invoked when the edit button is pressed
+ */
 function displayProfile(onEdit: () => void) {
   // TODO: retrieve via API
   return (
@@ -45,6 +49,11 @@ function displayProfile(onEdit: () => void) {
   );
 }
 
+/**
+ * Shows the edit profile information.
+ * @param onSave invoked when the save button is pressed
+ * @param onCancel invoked when the cancel button is pressed
+ */
 function editProfile(onSave: () => void, onCancel: () => void) {
   // TODO: retrieve values via API
   return (
@@ -79,6 +88,9 @@ function editProfile(onSave: () => void, onCancel: () => void) {
   );
 }
 
+/**
+ * The Profile component showing profile related information.
+ */
 function Profile() {
   const window = useWindow();
   const [edit, setEdit] = useState(false);

@@ -26,6 +26,9 @@ import './Settings.css';
 import ConfigWidget from '../configwidget/Widget';
 import { useWindow } from '../hooks/useWindow';
 
+/**
+ * The Settings component showing all configuration widgets.
+ */
 function Settings() {
   const window = useWindow();
 
