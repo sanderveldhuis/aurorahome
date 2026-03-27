@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import './navbar.css';
+import './Navbar.css';
 
 function Navbar() {
   // TODO: retrieve values via API
