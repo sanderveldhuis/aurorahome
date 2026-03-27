@@ -23,7 +23,7 @@
  */
 
 import { useState } from 'react';
-import './Navmenu.css';
+import './NavMenu.css';
 import { useWindow } from '../hooks/useWindow';
 
 function NavMenu() {
