@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import './dashboard.css';
-import { useWindow } from './hooks/useWindow';
+import './Dashboard.css';
+import { useWindow } from '../hooks/useWindow';
 
 function Dashboard() {
   const window = useWindow();

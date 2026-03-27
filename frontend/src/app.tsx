@@ -23,8 +23,8 @@
  */
 
 import './app.css';
+import Dashboard from './components/Dashboard.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
 import Navbar from './navbar.tsx';
 import NavMenu from './navmenu.tsx';
 import Profile from './profile.tsx';
