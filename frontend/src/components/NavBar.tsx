@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-import './Navbar.css';
+import './NavBar.css';
 
-function Navbar() {
+function NavBar() {
   // TODO: retrieve values via API
 
   return (
@@ -47,4 +47,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default NavBar;
