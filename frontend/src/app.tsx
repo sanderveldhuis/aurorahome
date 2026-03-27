@@ -27,10 +27,10 @@ import Dashboard from './components/Dashboard.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
 import Navbar from './components/Navbar.tsx';
 import NavMenu from './components/Navmenu.tsx';
+import Settings from './components/Settings.tsx';
 import Profile from './profile.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import WindowProvider from './providers/WindowProvider.tsx';
-import Settings from './settings.tsx';
 import UserMenu from './usermenu.tsx';
 
 function App() {

@@ -23,8 +23,8 @@
  */
 
 import './settings.css';
-import ConfigWidget from './configwidget/Widget';
-import { useWindow } from './hooks/useWindow';
+import ConfigWidget from '../configwidget/Widget';
+import { useWindow } from '../hooks/useWindow';
 
 function Settings() {
   const window = useWindow();
