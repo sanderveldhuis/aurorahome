@@ -23,7 +23,7 @@
  */
 
 import { useWindow } from '../hooks/useWindow';
-import './Usermenu.css';
+import './UserMenu.css';
 
 function signOut() {
   // TODO: implement

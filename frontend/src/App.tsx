@@ -29,7 +29,7 @@ import Navbar from './components/Navbar.tsx';
 import NavMenu from './components/NavMenu.tsx';
 import Profile from './components/Profile.tsx';
 import Settings from './components/Settings.tsx';
-import UserMenu from './components/Usermenu.tsx';
+import UserMenu from './components/UserMenu.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import WindowProvider from './providers/WindowProvider.tsx';
 
