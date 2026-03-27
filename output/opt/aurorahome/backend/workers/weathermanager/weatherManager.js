@@ -92,7 +92,7 @@ class WeatherManager {
             return;
         }
         // Construct the status details
-        this._statusDetails = { source: config.source.name };
+        this._statusDetails = {};
         statusReporter_1.status.weathermanager.setDetails(this._statusDetails);
         statusReporter_1.status.weathermanager.setHealth('running');
         // Construct the dedicated weather retriever
