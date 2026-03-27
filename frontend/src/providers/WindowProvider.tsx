@@ -22,39 +22,24 @@
  * SOFTWARE.
  */
 
-import './app.css';
-import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
-import Navbar from './navbar.tsx';
-import NavMenu from './navmenu.tsx';
-import Profile from './profile.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import WindowProvider from './providers/WindowProvider.tsx';
-import Settings from './settings.tsx';
-import UserMenu from './usermenu.tsx';
+import {
+  type ReactNode,
+  useState
+} from 'react';
+import { WindowContext } from '../hooks/useWindow';
 
-function App() {
+/**
+ * Defines the provider for the Window.
+ * @param children the child nodes for this provider
+ */
+function WindowProvider({ children }: { children: ReactNode; }) {
+  const [component, showComponent] = useState('Dashboard');
+
   return (
-    <>
-      <WindowProvider>
-        <MessagePopupProvider>
-          <MessagePopup />
-          <Navbar />
-          <UserMenu />
-          <div className='container-fluid'>
-            <div className='container-row row'>
-              <NavMenu />
-              <main className='container-col col h-100 overflow-y-auto'>
-                <Dashboard />
-                <Settings />
-                <Profile />
-              </main>
-            </div>
-          </div>
-        </MessagePopupProvider>
-      </WindowProvider>
-    </>
+    <WindowContext.Provider value={{ component, showComponent }}>
+      {children}
+    </WindowContext.Provider>
   );
 }
 
-export default App;
+export default WindowProvider;

@@ -22,13 +22,16 @@
  * SOFTWARE.
  */
 
+import { useWindow } from './hooks/useWindow';
 import './usermenu.css';
 
 function signOut() {
   // TODO: implement
 }
 
-function UserMenu({ setComponent }: { setComponent: React.Dispatch<React.SetStateAction<string>>; }) {
+function UserMenu() {
+  const window = useWindow();
+
   return (
     <>
       <div className='usermenu offcanvas offcanvas-start' id='userMenu'>
@@ -45,7 +48,7 @@ function UserMenu({ setComponent }: { setComponent: React.Dispatch<React.SetStat
               data-bs-dismiss='offcanvas'
               data-bs-target='#userMenu'
               onClick={() => {
-                setComponent('Settings');
+                window.showComponent('Settings');
               }}
             >
               <button type='button' className='nav-link d-flex align-items-center gap-2 mx-5'>
@@ -61,7 +64,7 @@ function UserMenu({ setComponent }: { setComponent: React.Dispatch<React.SetStat
               data-bs-dismiss='offcanvas'
               data-bs-target='#userMenu'
               onClick={() => {
-                setComponent('Profile');
+                window.showComponent('Profile');
               }}
             >
               <button type='button' className='nav-link d-flex align-items-center gap-2 mx-5'>

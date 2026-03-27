@@ -24,6 +24,7 @@
 
 import { useState } from 'react';
 import './profile.css';
+import { useWindow } from './hooks/useWindow';
 
 function displayProfile(onEdit: () => void) {
   // TODO: retrieve via API
@@ -78,46 +79,46 @@ function editProfile(onSave: () => void, onCancel: () => void) {
   );
 }
 
-function Profile({ component }: { component: string; }) {
+function Profile() {
+  const window = useWindow();
   const [edit, setEdit] = useState(false);
-  if (component !== 'Profile') {
-    return null;
-  }
 
   return (
     <>
-      <div className='row mb-3 mt-1 mt-md-3'>
-        <div className='col-12 col-lg-6 col-xl-3'>
-          <div className='card'>
-            <div className='card-body'>
-              <img src='https://github.com/sanderveldhuis.png' alt='' className='img-fluid rounded-circle mb-3' />
-              {edit ? editProfile(() => {
-                // TODO: store via API
-                setEdit(false);
-              }, () => {
-                setEdit(false);
-              }) : displayProfile(() => {
-                setEdit(true);
-              })}
+      <div className={window.component !== 'Profile' ? 'd-none' : ''}>
+        <div className='row mb-3 mt-1 mt-md-3'>
+          <div className='col-12 col-lg-6 col-xl-3'>
+            <div className='card'>
+              <div className='card-body'>
+                <img src='https://github.com/sanderveldhuis.png' alt='' className='img-fluid rounded-circle mb-3' />
+                {edit ? editProfile(() => {
+                  // TODO: store via API
+                  setEdit(false);
+                }, () => {
+                  setEdit(false);
+                }) : displayProfile(() => {
+                  setEdit(true);
+                })}
+              </div>
             </div>
           </div>
-        </div>
-        <div className='col-12 col-lg-6 col-xl-9 ps-lg-0 mt-3 mt-lg-0'>
-          <div className='card'>
-            <div className='card-body'>
-              Password and authentication
-            </div>
-            <div
-              className='card-body'
-              style={{
-                borderTop: 'inherit',
-                borderBottom: 'inherit'
-              }}
-            >
-              Web sessions
-            </div>
-            <div className='card-body'>
-              Profile activity
+          <div className='col-12 col-lg-6 col-xl-9 ps-lg-0 mt-3 mt-lg-0'>
+            <div className='card'>
+              <div className='card-body'>
+                Password and authentication
+              </div>
+              <div
+                className='card-body'
+                style={{
+                  borderTop: 'inherit',
+                  borderBottom: 'inherit'
+                }}
+              >
+                Web sessions
+              </div>
+              <div className='card-body'>
+                Profile activity
+              </div>
             </div>
           </div>
         </div>

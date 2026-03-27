@@ -22,39 +22,32 @@
  * SOFTWARE.
  */
 
-import './app.css';
-import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
-import Navbar from './navbar.tsx';
-import NavMenu from './navmenu.tsx';
-import Profile from './profile.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import WindowProvider from './providers/WindowProvider.tsx';
-import Settings from './settings.tsx';
-import UserMenu from './usermenu.tsx';
+import {
+  createContext,
+  useContext
+} from 'react';
 
-function App() {
-  return (
-    <>
-      <WindowProvider>
-        <MessagePopupProvider>
-          <MessagePopup />
-          <Navbar />
-          <UserMenu />
-          <div className='container-fluid'>
-            <div className='container-row row'>
-              <NavMenu />
-              <main className='container-col col h-100 overflow-y-auto'>
-                <Dashboard />
-                <Settings />
-                <Profile />
-              </main>
-            </div>
-          </div>
-        </MessagePopupProvider>
-      </WindowProvider>
-    </>
-  );
+/**
+ * Interface defining the information of the Window context.
+ */
+export interface WindowContextType {
+  component: string;
+  showComponent: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default App;
+/**
+ * Defines the Window context.
+ */
+export const WindowContext = createContext<WindowContextType | undefined>(undefined);
+
+/**
+ * Returns the Window, and functions to update it.
+ * @returns the Window
+ */
+export const useWindow = () => {
+  const context = useContext(WindowContext);
+  if (!context) {
+    throw new Error('Component must be used within a WindowProvider');
+  }
+  return context;
+};

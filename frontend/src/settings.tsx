@@ -24,54 +24,55 @@
 
 import './settings.css';
 import ConfigWidget from './configwidget/Widget';
+import { useWindow } from './hooks/useWindow';
 
-function Settings({ component }: { component: string; }) {
-  if (component !== 'Settings') {
-    return null;
-  }
+function Settings() {
+  const window = useWindow();
 
   return (
     <>
-      <div className='row mb-3 mt-1 mt-md-3'>
-        <div className='col-12'>
-          <ConfigWidget />
+      <div className={window.component !== 'Settings' ? 'd-none' : ''}>
+        <div className='row mb-3 mt-1 mt-md-3'>
+          <div className='col-12'>
+            <ConfigWidget />
+          </div>
         </div>
-      </div>
-      <div className='row mb-3'>
-        <div className='col-6'>
-          <div className='card'>
-            <div className='card-body'>
-              Split card
+        <div className='row mb-3'>
+          <div className='col-6'>
+            <div className='card'>
+              <div className='card-body'>
+                Split card
+              </div>
+            </div>
+          </div>
+          <div className='col-6 ps-0'>
+            <div className='card'>
+              <div className='card-body'>
+                Split card
+              </div>
             </div>
           </div>
         </div>
-        <div className='col-6 ps-0'>
-          <div className='card'>
-            <div className='card-body'>
-              Split card
+        <div className='row mb-3'>
+          <div className='col-6'>
+            <div className='card'>
+              <div className='card-body'>
+                Split card
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className='row mb-3'>
-        <div className='col-6'>
-          <div className='card'>
-            <div className='card-body'>
-              Split card
+          <div className='col-2 ps-0'>
+            <div className='card'>
+              <div className='card-body'>
+                Split card
+              </div>
             </div>
           </div>
-        </div>
-        <div className='col-2 ps-0'>
-          <div className='card'>
-            <div className='card-body'>
-              Split card
-            </div>
-          </div>
-        </div>
-        <div className='col-4 ps-0'>
-          <div className='card'>
-            <div className='card-body'>
-              Split card
+          <div className='col-4 ps-0'>
+            <div className='card'>
+              <div className='card-body'>
+                Split card
+              </div>
             </div>
           </div>
         </div>

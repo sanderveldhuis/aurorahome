@@ -24,8 +24,10 @@
 
 import { useState } from 'react';
 import './navmenu.css';
+import { useWindow } from './hooks/useWindow';
 
-function NavMenu({ component, setComponent }: { component: string; setComponent: React.Dispatch<React.SetStateAction<string>>; }) {
+function NavMenu() {
+  const window = useWindow();
   const [expanded, setExpanded] = useState(false);
 
   // TODO: retrieve values via API, can be configured by the user
@@ -47,11 +49,11 @@ function NavMenu({ component, setComponent }: { component: string; setComponent:
                 <li
                   key={item.name}
                   role='button'
-                  className={'nav-item' + (component == item.name ? ' active' : '')}
+                  className={'nav-item' + (window.component == item.name ? ' active' : '')}
                   data-bs-dismiss='offcanvas'
                   data-bs-target='#navMenu'
                   onClick={() => {
-                    setComponent(item.name);
+                    window.showComponent(item.name);
                   }}
                 >
                   <div className='triangle' />
@@ -64,7 +66,7 @@ function NavMenu({ component, setComponent }: { component: string; setComponent:
             <ul className='nav flex-column d-none d-md-block mb-2'>
               <li
                 role='button'
-                className={'nav-item' + (component == 'Settings' || component == 'Profile' ? ' active' : '')}
+                className={'nav-item' + (window.component == 'Settings' || window.component == 'Profile' ? ' active' : '')}
                 data-bs-toggle='offcanvas'
                 data-bs-target='#userMenu'
               >
