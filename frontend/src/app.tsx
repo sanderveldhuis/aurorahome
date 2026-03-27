@@ -29,9 +29,9 @@ import Navbar from './components/Navbar.tsx';
 import NavMenu from './components/Navmenu.tsx';
 import Profile from './components/Profile.tsx';
 import Settings from './components/Settings.tsx';
+import UserMenu from './components/Usermenu.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import WindowProvider from './providers/WindowProvider.tsx';
-import UserMenu from './usermenu.tsx';
 
 function App() {
   return (

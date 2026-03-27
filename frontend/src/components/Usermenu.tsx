@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { useWindow } from './hooks/useWindow';
-import './usermenu.css';
+import { useWindow } from '../hooks/useWindow';
+import './Usermenu.css';
 
 function signOut() {
   // TODO: implement
