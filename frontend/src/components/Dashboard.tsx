@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import './Dashboard.css';
+import './Dashboard.scss';
 import { useWindow } from '../hooks/useWindow';
 
 /**

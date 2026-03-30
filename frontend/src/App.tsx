@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import './App.css';
+import './App.scss';
 import Dashboard from './components/Dashboard.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
 import NavBar from './components/NavBar.tsx';

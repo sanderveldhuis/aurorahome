@@ -23,7 +23,7 @@
  */
 
 import { useState } from 'react';
-import './Profile.css';
+import './Profile.scss';
 import { useWindow } from '../hooks/useWindow';
 
 /**

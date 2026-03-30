@@ -28,7 +28,7 @@ import {
   type ApiShellyEnable,
   isApiShellyConfigResponse
 } from '../../../shared/apiConfig';
-import './ShellyConfig.css';
+import './ShellyConfig.scss';
 import { api } from 'glidelite/frontend';
 import validator from 'validator';
 import useInterval from '../hooks/useInterval';

@@ -24,7 +24,7 @@
 
 import { api } from 'glidelite/frontend';
 import useInterval from '../hooks/useInterval';
-import './Widget.css';
+import './Widget.scss';
 import { useState } from 'react';
 import {
   type ApiApplicationStatus,

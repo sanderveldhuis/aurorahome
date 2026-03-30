@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import './ConfigConfig.css';
+import './ConfigConfig.scss';
 
 /**
  * The Config Config component showing configuration and status of Config Manager.

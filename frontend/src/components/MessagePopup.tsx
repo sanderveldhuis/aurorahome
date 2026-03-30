@@ -27,7 +27,7 @@ import {
   useRef,
   useState
 } from 'react';
-import './MessagePopup.css';
+import './MessagePopup.scss';
 import { Modal } from 'bootstrap';
 import useInterval from '../hooks/useInterval';
 import { useMessagePopup } from '../hooks/useMessagePopup';

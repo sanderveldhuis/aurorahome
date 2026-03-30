@@ -28,7 +28,7 @@ import {
   type ApiWeatherEnable,
   isApiWeatherConfigResponse
 } from '../../../shared/apiConfig';
-import './WeatherConfig.css';
+import './WeatherConfig.scss';
 import { api } from 'glidelite/frontend';
 import validator from 'validator';
 import useInterval from '../hooks/useInterval';

@@ -23,7 +23,7 @@
  */
 
 import { useWindow } from '../hooks/useWindow';
-import './UserMenu.css';
+import './UserMenu.scss';
 
 /**
  * Ensures the current user is signed out.
