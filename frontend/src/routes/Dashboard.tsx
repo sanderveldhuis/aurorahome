@@ -22,62 +22,56 @@
  * SOFTWARE.
  */
 
-import { useWindow } from '../hooks/useWindow';
-
 /**
  * The Dashboard component showing actual application information.
  */
 function Dashboard() {
-  const window = useWindow();
-
   return (
     <>
-      <div className={window.component !== 'Dashboard' ? 'd-none' : ''}>
-        <div className='row mb-3 mt-1 mt-md-3'>
-          <div className='col-12'>
-            <div className='card'>
-              <div className='card-body'>
-                Single card
-              </div>
+      <div className='row mb-3 mt-1 mt-md-3'>
+        <div className='col-12'>
+          <div className='card'>
+            <div className='card-body'>
+              Single card
             </div>
           </div>
         </div>
-        <div className='row mb-3'>
-          <div className='col-6'>
-            <div className='card'>
-              <div className='card-body'>
-                Split card
-              </div>
-            </div>
-          </div>
-          <div className='col-6 ps-0'>
-            <div className='card'>
-              <div className='card-body'>
-                Split card
-              </div>
+      </div>
+      <div className='row mb-3'>
+        <div className='col-6'>
+          <div className='card'>
+            <div className='card-body'>
+              Split card
             </div>
           </div>
         </div>
-        <div className='row mb-3'>
-          <div className='col-6'>
-            <div className='card'>
-              <div className='card-body'>
-                Split card
-              </div>
+        <div className='col-6 ps-0'>
+          <div className='card'>
+            <div className='card-body'>
+              Split card
             </div>
           </div>
-          <div className='col-2 ps-0'>
-            <div className='card'>
-              <div className='card-body'>
-                Split card
-              </div>
+        </div>
+      </div>
+      <div className='row mb-3'>
+        <div className='col-6'>
+          <div className='card'>
+            <div className='card-body'>
+              Split card
             </div>
           </div>
-          <div className='col-4 ps-0'>
-            <div className='card'>
-              <div className='card-body'>
-                Split card
-              </div>
+        </div>
+        <div className='col-2 ps-0'>
+          <div className='card'>
+            <div className='card-body'>
+              Split card
+            </div>
+          </div>
+        </div>
+        <div className='col-4 ps-0'>
+          <div className='card'>
+            <div className='card-body'>
+              Split card
             </div>
           </div>
         </div>

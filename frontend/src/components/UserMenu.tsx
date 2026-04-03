@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { useWindow } from '../hooks/useWindow';
+import { useRouter } from '../hooks/useRouter';
 import './UserMenu.scss';
 
 /**
@@ -36,7 +36,7 @@ function signOut() {
  * The User Menu component showing user related pages.
  */
 function UserMenu() {
-  const window = useWindow();
+  const router = useRouter();
 
   return (
     <>
@@ -54,7 +54,7 @@ function UserMenu() {
               data-bs-dismiss='offcanvas'
               data-bs-target='#userMenu'
               onClick={() => {
-                window.showComponent('Settings');
+                router.showRoute('Settings');
               }}
             >
               <button type='button' className='nav-link d-flex align-items-center gap-2 mx-5'>
@@ -70,7 +70,7 @@ function UserMenu() {
               data-bs-dismiss='offcanvas'
               data-bs-target='#userMenu'
               onClick={() => {
-                window.showComponent('Profile');
+                router.showRoute('Profile');
               }}
             >
               <button type='button' className='nav-link d-flex align-items-center gap-2 mx-5'>

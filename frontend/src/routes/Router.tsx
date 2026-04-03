@@ -22,32 +22,27 @@
  * SOFTWARE.
  */
 
-import {
-  createContext,
-  useContext
-} from 'react';
+import { useRouter } from '../hooks/useRouter';
+import Dashboard from './Dashboard';
+import NotFound from './NotFound';
+import Profile from './Profile';
+import Settings from './Settings';
 
 /**
- * Interface defining the information of the Window context.
+ * The Router component displaying the active component.
  */
-export interface WindowContextType {
-  component: string;
-  showComponent: React.Dispatch<React.SetStateAction<string>>;
+function Router() {
+  const router = useRouter();
+
+  return (
+    <>
+      {router.route === 'Dashboard' ? <Dashboard /> :
+        router.route === 'Settings' ? <Settings /> :
+        router.route === 'Profile' ? <Profile /> :
+        router.route === 'Profile' ? <Profile /> :
+        <NotFound />}
+    </>
+  );
 }
 
-/**
- * Defines the Window context.
- */
-export const WindowContext = createContext<WindowContextType | undefined>(undefined);
-
-/**
- * Returns the Window, and functions to update it.
- * @returns the Window
- */
-export const useWindow = () => {
-  const context = useContext(WindowContext);
-  if (!context) {
-    throw new Error('Component must be used within a WindowProvider');
-  }
-  return context;
-};
+export default Router;

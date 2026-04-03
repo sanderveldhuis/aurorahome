@@ -22,38 +22,32 @@
  * SOFTWARE.
  */
 
-import './App.scss';
-import MessagePopup from './components/MessagePopup.tsx';
-import NavBar from './components/NavBar.tsx';
-import NavMenu from './components/NavMenu.tsx';
-import UserMenu from './components/UserMenu.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import RouterProvider from './providers/RouterProvider.tsx';
-import Router from './routes/Router.tsx';
+import {
+  createContext,
+  useContext
+} from 'react';
 
 /**
- * The App component showing the full application.
+ * Interface defining the information of the Router context.
  */
-function App() {
-  return (
-    <>
-      <RouterProvider>
-        <MessagePopupProvider>
-          <MessagePopup />
-          <NavBar />
-          <UserMenu />
-          <div className='container-fluid'>
-            <div className='container-row row'>
-              <NavMenu />
-              <main className='container-col col h-100 overflow-y-auto'>
-                <Router />
-              </main>
-            </div>
-          </div>
-        </MessagePopupProvider>
-      </RouterProvider>
-    </>
-  );
+export interface RouterContextType {
+  route: string;
+  showRoute: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default App;
+/**
+ * Defines the Router context.
+ */
+export const RouterContext = createContext<RouterContextType | undefined>(undefined);
+
+/**
+ * Returns the Router, and functions to update it.
+ * @returns the Router
+ */
+export const useRouter = () => {
+  const context = useContext(RouterContext);
+  if (!context) {
+    throw new Error('Component must be used within a RouterProvider');
+  }
+  return context;
+};
