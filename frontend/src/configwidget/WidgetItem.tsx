@@ -35,7 +35,7 @@ function ConfigWidgetItem({ name, health, children }: { name: string; health: st
       <div className='card mb-2'>
         <div className='card-body'>
           <div className='d-grid'>
-            <button className='btn btn-accordion collapsed' type='button' data-bs-toggle='collapse' data-bs-target={`#${id}`}>
+            <button className='btn btn-accordion collapsed d-flex align-items-center p-0' type='button' data-bs-toggle='collapse' data-bs-target={`#${id}`}>
               <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
               <span className={`p-2 rounded-circle ${health ? `bg-${health}` : 'placeholder'}`} />
             </button>
