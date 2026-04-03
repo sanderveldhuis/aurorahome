@@ -23,6 +23,8 @@
  */
 
 import './App.scss';
+import DataTablesCore from 'datatables.net-bs5';
+import DataTable from 'datatables.net-react';
 import MessagePopup from './components/MessagePopup.tsx';
 import NavBar from './components/NavBar.tsx';
 import NavMenu from './components/NavMenu.tsx';
@@ -35,6 +37,9 @@ import Router from './routes/Router.tsx';
  * The App component showing the full application.
  */
 function App() {
+  // Use Bootstrap DataTables
+  DataTable.use(DataTablesCore);
+
   return (
     <>
       <RouterProvider>

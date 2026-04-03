@@ -73,6 +73,7 @@ body {
 
 // Import Bootstrap after creating custom colors
 @import "~bootstrap/scss/bootstrap";
+@import "~datatables/css/dataTables.bootstrap5";
 
 // Custom accordion buttons
 .btn-accordion {
