@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import './Dashboard.scss';
 import { useWindow } from '../hooks/useWindow';
 
 /**

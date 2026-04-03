@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import './Settings.scss';
 import ConfigWidget from '../configwidget/Widget';
 import { useWindow } from '../hooks/useWindow';
 
