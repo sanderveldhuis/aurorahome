@@ -31,13 +31,9 @@
 
 .nav-menu .nav-link {
   height: 50px;
-  color: #fff;
+  color: $text-color;
   font-size: .875rem;
   font-weight: 400;
-}
-
-.nav-menu .nav-link svg {
-  vertical-align: -.125em;
 }
 
 .nav-menu .nav-item.active {

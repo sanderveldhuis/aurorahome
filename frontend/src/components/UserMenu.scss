@@ -22,26 +22,17 @@
  * SOFTWARE.
  */
 
-.user-menu {
-  background-color: rgb(22, 27, 46);
-}
+@import "../variables";
 
 .user-menu .nav-link {
   height: 50px;
-  color: #fff;
+  color: $text-color;
   font-size: .875rem;
   font-weight: 400;
 }
 
-.user-menu .nav-link svg {
-  vertical-align: -.125em;
-  fill: currentColor;
-}
-
 .user-menu .nav-divider {
-  height: 0;
   margin: 0.5rem 0;
-  overflow: hidden;
-  border-top: 2px solid rgba(157, 54, 230, 0.3);
+  color: $purple-50;
   opacity: 1;
 }
