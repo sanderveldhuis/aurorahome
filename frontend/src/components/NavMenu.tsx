@@ -24,13 +24,13 @@
 
 import { useState } from 'react';
 import './NavMenu.scss';
-import { useWindow } from '../hooks/useWindow';
+import { useRouter } from '../hooks/useRouter';
 
 /**
  * The Navigation Menu component showing application related pages.
  */
 function NavMenu() {
-  const window = useWindow();
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
 
   // TODO: retrieve values via API, can be configured by the user
@@ -52,11 +52,11 @@ function NavMenu() {
                 <li
                   key={item.name}
                   role='button'
-                  className={'nav-item' + (window.component == item.name ? ' active' : '')}
+                  className={'nav-item' + (router.route == item.name ? ' active' : '')}
                   data-bs-dismiss='offcanvas'
                   data-bs-target='#navMenu'
                   onClick={() => {
-                    window.showComponent(item.name);
+                    router.showRoute(item.name);
                   }}
                 >
                   <div className='triangle' />
@@ -69,7 +69,7 @@ function NavMenu() {
             <ul className='nav flex-column d-none d-md-block mb-2'>
               <li
                 role='button'
-                className={'nav-item' + (window.component == 'Settings' || window.component == 'Profile' ? ' active' : '')}
+                className={'nav-item' + (router.route == 'Settings' || router.route == 'Profile' ? ' active' : '')}
                 data-bs-toggle='offcanvas'
                 data-bs-target='#userMenu'
               >

@@ -22,24 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  type ReactNode,
-  useState
-} from 'react';
-import { WindowContext } from '../hooks/useWindow';
+import ConfigWidget from '../configwidget/Widget';
 
 /**
- * Defines the provider for the Window.
- * @param children the child nodes for this provider
+ * The Settings component showing all configuration widgets.
  */
-function WindowProvider({ children }: { children: ReactNode; }) {
-  const [component, showComponent] = useState('Dashboard');
-
+function Settings() {
   return (
-    <WindowContext.Provider value={{ component, showComponent }}>
-      {children}
-    </WindowContext.Provider>
+    <>
+      <div className='row mb-1 mt-1 mt-md-3'>
+        <div className='col-12'>
+          <ConfigWidget />
+        </div>
+      </div>
+    </>
   );
 }
 
-export default WindowProvider;
+export default Settings;

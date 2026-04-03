@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-html,
-body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  display: flex;
-  height: 100%;
-  margin: auto;
-  color: rgb(255, 255, 255);
-  background-color: rgb(0, 8, 31);
+/**
+ * The Not Found component showing an error due to the page is not found.
+ */
+function NotFound() {
+  return (
+    <>
+      <div className='position-absolute top-50 start-50 translate-middle text-center'>
+        <h4>Oops!</h4>
+        <p>Your home is smart… this page, not so much.</p>
+        <p className='fw-light'>
+          <i>Not Found</i>
+        </p>
+      </div>
+    </>
+  );
 }
 
-div {
-  width: 100%;
-  margin: auto;
-  text-align: center;
-}
+export default NotFound;

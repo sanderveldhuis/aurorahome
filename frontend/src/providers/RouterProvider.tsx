@@ -22,26 +22,24 @@
  * SOFTWARE.
  */
 
-import ConfigWidget from '../configwidget/Widget';
-import { useWindow } from '../hooks/useWindow';
+import {
+  type ReactNode,
+  useState
+} from 'react';
+import { RouterContext } from '../hooks/useRouter';
 
 /**
- * The Settings component showing all configuration widgets.
+ * Defines the provider for the Router.
+ * @param children the child nodes for this provider
  */
-function Settings() {
-  const window = useWindow();
+function RouterProvider({ children }: { children: ReactNode; }) {
+  const [route, showRoute] = useState('Dashboard');
 
   return (
-    <>
-      <div className={window.component !== 'Settings' ? 'd-none' : ''}>
-        <div className='row mb-1 mt-1 mt-md-3'>
-          <div className='col-12'>
-            <ConfigWidget />
-          </div>
-        </div>
-      </div>
-    </>
+    <RouterContext.Provider value={{ route, showRoute }}>
+      {children}
+    </RouterContext.Provider>
   );
 }
 
-export default Settings;
+export default RouterProvider;
