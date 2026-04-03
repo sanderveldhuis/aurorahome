@@ -22,31 +22,32 @@
  * SOFTWARE.
  */
 
-.navmenu,
-.navmenu .offcanvas-md {
-  background-color: rgb(22, 27, 46);
+import {
+  createContext,
+  useContext
+} from 'react';
+
+/**
+ * Interface defining the information of the Window context.
+ */
+export interface WindowContextType {
+  component: string;
+  showComponent: React.Dispatch<React.SetStateAction<string>>;
 }
 
-.navmenu .nav-link {
-  height: 50px;
-  color: #fff;
-  font-size: .875rem;
-  font-weight: 400;
-}
+/**
+ * Defines the Window context.
+ */
+export const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
-.navmenu .nav-link svg {
-  vertical-align: -.125em;
-  fill: currentColor;
-}
-
-.navmenu .nav-item.active {
-  background: linear-gradient(180deg,rgba(210, 252, 240, 0.1) 0%, rgba(157, 54, 230, 0.3) 50%, rgba(47, 61, 217, 0.3) 100%) !important;
-}
-
-.navmenu .nav-item.active .triangle {
-  position: absolute;
-  width: 20px;
-  height: 50px;
-  background: linear-gradient(180deg,rgba(210, 252, 240, 0.5) 0%, rgba(157, 54, 230, 1) 50%, rgba(47, 61, 217, 1) 100%) !important;
-  clip-path: polygon(0% 0%, 0% 100%, 100% 50%);
-}
+/**
+ * Returns the Window, and functions to update it.
+ * @returns the Window
+ */
+export const useWindow = () => {
+  const context = useContext(WindowContext);
+  if (!context) {
+    throw new Error('Component must be used within a WindowProvider');
+  }
+  return context;
+};

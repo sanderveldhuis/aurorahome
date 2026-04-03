@@ -21,3 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import type { ReactNode } from 'react';
+import { toHtmlId } from '../utils/html';
+
+/**
+ * The Config Widget item component showing items in accordion style.
+ */
+function ConfigWidgetItem({ name, health, children }: { name: string; health: string; children: ReactNode; }) {
+  const id = `configWidget${toHtmlId(name)}`;
+  return (
+    <>
+      <div className='card mb-2'>
+        <div className='card-body'>
+          <div className='d-grid'>
+            <button className='btn btn-accordion collapsed d-flex align-items-center p-0' type='button' data-bs-toggle='collapse' data-bs-target={`#${id}`}>
+              <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
+              <span className={`p-2 rounded-circle ${health ? `bg-${health}` : 'placeholder'}`} />
+            </button>
+          </div>
+          <div className='collapse' id={id} data-bs-parent='#configWidget'>
+            <hr />
+            {children}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default ConfigWidgetItem;

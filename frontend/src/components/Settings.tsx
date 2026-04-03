@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-.usermenu {
-  background-color: rgb(22, 27, 46);
+import ConfigWidget from '../configwidget/Widget';
+import { useWindow } from '../hooks/useWindow';
+
+/**
+ * The Settings component showing all configuration widgets.
+ */
+function Settings() {
+  const window = useWindow();
+
+  return (
+    <>
+      <div className={window.component !== 'Settings' ? 'd-none' : ''}>
+        <div className='row mb-1 mt-1 mt-md-3'>
+          <div className='col-12'>
+            <ConfigWidget />
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
-.usermenu .nav-link {
-  height: 50px;
-  color: #fff;
-  font-size: .875rem;
-  font-weight: 400;
-}
-
-.usermenu .nav-link svg {
-  vertical-align: -.125em;
-  fill: currentColor;
-}
-
-.usermenu .nav-divider {
-  height: 0;
-  margin: 0.5rem 0;
-  overflow: hidden;
-  border-top: 2px solid rgba(157, 54, 230, 0.3);
-  opacity: 1;
-}
+export default Settings;

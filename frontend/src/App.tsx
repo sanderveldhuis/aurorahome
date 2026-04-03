@@ -22,37 +22,40 @@
  * SOFTWARE.
  */
 
-import { useState } from 'react';
-import './app.css';
+import './App.scss';
+import Dashboard from './components/Dashboard.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
-import Dashboard from './dashboard.tsx';
-import Navbar from './navbar.tsx';
-import NavMenu from './navmenu.tsx';
-import Profile from './profile.tsx';
+import NavBar from './components/NavBar.tsx';
+import NavMenu from './components/NavMenu.tsx';
+import Profile from './components/Profile.tsx';
+import Settings from './components/Settings.tsx';
+import UserMenu from './components/UserMenu.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import Settings from './settings.tsx';
-import UserMenu from './usermenu.tsx';
+import WindowProvider from './providers/WindowProvider.tsx';
 
+/**
+ * The App component showing the full application.
+ */
 function App() {
-  const [component, setComponent] = useState('Dashboard');
-
   return (
     <>
-      <MessagePopupProvider>
-        <MessagePopup />
-        <Navbar />
-        <UserMenu setComponent={setComponent} />
-        <div className='container-fluid'>
-          <div className='container-row row'>
-            <NavMenu component={component} setComponent={setComponent} />
-            <main className='container-col col h-100 overflow-y-auto'>
-              <Dashboard component={component} />
-              <Settings component={component} />
-              <Profile component={component} />
-            </main>
+      <WindowProvider>
+        <MessagePopupProvider>
+          <MessagePopup />
+          <NavBar />
+          <UserMenu />
+          <div className='container-fluid'>
+            <div className='container-row row'>
+              <NavMenu />
+              <main className='container-col col h-100 overflow-y-auto'>
+                <Dashboard />
+                <Settings />
+                <Profile />
+              </main>
+            </div>
           </div>
-        </div>
-      </MessagePopupProvider>
+        </MessagePopupProvider>
+      </WindowProvider>
     </>
   );
 }

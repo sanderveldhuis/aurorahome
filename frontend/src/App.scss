@@ -22,47 +22,12 @@
  * SOFTWARE.
  */
 
-.message-popup {
-  --bs-modal-color: rgb(255, 255, 255);
-  --bs-modal-bg: rgb(22, 27, 46);
+.container-fluid .container-row {
+  height: calc(100vh - 40px); /* Remove the height of the navbar from the viewport height */
 }
 
-.message-popup .modal-dialog {
-  display: flex;
-  align-items: end;
-  min-height: calc(100% - var(--bs-modal-margin) * 2);
-}
-
-.message-popup .progress {
-  --bs-progress-height: 5px;
-  --bs-progress-bg: rgb(0, 8, 31);
-  --bs-progress-bar-transition: none;
-}
-
-/* Success */
-
-.message-popup.success {
-  --bs-modal-border-color: rgb(107, 142, 35);
-}
-
-.message-popup.success svg {
-  fill: rgb(107, 142, 35);
-}
-
-.message-popup.success .progress-bar {
-  background-color: rgb(107, 142, 35) !important;
-}
-
-/* Error */
-
-.message-popup.error {
-  --bs-modal-border-color: rgb(220, 53, 69);
-}
-
-.message-popup.error svg {
-  fill: rgb(220, 53, 69);
-}
-
-.message-popup.error .progress-bar {
-  background-color: rgb(220, 53, 69) !important;
+@media (min-width: 768px) {
+  .container-fluid .container-row {
+    height: 100vh; /* Full viewport height is available when navbar is not enabled */
+  }
 }

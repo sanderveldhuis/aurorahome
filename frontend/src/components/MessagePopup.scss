@@ -21,3 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+@import "../theme";
+
+// Generate contextual modifier classes for colorizing the modal
+@each $state in map-keys($theme-colors) {
+  .message-popup-#{$state} {
+    --#{$prefix}modal-border-color: var(--#{$prefix}#{$state}-border-subtle);
+  }
+  .message-popup-#{$state} svg {
+    fill: var(--#{$prefix}#{$state}-border-subtle);
+  }
+}

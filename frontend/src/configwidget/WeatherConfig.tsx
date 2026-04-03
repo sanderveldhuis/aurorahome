@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
+import { api } from 'glidelite/frontend';
 import { useState } from 'react';
+import validator from 'validator';
 import {
   type ApiWeatherDisable,
   type ApiWeatherEnable,
   isApiWeatherConfigResponse
 } from '../../../shared/apiConfig';
-import './WeatherConfig.css';
-import { api } from 'glidelite/frontend';
-import validator from 'validator';
 import useInterval from '../hooks/useInterval';
 import {
   type MessagePopupContextType,
   useMessagePopup
 } from '../hooks/useMessagePopup';
+import ConfigWidgetStatus from './WidgetStatus';
 
 /**
  * Saves the weather configuration using the dedicated API.
@@ -144,171 +144,152 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
 
   return (
     <>
-      <div className='weather-config placeholder-glow'>
-        <button className='btn btn-outline-secondary d-flex w-100 text-start' type='button' data-bs-toggle='collapse' data-bs-target='#weather-config'>
-          <div className={`me-auto ${health ? '' : 'placeholder'}`}>Weather</div>
-          <svg className={`ms-1 mt-1 ${health ? health : 'placeholder'}`} width='20' height='20'>
-            {health === 'starting' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6' />}
-            {health === 'running' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z' />}
-            {health === 'instable' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2' />}
-            {health === 'disabled' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5m3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5' />}
-            {health === 'stopped' && <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z' />}
-          </svg>
-        </button>
-        <div className='collapse' id='weather-config'>
-          <div className='card card-body'>
-            <div className='mb-3'>
-              <div className={`form-check ${configLoaded ? '' : 'placeholder'}`}>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  checked={enabled}
-                  hidden={!configLoaded}
-                  onChange={event => {
-                    const input = event.target as HTMLInputElement;
-                    setEnabled(input.checked);
-                  }}
-                />
-                <label className='form-check-label'>Enable</label>
-              </div>
-            </div>
-            <div className={`alert ${health ? health : 'placeholder'}`} role='alert'>
-              <p className='mb-0'>
-                <strong>Health:</strong> {health}
-              </p>
-              {'lastUpdate' in details && ( // TODO: replace local by configuration value
-                <p className='mb-0'>
-                  <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString('nl-NL')}
-                </p>
-              )}
-              {'nextUpdate' in details && ( // TODO: replace local by configuration value
-                <p className='mb-0'>
-                  <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString('nl-NL')}
-                </p>
-              )}
-            </div>
-            <div className='mb-2'>
-              <div className='input-group'>
-                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
-                  <svg width='16' height='16'>
-                    <path d='M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z' />
-                    <path d='M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3' />
-                  </svg>
-                </div>
-                <input
-                  type='number'
-                  className={`form-control ${intervalInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
-                  placeholder='Refresh interval in seconds'
-                  disabled={!enabled || !configLoaded}
-                  value={interval}
-                  onChange={event => {
-                    const input = event.target as HTMLInputElement;
-                    setInterval(input.value);
-                  }}
-                />
-                <div className='invalid-feedback'>Minimum required refresh interval is 1 second</div>
-              </div>
-            </div>
-            <div className='mb-2'>
-              <div className='input-group'>
-                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
-                  <svg width='16' height='16'>
-                    <path d='M14 10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1zM2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2z' />
-                    <path d='M5 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M14 3a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z' />
-                    <path d='M5 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0' />
-                  </svg>
-                </div>
-                <select
-                  className={`form-control ${nameInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
-                  disabled={!enabled || !configLoaded}
-                  value={name}
-                  onChange={event => {
-                    const input = event.target as HTMLSelectElement;
-                    setName(input.value);
-                  }}
-                >
-                  <option value='openweathermapV3'>OpenWeatherMap One Call API 3.0</option>
-                </select>
-              </div>
-            </div>
-            <div className='mb-2'>
-              <div className='input-group'>
-                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
-                  <svg width='16' height='16'>
-                    <path d='M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6' />
-                  </svg>
-                </div>
-                <input
-                  type='text'
-                  className={`form-control ${locationInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
-                  placeholder='Eg: 52.377956,4.897070'
-                  disabled={!enabled || !configLoaded}
-                  value={location}
-                  onChange={event => {
-                    const input = event.target as HTMLInputElement;
-                    setLocation(input.value);
-                  }}
-                />
-                <div className='invalid-feedback'>Enter a latutude and longitude, eg: 52.377956,4.897070</div>
-              </div>
-            </div>
-            <div className='mb-2'>
-              <div className='input-group'>
-                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
-                  <svg width='16' height='16'>
-                    <path d='M1 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5v-1H2v-1h4v-1H4v-1h2v-1H2v-1h4V9H4V8h2V7H2V6h4V2h1v4h1V4h1v2h1V2h1v4h1V4h1v2h1V2h1v4h1V1a1 1 0 0 0-1-1z' />
-                  </svg>
-                </div>
-                <select
-                  className={`form-control ${unitsInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
-                  disabled={!enabled || !configLoaded}
-                  value={units}
-                  onChange={event => {
-                    const input = event.target as HTMLSelectElement;
-                    setUnits(input.value);
-                  }}
-                >
-                  <option value='standard'>Standard</option>
-                  <option value='metric'>Metric</option>
-                  <option value='imperial'>Imperial</option>
-                </select>
-              </div>
-            </div>
-            <div className='mb-3'>
-              <div className='input-group'>
-                <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
-                  <svg width='16' height='16'>
-                    <path d='M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3' />
-                  </svg>
-                </div>
-                <input
-                  type='text'
-                  className={`form-control ${apiKeyInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
-                  placeholder='API key'
-                  disabled={!enabled || !configLoaded}
-                  value={apiKey}
-                  onChange={event => {
-                    const input = event.target as HTMLInputElement;
-                    setApiKey(input.value);
-                  }}
-                />
-                <div className='invalid-feedback'>Enter an API key consisting of 32 characters: a-z, A-Z, 0-9</div>
-              </div>
-            </div>
-            <div className='input-group'>
-              <button
-                type='submit'
-                className='form-control btn btn-primary'
-                disabled={!saveEnabled || !configLoaded}
-                onClick={() => {
-                  saveConfig(enabled, interval, name, location, units, apiKey, setIntervalInvalid, setNameInvalid, setLocationInvalid, setUnitsInvalid, setApiKeyInvalid, setSaveEnabled, messagePopup);
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
+      <div className='mb-3'>
+        <div className={`form-check ${configLoaded ? '' : 'placeholder'}`}>
+          <input
+            type='checkbox'
+            className='form-check-input'
+            checked={enabled}
+            hidden={!configLoaded}
+            onChange={event => {
+              const input = event.target as HTMLInputElement;
+              setEnabled(input.checked);
+            }}
+          />
+          <label className='form-check-label'>Enable</label>
         </div>
+      </div>
+      <ConfigWidgetStatus health={health}>
+        {'lastUpdate' in details && ( // TODO: replace local by configuration value
+          <div>
+            <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString('nl-NL')}
+          </div>
+        )}
+        {'nextUpdate' in details && ( // TODO: replace local by configuration value
+          <div>
+            <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString('nl-NL')}
+          </div>
+        )}
+      </ConfigWidgetStatus>
+      <div className='mt-3 mb-2'>
+        <div className='input-group'>
+          <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
+            <svg fill='currentColor' width='16' height='16'>
+              <path d='M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z' />
+              <path d='M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3' />
+            </svg>
+          </div>
+          <input
+            type='number'
+            className={`form-control ${intervalInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
+            placeholder='Refresh interval in seconds'
+            disabled={!enabled || !configLoaded}
+            value={interval}
+            onChange={event => {
+              const input = event.target as HTMLInputElement;
+              setInterval(input.value);
+            }}
+          />
+          <div className='invalid-feedback'>Minimum required refresh interval is 1 second</div>
+        </div>
+      </div>
+      <div className='mb-2'>
+        <div className='input-group'>
+          <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
+            <svg fill='currentColor' width='16' height='16'>
+              <path d='M14 10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1zM2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2z' />
+              <path d='M5 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M14 3a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z' />
+              <path d='M5 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0' />
+            </svg>
+          </div>
+          <select
+            className={`form-control ${nameInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
+            disabled={!enabled || !configLoaded}
+            value={name}
+            onChange={event => {
+              const input = event.target as HTMLSelectElement;
+              setName(input.value);
+            }}
+          >
+            <option value='openweathermapV3'>OpenWeatherMap One Call API 3.0</option>
+          </select>
+        </div>
+      </div>
+      <div className='mb-2'>
+        <div className='input-group'>
+          <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
+            <svg fill='currentColor' width='16' height='16'>
+              <path d='M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6' />
+            </svg>
+          </div>
+          <input
+            type='text'
+            className={`form-control ${locationInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
+            placeholder='Eg: 52.377956,4.897070'
+            disabled={!enabled || !configLoaded}
+            value={location}
+            onChange={event => {
+              const input = event.target as HTMLInputElement;
+              setLocation(input.value);
+            }}
+          />
+          <div className='invalid-feedback'>Enter a latutude and longitude, eg: 52.377956,4.897070</div>
+        </div>
+      </div>
+      <div className='mb-2'>
+        <div className='input-group'>
+          <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
+            <svg fill='currentColor' width='16' height='16'>
+              <path d='M1 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5v-1H2v-1h4v-1H4v-1h2v-1H2v-1h4V9H4V8h2V7H2V6h4V2h1v4h1V4h1v2h1V2h1v4h1V4h1v2h1V2h1v4h1V1a1 1 0 0 0-1-1z' />
+            </svg>
+          </div>
+          <select
+            className={`form-control ${unitsInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
+            disabled={!enabled || !configLoaded}
+            value={units}
+            onChange={event => {
+              const input = event.target as HTMLSelectElement;
+              setUnits(input.value);
+            }}
+          >
+            <option value='standard'>Standard</option>
+            <option value='metric'>Metric</option>
+            <option value='imperial'>Imperial</option>
+          </select>
+        </div>
+      </div>
+      <div className='mb-3'>
+        <div className='input-group'>
+          <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
+            <svg fill='currentColor' width='16' height='16'>
+              <path d='M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3' />
+            </svg>
+          </div>
+          <input
+            type='text'
+            className={`form-control ${apiKeyInvalid ? 'is-invalid' : ''} ${configLoaded ? '' : 'placeholder'}`}
+            placeholder='API key'
+            disabled={!enabled || !configLoaded}
+            value={apiKey}
+            onChange={event => {
+              const input = event.target as HTMLInputElement;
+              setApiKey(input.value);
+            }}
+          />
+          <div className='invalid-feedback'>Enter an API key consisting of 32 characters: a-z, A-Z, 0-9</div>
+        </div>
+      </div>
+      <div className='input-group'>
+        <button
+          type='submit'
+          className='form-control btn btn-primary'
+          disabled={!saveEnabled || !configLoaded}
+          onClick={() => {
+            saveConfig(enabled, interval, name, location, units, apiKey, setIntervalInvalid, setNameInvalid, setLocationInvalid, setUnitsInvalid, setApiKeyInvalid, setSaveEnabled, messagePopup);
+          }}
+        >
+          Save
+        </button>
       </div>
     </>
   );

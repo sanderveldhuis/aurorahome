@@ -21,3 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import {
+  type ReactNode,
+  useState
+} from 'react';
+import { WindowContext } from '../hooks/useWindow';
+
+/**
+ * Defines the provider for the Window.
+ * @param children the child nodes for this provider
+ */
+function WindowProvider({ children }: { children: ReactNode; }) {
+  const [component, showComponent] = useState('Dashboard');
+
+  return (
+    <WindowContext.Provider value={{ component, showComponent }}>
+      {children}
+    </WindowContext.Provider>
+  );
+}
+
+export default WindowProvider;

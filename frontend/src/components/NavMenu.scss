@@ -22,19 +22,28 @@
  * SOFTWARE.
  */
 
-/* Import all of Bootstrap's CSS */
-@import "~bootstrap/scss/bootstrap.scss";
+@import "../variables";
 
-html,
-body {
-  height: 100vh;
+.nav-menu,
+.nav-menu .offcanvas-md {
+  background-color: $foreground-color;
 }
 
-#root {
-  height: 100vh;
-  max-height: 100vh;
-  overflow-x: auto;
-  overflow-y: hidden;
-  color: rgb(255, 255, 255);
-  background-color: rgb(0, 8, 31);
+.nav-menu .nav-link {
+  height: 50px;
+  color: $text-color;
+  font-size: .875rem;
+  font-weight: 400;
+}
+
+.nav-menu .nav-item.active {
+  background: linear-gradient(180deg, $offwhite-10 0%, $purple-30 50%, $blue-30 100%) !important;
+}
+
+.nav-menu .nav-item.active .triangle {
+  position: absolute;
+  width: 20px;
+  height: 50px;
+  background: linear-gradient(180deg, $offwhite-50 0%, $purple-100 50%, $blue-100 100%) !important;
+  clip-path: polygon(0% 0%, 0% 100%, 100% 50%);
 }

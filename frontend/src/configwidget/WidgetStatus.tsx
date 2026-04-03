@@ -22,19 +22,20 @@
  * SOFTWARE.
  */
 
-.container-fluid .container-row {
-  height: calc(100vh - 40px); /* Remove the height of the navbar from the viewport height */
+import type { ReactNode } from 'react';
+
+/**
+ * The Config Widget status component showing the health and details of a component.
+ */
+function ConfigWidgetStatus({ health, children }: { health: string; children?: ReactNode; }) {
+  return (
+    <>
+      <div className={`alert w-100 mb-1 ${health ? `alert-${health}` : 'placeholder'}`} role='alert'>
+        <strong>Health:</strong> {health}
+        {children}
+      </div>
+    </>
+  );
 }
 
-@media (min-width: 768px) {
-  .container-fluid .container-row {
-    height: 100vh; /* Full viewport height is available when navbar is not enabled */
-  }
-}
-
-.container-fluid .container-row .container-col .card {
-  --bs-body-color: white;
-  --bs-card-bg: rgb(22, 27, 46);
-  --bs-card-border-color: rgb(0, 8, 31);
-  --bs-card-border-width: 2px;
-}
+export default ConfigWidgetStatus;

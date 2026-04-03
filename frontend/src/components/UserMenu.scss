@@ -22,7 +22,17 @@
  * SOFTWARE.
  */
 
-.navbar svg {
-    vertical-align: -.125em;
-    fill: currentColor;
+@import "../variables";
+
+.user-menu .nav-link {
+  height: 50px;
+  color: $text-color;
+  font-size: .875rem;
+  font-weight: 400;
+}
+
+.user-menu .nav-divider {
+  margin: 0.5rem 0;
+  color: $purple-50;
+  opacity: 1;
 }
