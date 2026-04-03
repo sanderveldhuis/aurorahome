@@ -22,17 +22,20 @@
  * SOFTWARE.
  */
 
-import ConfigWidgetStatus from './WidgetStatus';
+import type { ReactNode } from 'react';
 
 /**
- * The Config Manager component showing configuration and status of the Config Manager.
+ * The Config Widget status component showing the health and details of a component.
  */
-function ConfigConfig({ health }: { health: string; }) {
+function ConfigWidgetStatus({ health, children }: { health: string; children?: ReactNode; }) {
   return (
     <>
-      <ConfigWidgetStatus health={health} />
+      <div className={`alert w-100 mb-1 ${health ? `alert-${health}` : 'placeholder'}`} role='alert'>
+        <strong>Health:</strong> {health}
+        {children}
+      </div>
     </>
   );
 }
 
-export default ConfigConfig;
+export default ConfigWidgetStatus;

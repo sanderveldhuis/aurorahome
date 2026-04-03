@@ -23,17 +23,17 @@
  */
 
 import { api } from 'glidelite/frontend';
-import useInterval from '../hooks/useInterval';
-import './Widget.scss';
 import { useState } from 'react';
 import {
   type ApiApplicationStatus,
   type ApiStatusResponse,
   isApiStatusResponse
 } from '../../../shared/apiStatus';
+import useInterval from '../hooks/useInterval';
 import ConfigConfig from './ConfigConfig';
 import ShellyConfig from './ShellyConfig';
 import WeatherConfig from './WeatherConfig';
+import ConfigWidgetItem from './WidgetItem';
 
 /**
  * Searches for the application status with the specified name in the result.
@@ -100,20 +100,16 @@ function ConfigWidget() {
 
   return (
     <>
-      <div className='card config-widget'>
-        <div className='card-body'>
-          <div className='row'>
-            <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ConfigConfig health={configHealth} />
-            </div>
-            <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <WeatherConfig health={weatherHealth} details={weatherDetails} />
-            </div>
-            <div className='col-lg-4 col-sm-6 col-12 mb-lg-0 mb-3'>
-              <ShellyConfig health={shellyHealth} details={shellyDetails} />
-            </div>
-          </div>
-        </div>
+      <div className='config-widget placeholder-glow' id='configWidget'>
+        <ConfigWidgetItem name={'Config'} health={configHealth}>
+          <ConfigConfig health={configHealth} />
+        </ConfigWidgetItem>
+        <ConfigWidgetItem name={'Weather'} health={weatherHealth}>
+          <WeatherConfig health={weatherHealth} details={weatherDetails} />
+        </ConfigWidgetItem>
+        <ConfigWidgetItem name={'Shelly'} health={shellyHealth}>
+          <ShellyConfig health={shellyHealth} details={shellyDetails} />
+        </ConfigWidgetItem>
       </div>
     </>
   );
