@@ -102,8 +102,8 @@ function MessagePopup() {
 
   return (
     <>
-      <div className={`message-popup modal fade ${state}`} id='message-popup' data-bs-backdrop='static' data-bs-keyboard='false'>
-        <div className='modal-dialog'>
+      <div className={`message-popup message-popup-${state} modal fade`} id='message-popup' data-bs-backdrop='static' data-bs-keyboard='false'>
+        <div className='modal-dialog modal-dialog-centered align-items-end'>
           <div className='modal-content'>
             <div className='modal-body d-flex'>
               <svg width='24' height='24' viewBox='0 0 16 16'>
@@ -119,8 +119,8 @@ function MessagePopup() {
               />
             </div>
             <div className='modal-body pt-0'>
-              <div className='progress' role='progressbar'>
-                <div className='progress-bar' id='message-popup-progress' />
+              <div className='progress' role='progressbar' style={{ height: '5px' }}>
+                <div className={`progress-bar bg-${state}`} style={{ transition: 'none' }} id='message-popup-progress' />
               </div>
             </div>
           </div>
