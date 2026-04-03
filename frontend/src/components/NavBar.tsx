@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import './NavBar.scss';
-
 /**
  * The Navigation Bar component showing application related pages.
  */
@@ -39,7 +37,7 @@ function NavBar() {
         <ul className='navbar-nav flex-row'>
           <li className='nav-item text-nowrap'>
             <button type='button' className='nav-link px-3 text-white' data-bs-toggle='offcanvas' data-bs-target='#navMenu'>
-              <svg width='16' height='16' viewBox='0 0 16 16'>
+              <svg fill='currentColor' width='16' height='16' viewBox='0 0 16 16' style={{ verticalAlign: '-.125em' }}>
                 <path d='M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z' />
               </svg>
             </button>
