@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-@import "~bootstrap/scss/bootstrap.scss";
 @import "variables";
+@import "theme";
 
 html,
 body {
@@ -35,6 +35,5 @@ body {
   max-height: 100vh;
   overflow-x: auto;
   overflow-y: hidden;
-  color: rgb(255, 255, 255);
-  background-color: rgb(0, 8, 31);
+  background-color: $background-color;
 }
