@@ -61,7 +61,7 @@ function NavMenu() {
                 >
                   <div className='triangle' />
                   <button type='button' className={'nav-link d-flex align-items-center gap-2 mx-5' + (expanded ? '' : ' mx-md-3')}>
-                    <svg width='16' height='16' viewBox='0 0 16 16'>{item.svgPaths.map(path => <path key={`path-${String(Math.random())}`} d={path} />)}</svg> <div className={expanded ? '' : 'd-md-none'}>{item.name}</div>
+                    <svg fill='currentColor' width='16' height='16' viewBox='0 0 16 16'>{item.svgPaths.map(path => <path key={`path-${String(Math.random())}`} d={path} />)}</svg> <div className={expanded ? '' : 'd-md-none'}>{item.name}</div>
                   </button>
                 </li>
               ))}
@@ -87,11 +87,11 @@ function NavMenu() {
                 }}
               >
                 <button type='button' className='nav-link d-flex align-items-center gap-2 mx-auto'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' className={expanded ? 'text-white-50' : 'd-none'}>
+                  <svg fill='currentColor' width='16' height='16' viewBox='0 0 16 16' className={expanded ? 'text-white-50' : 'd-none'}>
                     <path d='M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0' />
                     <path d='M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0' />
                   </svg>
-                  <svg width='16' height='16' viewBox='0 0 16 16' className={expanded ? 'd-none' : 'text-white-50'}>
+                  <svg fill='currentColor' width='16' height='16' viewBox='0 0 16 16' className={expanded ? 'd-none' : 'text-white-50'}>
                     <path d='M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708' />
                     <path d='M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708' />
                   </svg>
