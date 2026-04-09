@@ -31,6 +31,7 @@ import {
 } from '../../../shared/apiStatus';
 import useInterval from '../hooks/useInterval';
 import ConfigConfig from './ConfigConfig';
+import LogView from './LogView';
 import ShellyConfig from './ShellyConfig';
 import WeatherConfig from './WeatherConfig';
 import ConfigWidgetItem from './WidgetItem';
@@ -59,6 +60,7 @@ function ConfigWidget() {
   const [weatherDetails, setWeatherDetails] = useState({});
   const [shellyHealth, setShellyHealth] = useState('');
   const [shellyDetails, setShellyDetails] = useState({});
+  const [logHealth, setLogHealth] = useState('');
 
   useInterval(() => {
     api.get({ path: '/status', responseType: 'json', timeout: 800 })
@@ -90,25 +92,34 @@ function ConfigWidget() {
         if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(shellyDetails)) {
           setShellyDetails(status?.details ?? {});
         }
+
+        // Handle Log Manager status
+        status = getStatusForName('logmanager', payload);
+        setLogHealth(status ? status.health : 'stopped');
+        // No details available for Log Manager
       }).catch(() => {
         // On failure display the placeholder
         setConfigHealth('');
         setWeatherHealth('');
         setShellyHealth('');
+        setLogHealth('');
       });
   }, 1000);
 
   return (
     <>
       <div className='config-widget placeholder-glow' id='configWidget'>
-        <ConfigWidgetItem name={'Config'} health={configHealth}>
+        <ConfigWidgetItem name='Config' health={configHealth}>
           <ConfigConfig health={configHealth} />
         </ConfigWidgetItem>
-        <ConfigWidgetItem name={'Weather'} health={weatherHealth}>
+        <ConfigWidgetItem name='Weather' health={weatherHealth}>
           <WeatherConfig health={weatherHealth} details={weatherDetails} />
         </ConfigWidgetItem>
-        <ConfigWidgetItem name={'Shelly'} health={shellyHealth}>
+        <ConfigWidgetItem name='Shelly' health={shellyHealth}>
           <ShellyConfig health={shellyHealth} details={shellyDetails} />
+        </ConfigWidgetItem>
+        <ConfigWidgetItem name='Log' health={logHealth}>
+          <LogView />
         </ConfigWidgetItem>
       </div>
     </>

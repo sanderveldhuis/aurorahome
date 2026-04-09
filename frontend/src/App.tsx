@@ -23,6 +23,7 @@
  */
 
 import './App.scss';
+import 'datatables.net-buttons-bs5';
 import DataTablesCore from 'datatables.net-bs5';
 import DataTable from 'datatables.net-react';
 import MessagePopup from './components/MessagePopup.tsx';

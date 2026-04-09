@@ -82,7 +82,6 @@ export class LogManager {
    */
   _onRequest(name: string, payload: IpcPayload, response: (payload?: IpcPayload) => void): void {
     if (isIpcGetLogMessage(name, payload)) {
-      log.logmanager.info('Received GetLog request via IPC');
       this._handleGetLogMessage(response);
     }
     else {
