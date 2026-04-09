@@ -160,14 +160,14 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
         </div>
       </div>
       <ConfigWidgetStatus health={health}>
-        {'lastUpdate' in details && ( // TODO: replace local by configuration value
+        {'lastUpdate' in details && (
           <div>
-            <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString('nl-NL')}
+            <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString(navigator.languages[0] || navigator.language)}
           </div>
         )}
-        {'nextUpdate' in details && ( // TODO: replace local by configuration value
+        {'nextUpdate' in details && (
           <div>
-            <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString('nl-NL')}
+            <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString(navigator.languages[0] || navigator.language)}
           </div>
         )}
       </ConfigWidgetStatus>

@@ -1,0 +1,147 @@
+1775158561737:INF:weathermanager:Started
+1775158561789:INF:statusmanager:Started
+1775158561860:INF:shellyserver:Started
+1775158562677:INF:configmanager:Started
+1775158562749:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775158562815:INF:configmanager:Published 1 available configurations
+1775158562878:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775158562895:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775158645974:INF:configmanager:Received SetConfig request via IPC for name 'WeatherManager'
+1775158646032:INF:weathermanager:Received WeatherManagerConfig publish via IPC
+1775158646033:INF:weathermanager:Stopped weather retrieval
+1775158661369:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775158661389:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775158661391:INF:shellyserver:Stopped MQTT server
+1775158667391:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775158667405:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775158667423:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159182416:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159182427:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159182569:INF:shellydevice:Closed device with name:
+1775159186434:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159186435:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159186458:INF:shellydevice:Closed device with name:
+1775159200526:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159200529:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159200549:INF:shellydevice:Closed device with name:
+1775159253181:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159253203:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159253204:INF:shellyserver:Stopped MQTT server
+1775159253206:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159255815:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159255817:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159255837:INF:shellydevice:Closed device with name:
+1775159275977:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159275980:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775159310778:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159310798:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159384714:INF:shellyserver:Stopped MQTT server
+1775159384967:INF:shellydevice:Closed device with name: shellyplugsg3-e4b063e5c430
+1775159428356:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159428375:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159428378:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159451478:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159451480:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159451500:INF:shellydevice:Closed device with name:
+1775159484410:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159484423:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159484424:INF:shellyserver:Stopped MQTT server
+1775159484425:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159511390:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159511392:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159511411:INF:shellydevice:Closed device with name:
+1775159568540:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159568543:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159568562:INF:shellydevice:Closed device with name:
+1775159588383:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159588387:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159588409:INF:shellydevice:Closed device with name:
+1775159592269:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159592270:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159592290:INF:shellydevice:Closed device with name:
+1775159611790:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159611791:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159611822:INF:shellydevice:Closed device with name:
+1775159616234:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159616236:WRN:shellydevice:Invalid credentials from device 'shellyplugsg3-e4b063e5c430'
+1775159616255:INF:shellydevice:Closed device with name:
+1775159626701:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159626721:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159626722:INF:shellyserver:Stopped MQTT server
+1775159626723:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159633792:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159633794:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775159643664:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159643675:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159664357:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775159664369:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775159707887:INF:shellyserver:Stopped MQTT server
+1775159707888:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775159707889:INF:shellydevice:Closed device with name: shellyplugsg3-e4b063e5c430
+1775159736322:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775159736324:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775183785220:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 2
+1775183785221:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775183796605:INF:shellydevice:Closed device with name: shellyplugsg3-e4b063e5c430
+1775208902104:INF:statusmanager:Started
+1775208902150:INF:weathermanager:Started
+1775208902305:INF:shellyserver:Started
+1775208902994:INF:configmanager:Started
+1775208903064:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775208903128:INF:configmanager:Published 2 available configurations
+1775208903169:INF:weathermanager:Received WeatherManagerConfig publish via IPC
+1775208903169:INF:weathermanager:Stopped weather retrieval
+1775208903319:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775208903336:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775208940033:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775208940135:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775208963843:INF:configmanager:Received SetConfig request via IPC for name 'ShellyServer'
+1775208963866:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775223481804:INF:statusmanager:Started
+1775223481878:INF:weathermanager:Started
+1775223482019:INF:shellyserver:Started
+1775223482752:INF:configmanager:Started
+1775223482821:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775223482889:INF:configmanager:Published 2 available configurations
+1775223482901:INF:weathermanager:Received WeatherManagerConfig publish via IPC
+1775223482902:INF:weathermanager:Stopped weather retrieval
+1775223483033:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775223483049:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775223486973:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775223487106:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775225041480:INF:statusmanager:Started
+1775225041514:INF:weathermanager:Started
+1775225041669:INF:shellyserver:Started
+1775225042390:INF:configmanager:Started
+1775225042460:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775225042525:INF:configmanager:Published 2 available configurations
+1775225042533:INF:weathermanager:Received WeatherManagerConfig publish via IPC
+1775225042533:INF:weathermanager:Stopped weather retrieval
+1775225042682:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775225042698:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775225090611:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775225090753:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775243402323:INF:statusmanager:Started
+1775243402410:INF:weathermanager:Started
+1775243402493:INF:shellyserver:Started
+1775243403269:INF:configmanager:Started
+1775243403339:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775243403399:INF:configmanager:Published 2 available configurations
+1775243403430:INF:weathermanager:Received WeatherManagerConfig publish via IPC
+1775243403431:INF:weathermanager:Stopped weather retrieval
+1775243403509:INF:shellyserver:Received ShellyServerConfig publish via IPC
+1775243403528:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775243409527:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775243409652:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430
+1775245862376:INF:weathermanager:Started
+1775245862425:INF:shellyserver:Started
+1775245862423:INF:statusmanager:Started
+1775245863265:DBG:configmanager:Started
+1775245863335:INF:configmanager:Connected to database 'mongodb://127.0.0.1:27017/config'
+1775245863396:INF:configmanager:Published 2 available configurations
+1775245863403:ERR:weathermanager:Received WeatherManagerConfig publish via IPC
+1775245863403:INF:weathermanagerStopped weather retrieval
+1775245863441:WRN:shellyserver:Received ShellyServerConfig publish via IPC
+1775245863457:INF:shellyserver:Started MQTT server on '0.0.0.0:1883'
+1775245910222:INF:shellyserver:Device connected with IP address: 192.168.0.142, number of devices: 1
+1775245910362:INF:shellydevice:Connected device with name: shellyplugsg3-e4b063e5c430

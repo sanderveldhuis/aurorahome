@@ -22,12 +22,17 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+'glc service';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
+import { LogManager } from './logManager';
+
+// Construct Log Manager
+const logManager = new LogManager();
 
 // Gracefully shutdown
 process.on('SIGINT', () => {
-  ipc.stop();
+  logManager.stop();
 });
+
+// Start the Log Manager
+logManager.start();
