@@ -3,61 +3,75 @@
 
 title AuroraHome system overview
 
+/'
+  External components
+'/
 Person_Ext(User, "AuroraHome User", "Desktop/Mobile browser")
 System_Ext(OpenWeatherMap, "OpenWeatherMap", "")
-ContainerDb(MongoDb, "MongoDB", "")
-ContainerDb(FileSystem, "FileSystem", "")
 
-System_Boundary(Ui, "UI") {
-  System(Settings, "Settings", "")
-  System(ConfigConfig, "ConfigConfig", "")
-  System(ShellyConfig, "ShellyConfig", "")
-  System(WeatherConfig, "WeatherConfig", "")
-  System(LogView, "LogView", "")
-  System(WeatherWidget, "WeatherWidget", "")
+/'
+  System components
+'/
+System_Boundary(DeploymentSystem, "Deployment System") {
+  ContainerDb(MongoDb, "MongoDB", "")
+  ContainerDb(FileSystem, "FileSystem", "")
+
+  System_Boundary(Ui, "UI") {
+    System(Settings, "Settings", "")
+    System(ConfigConfig, "ConfigConfig", "")
+    System(ShellyConfig, "ShellyConfig", "")
+    System(WeatherConfig, "WeatherConfig", "")
+    System(LogView, "LogView", "")
+  }
+
+  System_Boundary(Api, "API") {
+    System(StatusApi, "/status", "")
+    System(LogApi, "/log", "")
+    System(ConfigWeatherApi, "/config/weather", "")
+    System(ConfigShellyApi, "/config/shelly", "")
+  }
+
+  System_Boundary(Workers, "Workers") {
+    System(StatusManager, "StatusManager", "")
+    System(ConfigManager, "ConfigManager", "")
+    System(WeatherManager, "WeatherManager", "")
+    System(LogManager, "LogManager", "")
+    System(ShellyServer, "ShellyServer", "")
+  }
 }
 
-System_Boundary(Api, "API") {
-  System(StatusApi, "/api/status", "")
-  System(WeatherApi, "/api/config/weather", "")
-  System(ShellyApi, "/api/config/shelly", "")
-  System(LogApi, "/api/log", "")
-}
+/'
+  Connectors
+'/
+Rel_R(User, Api, "HTTPS", "GET/POST/PUT/DELETE")
+Rel_R(User, Ui, "HTTPS", "GET")
 
-System_Boundary(Workers, "Workers") {
-  System(StatusManager, "StatusManager", "")
-  System(ConfigManager, "ConfigManager", "")
-  System(WeatherManager, "WeatherManager", "")
-  System(LogManager, "LogManager", "")
-  System(ShellyServer, "ShellyServer", "")
-}
-
-Rel_D(User, Api, "HTTPS", "GET/POST/PUT/DELETE")
-Rel_L(User, Ui, "HTTPS", "GET")
-
+Rel_D(Settings, ConfigConfig, "", "health/details")
+Rel_D(Settings, ShellyConfig, "", "health/details")
+Rel_D(Settings, WeatherConfig, "", "health/details")
+Rel_D(Settings, LogView, "", "health/details")
 Rel_D(Settings, StatusApi, "HTTPS", "GET")
-Rel_D(WeatherConfig, WeatherApi, "HTTPS", "GET/POST")
-Rel_D(WeatherWidget, WeatherApi, "HTTPS", "GET")
-Rel_D(ShellyConfig, ShellyApi, "HTTPS", "GET/POST")
+
+Rel_D(WeatherConfig, ConfigWeatherApi, "HTTPS", "GET/POST")
+Rel_D(ShellyConfig, ConfigShellyApi, "HTTPS", "GET/POST")
 Rel_D(LogView, LogApi, "HTTPS", "GET")
 
-Rel_U(WeatherManager, WeatherApi, "IPC pub/sub", "WeatherData")
-Rel_D(WeatherApi, ConfigManager, "IPC req/res", "SetConfig")
-Rel_D(ShellyApi, ConfigManager, "IPC req/res", "SetConfig")
+BiRel_U(StatusManager, StatusApi, "IPC pub/sub", "Status")
+BiRel_U(ConfigManager, ConfigShellyApi, "IPC pub/sub", "ShellyServerConfig")
+Rel_D(ConfigShellyApi, ConfigManager, "IPC req/res", "SetConfig")
+BiRel_U(ConfigManager, ConfigWeatherApi, "IPC pub/sub", "WeatherManagerConfig")
+Rel_D(ConfigWeatherApi, ConfigManager, "IPC req/res", "SetConfig")
 Rel_D(LogApi, LogManager, "IPC req/res", "GetLog")
-
-Rel_D(ConfigManager, WeatherManager, "IPC pub/sub", "WeatherManagerConfig")
-Rel_U(ConfigManager, WeatherApi, "IPC pub/sub", "WeatherManagerConfig")
-Rel_D(ConfigManager, ShellyServer, "IPC pub/sub", "ShellyServerConfig")
-Rel_U(ConfigManager, ShellyApi, "IPC pub/sub", "ShellyServerConfig")
 
 Rel_D(ConfigManager, StatusManager, "IPC ind", "ConfigManagerStatus")
 Rel_D(WeatherManager, StatusManager, "IPC ind", "WeatherManagerStatus")
-Rel_D(LogManager, StatusManager, "IPC ind", "")
+Rel_D(LogManager, StatusManager, "IPC ind", "Status")
 Rel_D(ShellyServer, StatusManager, "IPC ind", "ShellyServerStatus")
-Rel_U(StatusManager, StatusApi, "IPC pub/sub", "Status")
 
-Rel_R(ConfigManager, MongoDb, "read/write")
+BiRel_D(ConfigManager, WeatherManager, "IPC pub/sub", "WeatherManagerConfig")
+BiRel_D(ConfigManager, ShellyServer, "IPC pub/sub", "ShellyServerConfig")
+
+BiRel_R(ConfigManager, MongoDb, "read/write")
 Rel_R(LogManager, FileSystem, "read")
 Rel_R(WeatherManager, OpenWeatherMap, "HTTPS", "GET")
 
