@@ -25,9 +25,9 @@
 import type { ReactNode } from 'react';
 
 /**
- * The Config Widget status component showing the health and details of a component.
+ * The settings status component showing the health and details of a component.
  */
-function ConfigWidgetStatus({ health, children }: { health: string; children?: ReactNode; }) {
+function SettingsStatus({ health, children }: { health: string; children?: ReactNode; }) {
   return (
     <>
       <div className={`alert w-100 mb-1 ${health ? `alert-${health}` : 'placeholder'}`} role='alert'>
@@ -38,4 +38,4 @@ function ConfigWidgetStatus({ health, children }: { health: string; children?: R
   );
 }
 
-export default ConfigWidgetStatus;
+export default SettingsStatus;

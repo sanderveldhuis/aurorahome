@@ -35,7 +35,7 @@ import {
   type MessagePopupContextType,
   useMessagePopup
 } from '../hooks/useMessagePopup';
-import ConfigWidgetStatus from './WidgetStatus';
+import SettingsStatus from './SettingsStatus';
 
 /**
  * Saves the weather configuration using the dedicated API.
@@ -96,9 +96,9 @@ function saveConfig(enable: boolean, interval: string, name: string, location: s
 }
 
 /**
- * The Weather Config component showing configuration and status of weather.
+ * The settings weather component showing configuration and status of weather.
  */
-function WeatherConfig({ health, details }: { health: string; details: Record<string, string>; }) {
+function SettingsWeather({ health, details }: { health: string; details: Record<string, string>; }) {
   // Use the Message Popup context
   const messagePopup = useMessagePopup();
 
@@ -159,7 +159,7 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
           <label className='form-check-label'>Enable</label>
         </div>
       </div>
-      <ConfigWidgetStatus health={health}>
+      <SettingsStatus health={health}>
         {'lastUpdate' in details && (
           <div>
             <strong>Last update:</strong> {new Date(details.lastUpdate).toLocaleTimeString(navigator.languages[0] || navigator.language)}
@@ -170,7 +170,7 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
             <strong>Next update:</strong> {new Date(details.nextUpdate).toLocaleTimeString(navigator.languages[0] || navigator.language)}
           </div>
         )}
-      </ConfigWidgetStatus>
+      </SettingsStatus>
       <div className='mt-3 mb-2'>
         <div className='input-group'>
           <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
@@ -295,4 +295,4 @@ function WeatherConfig({ health, details }: { health: string; details: Record<st
   );
 }
 
-export default WeatherConfig;
+export default SettingsWeather;

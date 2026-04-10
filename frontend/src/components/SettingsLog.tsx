@@ -33,9 +33,9 @@ import { isApiLogResponse } from '../../../shared/apiLog';
 import useInterval from '../hooks/useInterval';
 
 /**
- * The Log View component showing logs and applies filtering.
+ * The settings log component showing logs and applies filtering.
  */
-function LogView() {
+function SettingsLog() {
   const [logsLoaded, setLogsLoaded] = useState(false);
 
   // Create the DataTable reference after rendering otherwise the identifier cannot be found
@@ -132,4 +132,4 @@ function LogView() {
   );
 }
 
-export default LogView;
+export default SettingsLog;

@@ -22,32 +22,17 @@
  * SOFTWARE.
  */
 
-import type { ReactNode } from 'react';
-import { toHtmlId } from '../utils/html';
+import SettingsStatus from './SettingsStatus';
 
 /**
- * The Config Widget item component showing items in accordion style.
+ * The settings config component showing configuration and status of the Config Manager.
  */
-function ConfigWidgetItem({ name, health, children }: { name: string; health: string; children: ReactNode; }) {
-  const id = `configWidget${toHtmlId(name)}`;
+function SettingsConfig({ health }: { health: string; }) {
   return (
     <>
-      <div className='card mb-2'>
-        <div className='card-body'>
-          <div className='d-grid'>
-            <button className='btn btn-accordion collapsed d-flex align-items-center p-0' type='button' data-bs-toggle='collapse' data-bs-target={`#${id}`}>
-              <div className={`me-auto ${health ? '' : 'placeholder'}`}>{name}</div>
-              <span className={`p-2 rounded-circle ${health ? `bg-${health}` : 'placeholder'}`} />
-            </button>
-          </div>
-          <div className='collapse' id={id} data-bs-parent='#configWidget'>
-            <hr />
-            {children}
-          </div>
-        </div>
-      </div>
+      <SettingsStatus health={health} />
     </>
   );
 }
 
-export default ConfigWidgetItem;
+export default SettingsConfig;
