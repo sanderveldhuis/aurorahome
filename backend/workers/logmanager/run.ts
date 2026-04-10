@@ -22,20 +22,17 @@
  * SOFTWARE.
  */
 
-import type { ReactNode } from 'react';
+'glc service';
 
-/**
- * The Config Widget status component showing the health and details of a component.
- */
-function ConfigWidgetStatus({ health, children }: { health: string; children?: ReactNode; }) {
-  return (
-    <>
-      <div className={`alert w-100 mb-1 ${health ? `alert-${health}` : 'placeholder'}`} role='alert'>
-        <strong>Health:</strong> {health}
-        {children}
-      </div>
-    </>
-  );
-}
+import { LogManager } from './logManager';
 
-export default ConfigWidgetStatus;
+// Construct Log Manager
+const logManager = new LogManager();
+
+// Gracefully shutdown
+process.on('SIGINT', () => {
+  logManager.stop();
+});
+
+// Start the Log Manager
+logManager.start();

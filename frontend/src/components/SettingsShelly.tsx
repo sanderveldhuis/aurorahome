@@ -35,7 +35,7 @@ import {
   type MessagePopupContextType,
   useMessagePopup
 } from '../hooks/useMessagePopup';
-import ConfigWidgetStatus from './WidgetStatus';
+import SettingsStatus from './SettingsStatus';
 
 /**
  * Saves the Shelly configuration using the dedicated API.
@@ -91,9 +91,9 @@ function saveConfig(enable: boolean, host: string, username: string, password: s
 }
 
 /**
- * The Shelly Config component showing configuration and status of Shelly.
+ * The settings Shelly component showing configuration and status of Shelly.
  */
-function ShellyConfig({ health, details }: { health: string; details: Record<string, string>; }) {
+function SettingsShelly({ health, details }: { health: string; details: Record<string, string>; }) {
   // Use the Message Popup context
   const messagePopup = useMessagePopup();
 
@@ -148,13 +148,13 @@ function ShellyConfig({ health, details }: { health: string; details: Record<str
           <label className='form-check-label'>Enable</label>
         </div>
       </div>
-      <ConfigWidgetStatus health={health}>
+      <SettingsStatus health={health}>
         {'nofClients' in details && (
           <div>
             <strong>Number of clients:</strong> {details.nofClients}
           </div>
         )}
-      </ConfigWidgetStatus>
+      </SettingsStatus>
       <div className='mt-3 mb-2'>
         <div className='input-group'>
           <div className={`input-group-text ${configLoaded ? '' : 'placeholder'}`}>
@@ -236,4 +236,4 @@ function ShellyConfig({ health, details }: { health: string; details: Record<str
   );
 }
 
-export default ShellyConfig;
+export default SettingsShelly;

@@ -22,17 +22,106 @@
  * SOFTWARE.
  */
 
-import ConfigWidget from '../configwidget/Widget';
+import { api } from 'glidelite/frontend';
+import { useState } from 'react';
+import {
+  type ApiApplicationStatus,
+  type ApiStatusResponse,
+  isApiStatusResponse
+} from '../../../shared/apiStatus';
+import SettingsConfig from '../components/SettingsConfig';
+import SettingsItem from '../components/SettingsItem';
+import SettingsLog from '../components/SettingsLog';
+import SettingsShelly from '../components/SettingsShelly';
+import SettingsWeather from '../components/SettingsWeather';
+import useInterval from '../hooks/useInterval';
 
 /**
- * The Settings component showing all configuration widgets.
+ * Searches for the application status with the specified name in the result.
+ * @param name the application name
+ * @param result the result to search in
+ * @returns the application status, or `undefined` if not found
+ */
+function getStatusForName(name: string, status: ApiStatusResponse): ApiApplicationStatus | undefined {
+  for (const application of status.applications) {
+    if (application.name === name) {
+      return application;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * The Settings component showing configuration, health, and details of components.
  */
 function Settings() {
+  const [configHealth, setConfigHealth] = useState('');
+  const [weatherHealth, setWeatherHealth] = useState('');
+  const [weatherDetails, setWeatherDetails] = useState({});
+  const [shellyHealth, setShellyHealth] = useState('');
+  const [shellyDetails, setShellyDetails] = useState({});
+  const [logHealth, setLogHealth] = useState('');
+
+  useInterval(() => {
+    api.get({ path: '/status', responseType: 'json', timeout: 800 })
+      .then(payload => {
+        // Validate response payload
+        if (!isApiStatusResponse(payload)) {
+          throw new Error();
+        }
+
+        let status: ApiApplicationStatus | undefined;
+
+        // Handle Config Manager status
+        status = getStatusForName('configmanager', payload);
+        setConfigHealth(status ? status.health : 'stopped');
+        // No details available for Config Manager
+
+        // Handle Weather Manager status
+        status = getStatusForName('weathermanager', payload);
+        setWeatherHealth(status ? status.health : 'stopped');
+        // Only update details when changed to prevent re-render on each received API response
+        if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(weatherDetails)) {
+          setWeatherDetails(status?.details ?? {});
+        }
+
+        // Handle Shelly Server status
+        status = getStatusForName('shellyserver', payload);
+        setShellyHealth(status ? status.health : 'stopped');
+        // Only update details when changed to prevent re-render on each received API response
+        if (JSON.stringify(status?.details ?? {}) !== JSON.stringify(shellyDetails)) {
+          setShellyDetails(status?.details ?? {});
+        }
+
+        // Handle Log Manager status
+        status = getStatusForName('logmanager', payload);
+        setLogHealth(status ? status.health : 'stopped');
+        // No details available for Log Manager
+      }).catch(() => {
+        // On failure display the placeholder
+        setConfigHealth('');
+        setWeatherHealth('');
+        setShellyHealth('');
+        setLogHealth('');
+      });
+  }, 1000);
+
   return (
     <>
       <div className='row mb-1 mt-1 mt-md-3'>
-        <div className='col-12'>
-          <ConfigWidget />
+        <div className='col-12 placeholder-glow' id='settings'>
+          <SettingsItem name='Config' health={configHealth}>
+            <SettingsConfig health={configHealth} />
+          </SettingsItem>
+          <SettingsItem name='Weather' health={weatherHealth}>
+            <SettingsWeather health={weatherHealth} details={weatherDetails} />
+          </SettingsItem>
+          <SettingsItem name='Shelly' health={shellyHealth}>
+            <SettingsShelly health={shellyHealth} details={shellyDetails} />
+          </SettingsItem>
+          <SettingsItem name='Log' health={logHealth}>
+            <SettingsLog />
+          </SettingsItem>
         </div>
       </div>
     </>

@@ -22,44 +22,20 @@
  * SOFTWARE.
  */
 
-import './App.scss';
-import 'datatables.net-buttons-bs5';
-import DataTablesCore from 'datatables.net-bs5';
-import DataTable from 'datatables.net-react';
-import MessagePopup from './components/MessagePopup.tsx';
-import NavBar from './components/NavBar.tsx';
-import NavMenu from './components/NavMenu.tsx';
-import UserMenu from './components/UserMenu.tsx';
-import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
-import RouterProvider from './providers/RouterProvider.tsx';
-import Router from './routes/Router.tsx';
+import type { ReactNode } from 'react';
 
 /**
- * The App component showing the full application.
+ * The settings status component showing the health and details of a component.
  */
-function App() {
-  // Use Bootstrap DataTables
-  DataTable.use(DataTablesCore);
-
+function SettingsStatus({ health, children }: { health: string; children?: ReactNode; }) {
   return (
     <>
-      <RouterProvider>
-        <MessagePopupProvider>
-          <MessagePopup />
-          <NavBar />
-          <UserMenu />
-          <div className='container-fluid'>
-            <div className='container-row row'>
-              <NavMenu />
-              <main className='container-col col h-100 overflow-y-auto'>
-                <Router />
-              </main>
-            </div>
-          </div>
-        </MessagePopupProvider>
-      </RouterProvider>
+      <div className={`alert w-100 mb-1 ${health ? `alert-${health}` : 'placeholder'}`} role='alert'>
+        <strong>Health:</strong> {health}
+        {children}
+      </div>
     </>
   );
 }
 
-export default App;
+export default SettingsStatus;

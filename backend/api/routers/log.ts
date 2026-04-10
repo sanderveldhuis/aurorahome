@@ -22,12 +22,30 @@
  * SOFTWARE.
  */
 
+import express from 'express';
 import { ipc } from 'glidelite/backend';
+import { ApiLogResponse } from '../../../shared/apiLog';
+import { isIpcGetLogResponseMessage } from '../../ipc/logManager';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
+// Construct the Express router
+const router = express.Router();
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
+// The router implementation
+router.get('/log', (req, res, next) => {
+  ipc.to.logmanager.request('GetLog', undefined, (name, payload) => {
+    if (isIpcGetLogResponseMessage(name, payload)) {
+      if (payload.result === 'ok') {
+        const response: ApiLogResponse = { logs: payload.logs ?? [] };
+        res.status(200).json(response);
+      }
+      else {
+        next(new Error(`Failed getting log via GET /log, result: ${payload.result}`));
+      }
+    }
+    else {
+      next(new Error(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`));
+    }
+  });
 });
+
+export default router;

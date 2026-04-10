@@ -29,13 +29,16 @@ $body-bg: $foreground-color !default;
 $body-color: $text-color !default;
 $body-secondary-bg: $background-color !default;
 
-// Custom colors for input
+// Custom colors for components
+$input-bg: $body-bg;
 $input-placeholder-color: $gray-dark;
 $input-disabled-color: $gray-dark;
 $input-group-addon-bg: $background-color;
 $input-border-color: $gray-dark;
+$input-btn-focus-color: $purple-20;
 $focus-ring-box-shadow: 0 0 0 0.25rem $purple-20;
 $component-active-bg: $purple-50;
+$pagination-color: $text-color;
 
 // Imports required for creating custom colors
 @import "~bootstrap/scss/functions";
@@ -73,6 +76,8 @@ body {
 
 // Import Bootstrap after creating custom colors
 @import "~bootstrap/scss/bootstrap";
+@import "~datatables/css/dataTables.bootstrap5";
+@import "~datatables-buttons/css/buttons.bootstrap5";
 
 // Custom accordion buttons
 .btn-accordion {
