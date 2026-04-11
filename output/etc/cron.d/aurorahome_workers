@@ -1,5 +1,7 @@
 @reboot root node /opt/aurorahome/backend/workers/configmanager/run.js >> /var/log/aurorahome/workers.log &
 * * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/backend/workers/configmanager/run.js" || node /opt/aurorahome/backend/workers/configmanager/run.js >> /var/log/aurorahome/workers.log &
+@reboot root node /opt/aurorahome/backend/workers/logmanager/run.js >> /var/log/aurorahome/workers.log &
+* * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/backend/workers/logmanager/run.js" || node /opt/aurorahome/backend/workers/logmanager/run.js >> /var/log/aurorahome/workers.log &
 @reboot root node /opt/aurorahome/backend/workers/shellyserver/run.js >> /var/log/aurorahome/workers.log &
 * * * * * root ps aux | grep -v grep | grep -c "node /opt/aurorahome/backend/workers/shellyserver/run.js" || node /opt/aurorahome/backend/workers/shellyserver/run.js >> /var/log/aurorahome/workers.log &
 @reboot root node /opt/aurorahome/backend/workers/statusmanager/run.js >> /var/log/aurorahome/workers.log &
