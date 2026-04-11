@@ -1,4 +1,3 @@
-"use strict";
 /**
  * MIT License
  *
@@ -22,11 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+'glc service';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const backend_1 = require("glidelite/backend");
-// Start IPC communication
-backend_1.ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
+const logManager_1 = require("./logManager");
+// Construct Log Manager
+const logManager = new logManager_1.LogManager();
 // Gracefully shutdown
 process.on('SIGINT', () => {
-    backend_1.ipc.stop();
+    logManager.stop();
 });
+// Start the Log Manager
+logManager.start();
