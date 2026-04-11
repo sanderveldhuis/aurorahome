@@ -22,11 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
 const backend_1 = require("glidelite/backend");
-// Start IPC communication
-backend_1.ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
-// Gracefully shutdown
-process.on('SIGINT', () => {
-    backend_1.ipc.stop();
+const logManager_1 = require("../../ipc/logManager");
+// Construct the Express router
+const router = express_1.default.Router();
+// The router implementation
+router.get('/log', (req, res, next) => {
+    backend_1.ipc.to.logmanager.request('GetLog', undefined, (name, payload) => {
+        if ((0, logManager_1.isIpcGetLogResponseMessage)(name, payload)) {
+            if (payload.result === 'ok') {
+                const response = { logs: payload.logs ?? [] };
+                res.status(200).json(response);
+            }
+            else {
+                next(new Error(`Failed getting log via GET /log, result: ${payload.result}`));
+            }
+        }
+        else {
+            next(new Error(`Received unknown IPC response with name '${name}': ${JSON.stringify(payload)}`));
+        }
+    });
 });
+exports.default = router;

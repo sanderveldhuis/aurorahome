@@ -23,10 +23,34 @@
  * SOFTWARE.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const backend_1 = require("glidelite/backend");
-// Start IPC communication
-backend_1.ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
-// Gracefully shutdown
-process.on('SIGINT', () => {
-    backend_1.ipc.stop();
-});
+exports.isApiLogResponse = isApiLogResponse;
+const LOG_LEVEL = ['ERR', 'WRN', 'INF', 'DBG'];
+/**
+ * Checks whether the specified payload is an API Log response.
+ * @param payload the response payload
+ * @returns `true` when the payload is a Log response, or `false` otherwise
+ */
+function isApiLogResponse(payload) {
+    if (payload === null || !('logs' in payload) || !Array.isArray(payload.logs)) {
+        return false;
+    }
+    for (const obj of payload.logs) {
+        if (typeof obj === 'object' && obj !== null) {
+            const log = obj;
+            if ('timestamp' in log && typeof log.timestamp === 'number' &&
+                'level' in log && typeof log.level === 'string' && LOG_LEVEL.find(level => level === log.level) !== undefined &&
+                'name' in log && typeof log.name === 'string' &&
+                'message' in log && typeof log.message === 'string') {
+                // Log message is ok
+                continue;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
+}
