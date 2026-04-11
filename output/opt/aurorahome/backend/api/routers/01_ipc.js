@@ -25,7 +25,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const backend_1 = require("glidelite/backend");
 // Start IPC communication
-backend_1.ipc.start('apiserver', 'statusmanager', 'configmanager');
+backend_1.ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager');
 // Gracefully shutdown
 process.on('SIGINT', () => {
     backend_1.ipc.stop();
