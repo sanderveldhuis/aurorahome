@@ -84,16 +84,20 @@ function MessagePopup() {
   useEffect(() => {
     if (modal.current) {
       if (context.success !== '') {
-        setState('success');
-        setMessage(context.success);
-        setProgressRunning(true);
+        (() => {
+          setState('success');
+          setMessage(context.success);
+          setProgressRunning(true);
+        })();
         progress.current = 100;
         modal.current.show();
       }
       else if (context.error !== '') {
-        setState('error');
-        setMessage(context.error);
-        setProgressRunning(true);
+        (() => {
+          setState('error');
+          setMessage(context.error);
+          setProgressRunning(true);
+        })();
         progress.current = 100;
         modal.current.show();
       }
