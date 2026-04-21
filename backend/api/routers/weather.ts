@@ -22,12 +22,37 @@
  * SOFTWARE.
  */
 
-import { ipc } from 'glidelite/backend';
+import express from 'express';
+import {
+  ipc,
+  log
+} from 'glidelite/backend';
+import { ApiWeatherResponse } from '../../../shared/apiWeather';
+import { isIpcWeatherDataMessage } from '../../ipc/weatherManager';
 
-// Start IPC communication
-ipc.start('apiserver', 'statusmanager', 'configmanager', 'logmanager', 'weathermanager');
+// Caches published weather data
+const weather: ApiWeatherResponse = {};
 
-// Gracefully shutdown
-process.on('SIGINT', () => {
-  ipc.stop();
+// Subscribe to updates from the Weather Manager
+ipc.to.weathermanager.subscribe('WeatherData', (name, payload) => {
+  if (isIpcWeatherDataMessage(name, payload)) {
+    weather.current = payload.current;
+    weather.minutely = payload.minutely;
+    weather.hourly = payload.hourly;
+    weather.daily = payload.daily;
+    weather.alerts = payload.alerts;
+  }
+  else {
+    log.apiserver.warn(`Received unknown IPC publish with name: ${name}: ${JSON.stringify(payload)}`);
+  }
 });
+
+// Construct the Express router
+const router = express.Router();
+
+// The router implementation
+router.get('/weather', (req, res) => {
+  res.status(200).json(weather);
+});
+
+export default router;

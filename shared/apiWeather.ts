@@ -22,78 +22,6 @@
  * SOFTWARE.
  */
 
-import { IpcPayload } from 'glidelite/backend';
-
-/**
- * The weather data source name.
- */
-export type SourceName = typeof SOURCE_NAME[number];
-const SOURCE_NAME = ['openweathermapV3'] as const;
-
-/**
- * The weather data unit.
- */
-export type SourceUnits = typeof SOURCE_UNITS[number];
-const SOURCE_UNITS = ['standard', 'metric', 'imperial'] as const;
-
-/**
- * The Weather Manager weather data source.
- */
-export interface WeatherManagerSource {
-  /** Interval of retrieving from the source in seconds */
-  interval: number;
-  /** The source name */
-  name: SourceName;
-  /** The latitude geographic coordinate of the location */
-  lat: number;
-  /** The longitude geographic coordinate of the location */
-  lon: number;
-  /** The units applied to the data */
-  units: SourceUnits;
-  /** The source API key */
-  apiKey: string;
-}
-
-/**
- * The Weather Manager configuration.
- * @details the message ID for this message is 'WeatherManagerConfig'
- */
-export interface IpcWeatherManagerConfig {
-  /** The source of the weather data, `undefined` means no weather should be retrieved */
-  source?: WeatherManagerSource;
-}
-
-/**
- * Checks whether the specified message is an IPC WeatherManagerConfig message.
- * @param name the message name
- * @param payload the message payload
- * @returns `true` when the message is a WeatherManagerConfig message, or `false` otherwise
- */
-export function isIpcWeatherManagerConfigMessage(name: string, payload: IpcPayload): payload is IpcWeatherManagerConfig {
-  return name === 'WeatherManagerConfig' && typeof payload === 'object' && payload !== null &&
-    (!('source' in payload) || (typeof payload.source === 'object' && payload.source !== null &&
-      'interval' in payload.source && typeof payload.source.interval === 'number' &&
-      'name' in payload.source && typeof payload.source.name === 'string' &&
-      // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-      SOURCE_NAME.find(name => name === payload.source.name) !== undefined &&
-      'lat' in payload.source && typeof payload.source.lat === 'number' &&
-      'lon' in payload.source && typeof payload.source.lon === 'number' &&
-      'units' in payload.source && typeof payload.source.units === 'string' &&
-      // @ts-expect-error-line because TypeScript forgets that the payload.source object exists
-      SOURCE_UNITS.find(units => units === payload.source.units) !== undefined &&
-      'apiKey' in payload.source && typeof payload.source.apiKey === 'string'));
-}
-
-/**
- * The Weather Manager status details.
- */
-export interface WeatherManagerStatusDetails {
-  /** The timestamp of the last weather data update, `undefined` when not (yet) updated */
-  lastUpdate?: number;
-  /** The timestamp of the next weather data update */
-  nextUpdate?: number;
-}
-
 /**
  * Current weather data.
  */
@@ -152,10 +80,9 @@ export interface WeatherDataAlert {
 }
 
 /**
- * The IPC message for published weather data from Weather Manager.
- * @details the message ID for this message is 'WeatherData'
+ * The API response containing weather data.
  */
-export interface IpcWeatherData {
+export interface ApiWeatherResponse {
   /** The current weather data */
   current?: WeatherDataCurrent;
   /** The minutely forecast weather data */
@@ -169,14 +96,13 @@ export interface IpcWeatherData {
 }
 
 /**
- * Checks whether the specified message is an IPC WeatherData message.
- * @param name the message name
- * @param payload the message payload
- * @returns `true` when the message is a WeatherData message, or `false` otherwise
+ * Checks whether the specified payload is an API Weather response.
+ * @param payload the response payload
+ * @returns `true` when the payload is a Weather response, or `false` otherwise
  */
-export function isIpcWeatherDataMessage(name: string, payload: IpcPayload): payload is IpcWeatherData {
+export function isApiWeatherResponse(payload: object | null): payload is ApiWeatherResponse {
   if (
-    name !== 'WeatherData' || typeof payload !== 'object' || payload === null ||
+    payload === null ||
     ('minutely' in payload && !Array.isArray(payload.minutely)) ||
     ('hourly' in payload && !Array.isArray(payload.hourly)) ||
     ('daily' in payload && !Array.isArray(payload.daily)) ||
