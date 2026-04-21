@@ -137,11 +137,12 @@ export class MqttProtocol {
    * @param payload the MQTT packet payload
    */
   publish(topic: string, payload: string, qos?: 0 | 1 | 2): void {
-    const packet: mqtt.IPublishPacket = { cmd: 'publish', messageId: this._messageId, qos: qos ?? 0, topic: topic, payload: payload };
+    const packet: mqtt.IPublishPacket = { cmd: 'publish', messageId: this._messageId, qos: qos ?? 0, topic: topic, payload: payload, retain: false, dup: false };
     const data = mqtt.generate(packet, { protocolVersion: this._protocolVersion });
     this._socket.write(data);
 
     if (packet.qos > 0) {
+      packet.dup = true;
       this._setRetryTimeout('publish', this._messageId, packet);
     }
 
