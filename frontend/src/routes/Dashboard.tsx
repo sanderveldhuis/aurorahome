@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import WeatherWidget from "../components/weatherwidget/Widget";
+
 /**
  * The Dashboard component showing actual application information.
  */
@@ -30,11 +32,7 @@ function Dashboard() {
     <>
       <div className='row mb-3 mt-1 mt-md-3'>
         <div className='col-12'>
-          <div className='card'>
-            <div className='card-body'>
-              Single card
-            </div>
-          </div>
+          <WeatherWidget />
         </div>
       </div>
       <div className='row mb-3'>
