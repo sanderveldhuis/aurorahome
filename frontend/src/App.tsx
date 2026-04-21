@@ -26,10 +26,12 @@ import './App.scss';
 import 'datatables.net-buttons-bs5';
 import DataTablesCore from 'datatables.net-bs5';
 import DataTable from 'datatables.net-react';
+import MessageAlert from './components/MessageAlert.tsx';
 import MessagePopup from './components/MessagePopup.tsx';
 import NavBar from './components/NavBar.tsx';
 import NavMenu from './components/NavMenu.tsx';
 import UserMenu from './components/UserMenu.tsx';
+import MessageAlertProvider from './providers/MessageAlertProvider.tsx';
 import MessagePopupProvider from './providers/MessagePopupProvider.tsx';
 import RouterProvider from './providers/RouterProvider.tsx';
 import Router from './routes/Router.tsx';
@@ -44,19 +46,22 @@ function App() {
   return (
     <>
       <RouterProvider>
-        <MessagePopupProvider>
-          <MessagePopup />
-          <NavBar />
-          <UserMenu />
-          <div className='container-fluid'>
-            <div className='container-row row'>
-              <NavMenu />
-              <main className='container-col col h-100 overflow-y-auto'>
-                <Router />
-              </main>
+        <MessageAlertProvider>
+          <MessagePopupProvider>
+            <MessageAlert />
+            <MessagePopup />
+            <NavBar />
+            <UserMenu />
+            <div className='container-fluid'>
+              <div className='container-row row'>
+                <NavMenu />
+                <main className='container-col col h-100 overflow-y-auto'>
+                  <Router />
+                </main>
+              </div>
             </div>
-          </div>
-        </MessagePopupProvider>
+          </MessagePopupProvider>
+        </MessageAlertProvider>
       </RouterProvider>
     </>
   );

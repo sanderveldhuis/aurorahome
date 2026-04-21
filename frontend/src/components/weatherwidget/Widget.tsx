@@ -39,6 +39,7 @@ import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { isApiWeatherResponse } from '../../../../shared/apiWeather';
 import useInterval from '../../hooks/useInterval';
+import { useMessageAlert } from '../../hooks/useMessageAlert';
 
 /**
  * Register all components for ChartJS.
@@ -65,8 +66,14 @@ const rainLevels = [
  * The weather widget component showing actual weather data.
  */
 function WeatherWidget() {
+  // Use the Message Alert context
+  const messageAlert = useMessageAlert();
+
+  // States for this component
   const [loaded, setLoaded] = useState(false);
   const [chartData, setChartData] = useState<ChartData<'line'>>({ datasets: [] });
+
+  // Chart options
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -158,6 +165,16 @@ function WeatherWidget() {
           });
         }
         setChartData(data);
+
+        // Display alerts
+        if (payload.alerts) {
+          for (const alert of payload.alerts) {
+            if (Date.now() < (alert.end * 1000)) {
+              messageAlert.showWarning(`<strong>${alert.event}</strong><br/>${alert.description}`);
+            }
+          }
+        }
+
         setLoaded(true);
       }).catch(() => {
         setLoaded(false);

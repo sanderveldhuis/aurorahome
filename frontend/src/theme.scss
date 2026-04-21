@@ -48,6 +48,7 @@ $pagination-color: $text-color;
 $theme-colors: map-merge($theme-colors, (
   "primary": $purple-50,
   "success": $green,
+  "warning": $orange,
   "error": $red,
   "starting": $blue,
   "running": $green,
@@ -60,6 +61,8 @@ $theme-colors: map-merge($theme-colors, (
 body {
   --bs-success-bg-subtle: #{$green};
   --bs-success-border-subtle: #{$green};
+  --bs-warning-bg-subtle: #{$orange};
+  --bs-warning-border-subtle: #{$orange};
   --bs-error-bg-subtle: #{$red};
   --bs-error-border-subtle: #{$red};
   --bs-starting-bg-subtle: #{$blue};
