@@ -62,7 +62,12 @@ export interface WeatherDataHourly {
 export interface WeatherDataDaily {
   /** Timestamp of the forecast data */
   timestamp: number;
-  // TODO: extend with required data once widget is implemented
+  /** The minimum daily temperature, with units standard: kelvin, metric: celsius, imperial: fahrenheit */
+  min: number;
+  /** The maximum daily temperature, with units standard: kelvin, metric: celsius, imperial: fahrenheit */
+  max: number;
+  /** The weather icon URL */
+  icon: string;
 }
 
 /**

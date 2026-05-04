@@ -115,7 +115,10 @@ export class OpenWeatherMapV3 implements WeatherRetriever {
       data.daily = [];
       for (const day of json.daily) {
         data.daily.push({
-          timestamp: (day.dt ?? 0) as number
+          timestamp: (day.dt ?? 0) as number,
+          min: (day.temp.min ?? 0) as number,
+          max: (day.temp.max ?? 0) as number,
+          icon: `https://openweathermap.org/payload/api/media/file/${String(day.weather[0].icon)}.png`
         });
       }
     }

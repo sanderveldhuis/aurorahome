@@ -37,7 +37,10 @@ import {
 import { api } from 'glidelite/frontend';
 import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { isApiWeatherResponse } from '../../../../shared/apiWeather';
+import {
+  isApiWeatherResponse,
+  type WeatherDataDaily
+} from '../../../../shared/apiWeather';
 import useInterval from '../../hooks/useInterval';
 import { useMessageAlert } from '../../hooks/useMessageAlert';
 
@@ -61,6 +64,28 @@ const rainLevels = [
   { max: 10, label: 'Matig' },
   { max: 25, label: 'Zwaar' }
 ];
+
+/**
+ * Set daily weather forecast to the window.
+ * @param data the daily weather data
+ */
+function setDailyForecast(data?: WeatherDataDaily[]): void {
+  const daily = document.getElementById('weather-widget-daily');
+  if (daily) {
+    const content = data ? data.map(item => {
+      return [
+        `<div class="col">`,
+        `   <div>${new Date(item.timestamp * 1000).toLocaleDateString(navigator.languages[0] || navigator.language, { weekday: 'short' })}</div>`,
+        `   <img style="margin: -1.25rem" class="img-fluid" src="${item.icon}" crossorigin="anonymous">`,
+        `   <div>${String(Math.round(item.max))}° <span class="text-disabled">${String(Math.round(item.min))}°</span></div>`,
+        '</div>'
+      ].join('');
+    }).join('') : '';
+    if (content !== daily.innerHTML) {
+      daily.innerHTML = content;
+    }
+  }
+}
 
 /**
  * The weather widget component showing actual weather data.
@@ -166,6 +191,9 @@ function WeatherWidget() {
         }
         setChartData(data);
 
+        // Display daily forecast
+        setDailyForecast(payload.daily);
+
         // Display alerts
         if (payload.alerts) {
           for (const alert of payload.alerts) {
@@ -185,8 +213,23 @@ function WeatherWidget() {
     <>
       <div className='card placeholder-glow'>
         <div className={`card-body ${loaded ? '' : 'placeholder'}`}>
-          <div style={{ height: '120px' }}>
-            <Line className={loaded ? '' : 'd-none'} options={chartOptions} data={chartData} />
+          <div id='weather-widget' className='carousel slide'>
+            <div className='carousel-indicators'>
+              <button type='button' data-bs-target='#weather-widget' data-bs-slide-to='0' className='active' aria-current='true' aria-label='Slide 1'></button>
+              <button type='button' data-bs-target='#weather-widget' data-bs-slide-to='1' aria-label='Slide 2'></button>
+              <button type='button' data-bs-target='#weather-widget' data-bs-slide-to='2' aria-label='Slide 3'></button>
+            </div>
+            <div className='carousel-inner' style={{ height: '120px' }}>
+              <div className='carousel-item active'>
+                <div className='row text-center' id='weather-widget-daily' />
+              </div>
+              <div className='carousel-item' style={{ height: '120px' }}>
+                <Line className={loaded ? '' : 'd-none'} options={chartOptions} data={chartData} />
+              </div>
+              <div className='carousel-item'>
+                TODO
+              </div>
+            </div>
           </div>
         </div>
       </div>
