@@ -137,11 +137,12 @@ export class MqttProtocol {
    * @param payload the MQTT packet payload
    */
   publish(topic: string, payload: string, qos?: 0 | 1 | 2): void {
-    const packet = { cmd: 'publish', messageId: this._messageId, qos: qos ?? 0, topic: topic, payload: payload } as mqtt.IPublishPacket;
+    const packet: mqtt.IPublishPacket = { cmd: 'publish', messageId: this._messageId, qos: qos ?? 0, topic: topic, payload: payload, retain: false, dup: false };
     const data = mqtt.generate(packet, { protocolVersion: this._protocolVersion });
     this._socket.write(data);
 
     if (packet.qos > 0) {
+      packet.dup = true;
       this._setRetryTimeout('publish', this._messageId, packet);
     }
 
@@ -279,7 +280,8 @@ export class MqttProtocol {
    * Handles MQTT ping request.
    */
   _onPingReq(): void {
-    const data = mqtt.generate({ cmd: 'pingresp' } as mqtt.IPingrespPacket, { protocolVersion: this._protocolVersion });
+    const command: mqtt.IPingrespPacket = { cmd: 'pingresp' };
+    const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
     this._socket.write(data);
   }
 
@@ -303,7 +305,8 @@ export class MqttProtocol {
       granted.push(subscription.qos);
       topics.push(subscription.topic);
     }
-    const data = mqtt.generate({ cmd: 'suback', messageId: packet.messageId, granted: granted } as mqtt.ISubackPacket, { protocolVersion: this._protocolVersion });
+    const command: mqtt.ISubackPacket = { cmd: 'suback', messageId: packet.messageId, granted: granted };
+    const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
     this._socket.write(data);
 
     this._subscribeCallback(topics);
@@ -315,11 +318,13 @@ export class MqttProtocol {
    */
   _onPublish(packet: mqtt.IPublishPacket): void {
     if (packet.qos === 1) {
-      const data = mqtt.generate({ cmd: 'puback', messageId: packet.messageId } as mqtt.IPubackPacket, { protocolVersion: this._protocolVersion });
+      const command: mqtt.IPubackPacket = { cmd: 'puback', messageId: packet.messageId };
+      const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
     }
     else if (packet.qos === 2 && packet.messageId !== undefined) {
-      const data = mqtt.generate({ cmd: 'pubrec', messageId: packet.messageId } as mqtt.IPubrecPacket, { protocolVersion: this._protocolVersion });
+      const command: mqtt.IPubrecPacket = { cmd: 'pubrec', messageId: packet.messageId };
+      const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
       this._setRetryTimeout('pubrec', packet.messageId);
     }
@@ -354,7 +359,8 @@ export class MqttProtocol {
 
     const cache = this._cache[packet.messageId];
     if (cache.command === 'publish') {
-      const data = mqtt.generate({ cmd: 'pubrel', messageId: packet.messageId } as mqtt.IPubrelPacket, { protocolVersion: this._protocolVersion });
+      const command: mqtt.IPubrelPacket = { cmd: 'pubrel', messageId: packet.messageId };
+      const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
       this._setRetryTimeout('pubrel', packet.messageId);
     }
@@ -389,7 +395,8 @@ export class MqttProtocol {
     if (cache.command === 'pubrec') {
       clearTimeout(cache.retryTimeout);
       delete this._cache[packet.messageId]; /* eslint-disable-line @typescript-eslint/no-dynamic-delete */
-      const data = mqtt.generate({ cmd: 'pubcomp', messageId: packet.messageId } as mqtt.IPubcompPacket, { protocolVersion: this._protocolVersion });
+      const command: mqtt.IPubcompPacket = { cmd: 'pubcomp', messageId: packet.messageId };
+      const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
       this._socket.write(data);
     }
   }
@@ -425,12 +432,14 @@ export class MqttProtocol {
           break;
         }
         case 'pubrec': {
-          const data = mqtt.generate({ cmd: 'pubrec', messageId } as mqtt.IPubrecPacket, { protocolVersion: this._protocolVersion });
+          const command: mqtt.IPubrecPacket = { cmd: 'pubrec', messageId };
+          const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
           this._socket.write(data);
           break;
         }
         case 'pubrel': {
-          const data = mqtt.generate({ cmd: 'pubrel', messageId } as mqtt.IPubrelPacket, { protocolVersion: this._protocolVersion });
+          const command: mqtt.IPubrelPacket = { cmd: 'pubrel', messageId };
+          const data = mqtt.generate(command, { protocolVersion: this._protocolVersion });
           this._socket.write(data);
           break;
         }

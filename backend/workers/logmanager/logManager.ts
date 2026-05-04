@@ -86,7 +86,8 @@ export class LogManager {
     }
     else {
       log.logmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
-      response({ result: 'error' } as IpcGetLogResponse);
+      const responseMsg: IpcGetLogResponse = { result: 'error' };
+      response(responseMsg);
     }
   }
 
@@ -113,10 +114,11 @@ export class LogManager {
     const size = JSON.stringify(responseMsg).length;
     if (size > MAX_RESPONSE_SIZE) {
       log.logmanager.error(`Failed constructing IPC response due to exceeding IPC buffer size with '${String(size)}' bytes`);
-      response({ result: 'error' } as IpcGetLogResponse);
+      const responseMsg: IpcGetLogResponse = { result: 'error' };
+      response(responseMsg);
     }
     else {
-      response(responseMsg as IpcPayload);
+      response(responseMsg);
     }
   }
 

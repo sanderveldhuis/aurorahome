@@ -141,8 +141,7 @@ function SettingsShelly({ health, details }: { health: string; details: Record<s
             checked={enabled}
             hidden={!configLoaded}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setEnabled(input.checked);
+              setEnabled(event.target.checked);
             }}
           />
           <label className='form-check-label'>Enable</label>
@@ -171,8 +170,7 @@ function SettingsShelly({ health, details }: { health: string; details: Record<s
             disabled={!enabled || !configLoaded}
             value={host}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setHost(input.value);
+              setHost(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Enter a hostname and port, eg: 0.0.0.0:1883</div>
@@ -192,8 +190,7 @@ function SettingsShelly({ health, details }: { health: string; details: Record<s
             disabled={!enabled || !configLoaded}
             value={username}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setUsername(input.value);
+              setUsername(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Maximum allowed length is 65535 characters</div>
@@ -213,8 +210,7 @@ function SettingsShelly({ health, details }: { health: string; details: Record<s
             disabled={!enabled || !configLoaded}
             value={password}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setPassword(input.value);
+              setPassword(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Maximum allowed length is 65535 characters</div>

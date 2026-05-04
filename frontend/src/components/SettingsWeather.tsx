@@ -152,8 +152,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             checked={enabled}
             hidden={!configLoaded}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setEnabled(input.checked);
+              setEnabled(event.target.checked);
             }}
           />
           <label className='form-check-label'>Enable</label>
@@ -186,8 +185,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             disabled={!enabled || !configLoaded}
             value={interval}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setInterval(input.value);
+              setInterval(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Minimum required refresh interval is 1 second</div>
@@ -207,8 +205,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             disabled={!enabled || !configLoaded}
             value={name}
             onChange={event => {
-              const input = event.target as HTMLSelectElement;
-              setName(input.value);
+              setName(event.target.value);
             }}
           >
             <option value='openweathermapV3'>OpenWeatherMap One Call API 3.0</option>
@@ -229,8 +226,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             disabled={!enabled || !configLoaded}
             value={location}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setLocation(input.value);
+              setLocation(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Enter a latutude and longitude, eg: 52.377956,4.897070</div>
@@ -248,8 +244,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             disabled={!enabled || !configLoaded}
             value={units}
             onChange={event => {
-              const input = event.target as HTMLSelectElement;
-              setUnits(input.value);
+              setUnits(event.target.value);
             }}
           >
             <option value='standard'>Standard</option>
@@ -272,8 +267,7 @@ function SettingsWeather({ health, details }: { health: string; details: Record<
             disabled={!enabled || !configLoaded}
             value={apiKey}
             onChange={event => {
-              const input = event.target as HTMLInputElement;
-              setApiKey(input.value);
+              setApiKey(event.target.value);
             }}
           />
           <div className='invalid-feedback'>Enter an API key consisting of 32 characters: a-z, A-Z, 0-9</div>
