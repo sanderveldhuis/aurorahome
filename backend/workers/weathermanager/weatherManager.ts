@@ -132,7 +132,7 @@ export class WeatherManager {
 
   /**
    * Executes the weather retriever and stores the results.
-   * @param interval the interval in seconds
+   * @param interval the interval in milliseconds
    */
   _executeWeatherRetriever(interval: number): void {
     if (!this._weatherRetriever || !this._statusDetails) {

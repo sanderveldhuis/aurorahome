@@ -122,7 +122,7 @@ export class StatusManager {
   _handleApplicationStatusMessage(status: IpcApplicationStatus): void {
     // Add type to application status list
     if (!Object.keys(this._applicationStatus).includes(status.type)) {
-      this._applicationStatus[status.type] = {} as Record<string, ApplicationStatus>;
+      this._applicationStatus[status.type] = {};
     }
 
     // Check if status is changed
