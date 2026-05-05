@@ -146,7 +146,8 @@ class ConfigManager {
         }
         else {
             backend_1.log.configmanager.warn(`Received unknown IPC request with name '${name}': ${JSON.stringify(payload)}`);
-            response({ result: 'error' });
+            const responseMsg = { result: 'error' };
+            response(responseMsg);
         }
     }
     /**
@@ -157,17 +158,20 @@ class ConfigManager {
     _handleSetConfigMessage(setConfig, response) {
         // Do not try to update the database if not connected
         if (mongoose_1.default.connection.readyState !== mongoose_2.ConnectionStates.connected) {
-            response({ result: 'disconnected' });
+            const responseMsg = { result: 'disconnected' };
+            response(responseMsg);
             return;
         }
         // Update or create configuration for the specified name
         configModel_1.default.findOneAndUpdate({ name: setConfig.name }, setConfig, { upsert: true }).then(() => {
-            response({ result: 'ok' });
+            const responseMsg = { result: 'ok' };
+            response(responseMsg);
             // Publish the new configuration
             backend_1.ipc.publish(`${setConfig.name}Config`, setConfig.config);
         }).catch((error) => {
             backend_1.log.configmanager.error(`Failed SetConfig request via IPC for name '${setConfig.name}': ${error instanceof Error ? error.message : 'unknown'}`);
-            response({ result: 'error' });
+            const responseMsg = { result: 'error' };
+            response(responseMsg);
         });
     }
 }
