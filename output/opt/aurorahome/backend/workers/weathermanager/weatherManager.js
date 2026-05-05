@@ -107,7 +107,7 @@ class WeatherManager {
     }
     /**
      * Executes the weather retriever and stores the results.
-     * @param interval the interval in seconds
+     * @param interval the interval in milliseconds
      */
     _executeWeatherRetriever(interval) {
         if (!this._weatherRetriever || !this._statusDetails) {
