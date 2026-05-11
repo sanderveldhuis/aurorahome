@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import WeatherWidget from "../components/weatherwidget/Widget";
+import WeatherWidget from '../components/weatherwidget/Widget';
 
 /**
  * The Dashboard component showing actual application information.
