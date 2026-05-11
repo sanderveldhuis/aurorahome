@@ -58,6 +58,6 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.5",
     "sass-embedded": "1.99.0",
-    "typescript-eslint": "^8.59.1"
+    "typescript-eslint": "^8.59.2"
   }
 }
