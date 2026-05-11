@@ -76,7 +76,7 @@ function setDailyForecast(data?: WeatherDataDaily[]): void {
       return [
         `<div class="col">`,
         `   <div>${new Date(item.timestamp * 1000).toLocaleDateString(navigator.languages[0] || navigator.language, { weekday: 'short' })}</div>`,
-        `   <img style="margin: -1.25rem" class="img-fluid" src="${item.icon}" crossorigin="anonymous">`,
+        `   <img style="margin: -1.25rem" class="img-fluid" src="${item.icon}">`,
         `   <div>${String(Math.round(item.max))}° <span class="text-disabled">${String(Math.round(item.min))}°</span></div>`,
         '</div>'
       ].join('');
