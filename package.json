@@ -47,7 +47,7 @@
     "bootstrap": "^5.3.8",
     "datatables.net-bs5": "^2.3.8",
     "datatables.net-buttons-bs5": "^3.2.6",
-    "datatables.net-react": "^1.0.1",
+    "datatables.net-react": "^1.0.2",
     "dprint": "^0.54.0",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
