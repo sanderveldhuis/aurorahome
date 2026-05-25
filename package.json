@@ -57,7 +57,7 @@
     "mqtt": "^5.15.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.6",
-    "sass-embedded": "1.99.0",
+    "sass-embedded": "1.100.0",
     "typescript-eslint": "^8.59.2"
   }
 }
