@@ -48,7 +48,7 @@
     "datatables.net-bs5": "^2.3.8",
     "datatables.net-buttons-bs5": "^3.2.6",
     "datatables.net-react": "^1.0.2",
-    "dprint": "^0.54.0",
+    "dprint": "^0.55.1",
     "eslint": "^10.6.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
