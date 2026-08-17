@@ -40,7 +40,7 @@
     "@mongodb-js/mongodb-downloader": "^1.1.17",
     "@types/bootstrap": "^5.2.11",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.3",
+    "@types/react-dom": "^19.2.4",
     "@types/sync-fetch": "^0.4.4",
     "@types/validator": "^13.15.10",
     "@vitejs/plugin-react": "^5.1.2",
