@@ -46,7 +46,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "bootstrap": "^5.3.8",
     "datatables.net-bs5": "^3.1.1",
-    "datatables.net-buttons-bs5": "^4.0.3",
+    "datatables.net-buttons-bs5": "^4.1.2",
     "datatables.net-react": "^1.0.2",
     "dprint": "^0.57.4",
     "eslint": "^10.11.0",
