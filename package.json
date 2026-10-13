@@ -30,7 +30,7 @@
     "dist": "npm run format && npm run lint && npm run clean && npm run build && npm run test"
   },
   "dependencies": {
-    "mongoose": "^9.10.3",
+    "mongoose": "^9.11.1",
     "mqtt-packet": "^9.0.2",
     "sync-fetch": "^0.7.1",
     "validator": "^13.15.35"
@@ -49,7 +49,7 @@
     "datatables.net-buttons-bs5": "^4.1.2",
     "datatables.net-react": "^1.0.2",
     "dprint": "^0.57.4",
-    "eslint": "^10.11.0",
+    "eslint": "^10.12.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "glidelite": "github:sanderveldhuis/glidelite#next",
@@ -57,7 +57,7 @@
     "mqtt": "^5.16.0",
     "react": "^19.3.0",
     "react-dom": "^19.2.8",
-    "sass-embedded": "1.105.0",
+    "sass-embedded": "1.105.1",
     "typescript-eslint": "^8.71.1"
   }
 }
